@@ -23,10 +23,6 @@ import Footer from "@/components/footer/Footer2";
 
 export const metadata: Metadata = {
   title: "Filament",
-  icons: {
-    icon: [{ url: "/images/logo/mark.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/images/logo/mark.svg" }],
-  },
   description:
     "Filament — a non-custodial AMM on the LightChain AI network. Swap tokens and provide liquidity, settled entirely on-chain.",
 };
