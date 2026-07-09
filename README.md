@@ -4,7 +4,7 @@ A non-custodial AMM on the LightChain AI network (chain 9200).
 
 Swap tokens and provide liquidity — transactions constructed client-side, signed by your own wallet, settled entirely on-chain.
 
-**Live at:** [filament-eta.vercel.app](https://filament-eta.vercel.app)
+**Live at:** [filament.exchange](https://filament.exchange)
 
 ---
 
