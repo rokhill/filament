@@ -15,29 +15,25 @@ import { headers } from "next/headers";
 import ContextProvider from "@/context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { Instrument_Sans, Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
+
 import { cn } from "@/lib/utils";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer2";
 
+
 export const metadata: Metadata = {
   title: "Filament",
+  icons: {
+    icon: [{ url: "/images/logo/mark.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/images/logo/mark.svg" }],
+  },
   description:
     "Filament — a non-custodial AMM on the LightChain AI network. Swap tokens and provide liquidity, settled entirely on-chain.",
 };
 
-const body = Instrument_Sans({ subsets: ["latin"], variable: "--font-body" });
-const display = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-display",
-});
-const mono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
-});
+const body = { className: "", variable: "" };
+const display = { variable: "" };
+const mono = { variable: "" };
 
 export default async function RootLayout({
   children,

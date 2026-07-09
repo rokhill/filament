@@ -221,3 +221,28 @@ html.light footer, html.light .ae-footer {
 
 /* scrollbar */
 * { scrollbar-color: var(--ae-veil) var(--ae-night); }
+
+
+/* ---- light mode: make swap card readable ---- */
+html.light {
+  --clr-gray-100: #f0f2f8;
+  --clr-darker-two: #e8eaf4;
+  --clr-heading: #14100a;
+  --clr-body: #4a4560;
+  --clr-black: #14100a;
+  --ae-night: #f4f6fc;
+  --ae-haze: #e8eaf4;
+}
+html.light .swap__navbar {
+  background: rgba(244,246,252,0.92) !important;
+}
+html.light [class*="bg-[#e1e3f6]"],
+html.light [class*="bg-[#070710]"] {
+  background: #e8eaf4 !important;
+}
+html.light .theme-gradient {
+  background: linear-gradient(92deg, #9c7a1e 0%, #b8860b 60%, #4a6fa5 140%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
