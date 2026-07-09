@@ -24,7 +24,11 @@ export default function Home() {
   return (
     <div className="relative">
       <FilamentGlow />
-      <div className="container py-12 max-w-lg mx-auto space-y-4 relative z-[1]">
+      <div className="container py-10 max-w-lg mx-auto space-y-4 relative z-[1]">
+        <div className="text-center space-y-1 pb-2">
+          <p className="text-xs font-medium tracking-[0.2em] uppercase text-[var(--ae-aurum)] opacity-80">LightChain AI Mainnet</p>
+          <p className="text-sm text-[var(--clr-body)]">Swap tokens and earn fees — non-custodial, on-chain.</p>
+        </div>
         <SwapPoolsTabs />
         <SwapForm />
       </div>
