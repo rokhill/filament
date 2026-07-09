@@ -1,0 +1,30 @@
+allowBuilds:
+  '@parcel/watcher': true
+  '@reown/appkit': true
+  bufferutil: true
+  keccak: true
+  sharp: true
+  unrs-resolver: true
+  utf-8-validate: true
+minimumReleaseAgeExclude:
+  - next@15.4.5
+  - next@15.4.7
+  - next@15.5.10
+  - next@15.2.9
+  - next@15.5.13
+  - next@15.5.14
+  - next@15.5.15
+  - postcss@8.5.10
+  - next@15.5.16
+  - next@15.5.18
+  - ws@8.20.1
+  - uuid@11.1.1
+  - js-cookie@3.0.6
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@reown/appkit'
+  - bufferutil
+  - keccak
+  - sharp
+  - unrs-resolver
+  - utf-8-validate

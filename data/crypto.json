@@ -1,0 +1,52 @@
+{
+    "crypto":[
+      {
+        "value": "LCAI",
+        "label": "Light Chain",
+        "subText": "LCAI 0xA0b8...1ec7",
+        "icon": "/images/brand/lcai.svg"
+      },
+      {
+        "value": "ETH",
+        "label": "Ethereum",
+        "subText": "ETH",
+        "icon": "/images/brand/eth.svg"
+      },
+      {
+        "value": "WBTC",
+        "label": "Bitcoin",
+        "subText": "BTC 0xA0b8...1ec7",
+        "icon": "/images/brand/btc.svg"
+      },
+      {
+        "value": "USDC",
+        "label": "USDC",
+        "subText": "USDC 0xA0b8...eB48",
+        "icon": "/images/brand/usdc.svg"
+      },
+      {
+        "value": "USDS",
+        "label": "Solana",
+        "subText": "SOL 0xA0b8...1ec7",
+        "icon": "/images/brand/sol.svg"
+      },
+      {
+        "value": "USDT",
+        "label": "Tether",
+        "subText": "USDT 0xA0b8...1ec7",
+        "icon": "/images/brand/usdt.svg"
+      },
+      {
+        "value": "USDB",
+        "label": "Binance",
+        "subText": "BNB 0xA0b8...1ec7",
+        "icon": "/images/brand/bnb.svg"
+      },
+      {
+        "value": "USDK",
+        "label": "Katun",
+        "subText": "KTN 0xA0b8...1ec7",
+        "icon": "/images/brand/ktn.svg"
+      }
+    ]
+}
