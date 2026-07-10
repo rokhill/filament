@@ -25,6 +25,7 @@ const Header = () => {
             <nav className="flex items-center gap-8">
               <Link href="/" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Swap</Link>
               <Link href="/pools" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Pools</Link>
+              <Link href="/forge" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Forge</Link>
               <Link href="/guide" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Guide</Link>
             </nav>
             <div className="swap__navbar-right flex items-center">
