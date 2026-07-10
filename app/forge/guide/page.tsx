@@ -10,7 +10,7 @@ export default function ForgeGuidePage() {
   return (
     <div className="container max-w-2xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold text-[var(--clr-heading)] ae-display mb-2">
-        How the <span className="theme-gradient italic">Forge</span> works
+        How the <span className="theme-gradient">Forge</span> works
       </h1>
       <p className="text-[var(--clr-body)] mb-10">
         The Forge is a fair-launch pad for memecoins on LightChain AI. Every coin starts on a

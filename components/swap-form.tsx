@@ -163,7 +163,7 @@ export default function SwapForm() {
       <div className="absolute left-1/2 top-1/2 -translate-1/2 w-[394px] rounded-full h-[394px] bg-[radial-gradient(circle,rgba(227,179,65,0.55)_0%,rgba(127,180,232,0.25)_60%,transparent_100%)] blur-[110px]"></div>
       <CardHeader className="bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] py-6 lg:text-2xl text-xl z-[1]">
         <CardTitle className="text-center font-bold text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
-          Swap on <span className="theme-gradient ae-display italic">Filament</span>
+          Swap on <span className="theme-gradient ae-display">Filament</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 grid z-[1] bg-[#e1e3f6] dark:bg-[#070710]">

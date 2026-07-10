@@ -246,3 +246,64 @@ html.light .theme-gradient {
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
+
+/* ============================================================
+   FORGE — incandescence system
+   Heat encodes graduation proximity. Motion = market activity.
+   ============================================================ */
+
+@keyframes forgeEmber {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes forgeShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+@keyframes forgeBreathe {
+  0%, 100% { box-shadow: 0 0 24px 2px rgba(227, 179, 65, 0.18); }
+  50% { box-shadow: 0 0 42px 6px rgba(245, 214, 128, 0.32); }
+}
+@keyframes forgeTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.forge-title {
+  background: linear-gradient(90deg, var(--ae-aurum-deep), var(--ae-aurum), var(--ae-aurum-bright), var(--ae-aurum), var(--ae-aurum-deep));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: forgeEmber 6s ease-in-out infinite;
+}
+
+.forge-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.forge-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, rgba(245, 214, 128, 0.55), transparent);
+  animation: forgeShimmer 2.4s ease-in-out infinite;
+}
+
+.forge-breathe { animation: forgeBreathe 3.2s ease-in-out infinite; }
+
+.forge-ticker-track {
+  display: inline-flex;
+  gap: 2.5rem;
+  white-space: nowrap;
+  animation: forgeTicker 40s linear infinite;
+}
+.forge-ticker-track:hover { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .forge-title { animation: none; }
+  .forge-shimmer::after { animation: none; display: none; }
+  .forge-breathe { animation: none; }
+  .forge-ticker-track { animation: none; }
+}

@@ -50,7 +50,7 @@ const MobileMenu = () => {
           </div>
           <div className="px-4 py-4">
             <ul className="flex flex-col gap-4 mb-6">
-              <li><Link href="/" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Swap</Link></li>
+              <li><Link href="/" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Exchange</Link></li>
               <li><Link href="/pools" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Pools</Link></li>
               <li><Link href="/forge" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Forge</Link></li>
               <li><Link href="/guide" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Guide</Link></li>

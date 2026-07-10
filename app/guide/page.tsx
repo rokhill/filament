@@ -7,7 +7,7 @@ export default function GuidePage() {
   return (
     <div className="container max-w-2xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold text-[var(--clr-heading)] ae-display mb-2">
-        How to use <span className="theme-gradient italic">Filament</span>
+        How to use <span className="theme-gradient">Filament</span>
       </h1>
       <p className="text-[var(--clr-body)] mb-10">Filament is a non-custodial AMM on the LightChain AI network. Your wallet signs every transaction — Filament never holds your funds.</p>
 

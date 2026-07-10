@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import useForge, { ForgeCoin, fmtLcai } from "@/hooks/useForge";
+import useForge, { ForgeCoin, ForgeTrade, fmtLcai, fmtTokens } from "@/hooks/useForge";
 import { encodeMetadata, ipfsToHttp, shortAddr } from "@/config/forge";
-import ProgressBar from "@/components/forge/progress-bar";
+import ProgressBar, { heatStyle } from "@/components/forge/progress-bar";
 
 /* ------------------------------------------------------------------ */
 /*  Shared bits                                                        */
@@ -45,9 +45,91 @@ function CoinImage({ coin, size = 64 }: { coin: ForgeCoin; size?: number }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Live activity ticker                                               */
+/* ------------------------------------------------------------------ */
+
+function ActivityTicker({
+  items,
+  symbols,
+}: {
+  items: (ForgeTrade & { token: `0x${string}` })[];
+  symbols: Record<string, string>;
+}) {
+  if (items.length === 0) return null;
+  const row = items.map((t, i) => (
+    <Link key={i} href={`/forge/${t.token}`} className="inline-flex items-center gap-1.5 text-xs">
+      <span style={{ color: t.isBuy ? "var(--clr-success)" : "var(--clr-danger)" }}>
+        {t.isBuy ? "\u25b2" : "\u25bc"}
+      </span>
+      <span style={{ color: "var(--ae-nebula)" }}>{shortAddr(t.trader)}</span>
+      <span style={{ color: "var(--clr-heading)" }}>
+        {t.isBuy ? "bought" : "sold"} {fmtTokens(t.tokenAmount)}
+      </span>
+      <span style={{ color: "var(--ae-aurum)" }}>${symbols[t.token.toLowerCase()] ?? "???"}</span>
+      <span style={{ color: "var(--ae-nebula)" }}>for {fmtLcai(t.lcaiAmount, 1)} LCAI</span>
+    </Link>
+  ));
+  return (
+    <div
+      className="rounded-xl overflow-hidden py-2 mb-6"
+      style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}
+    >
+      <div className="forge-ticker-track">
+        <span className="inline-flex gap-10 px-5">{row}</span>
+        <span className="inline-flex gap-10 px-5" aria-hidden>
+          {row}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 /* ------------------------------------------------------------------ */
-/*  Coin card                                                          */
+/*  How it works + stats                                               */
+/* ------------------------------------------------------------------ */
+
+function HowItWorks() {
+  const steps = [
+    { n: "1", t: "Forge", d: "Anyone launches a coin for 300 LCAI. All 1B tokens start on the curve — no team allocation, no presale." },
+    { n: "2", t: "Trade the curve", d: "Buy and sell with LCAI. Price rises with every buy. Early buyers get the lowest prices. Sell back anytime." },
+    { n: "3", t: "Graduate", d: "Curve sells out → coin auto-lists on Filament with all raised LCAI as liquidity, burned forever. No rug possible." },
+  ];
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6">
+      {steps.map((s) => (
+        <div key={s.n} className="rounded-2xl p-4" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: "var(--ae-aurum)", color: "var(--ae-ink)" }}>{s.n}</span>
+            <span className="font-semibold text-sm" style={{ color: "var(--clr-heading)" }}>{s.t}</span>
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--ae-nebula)" }}>{s.d}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StatsStrip({ coins }: { coins: ForgeCoin[] }) {
+  const raised = coins.reduce((a, c) => a + c.lcaiRaised, 0n);
+  const grads = coins.filter((c) => c.graduated).length;
+  const stat = (label: string, value: string) => (
+    <div key={label} className="flex-1 min-w-[110px] text-center rounded-xl py-3 px-2" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+      <div className="text-lg font-bold" style={{ color: "var(--ae-aurum)" }}>{value}</div>
+      <div className="text-[11px]" style={{ color: "var(--ae-nebula)" }}>{label}</div>
+    </div>
+  );
+  return (
+    <div className="flex gap-3 flex-wrap mb-2">
+      {stat("Coins forged", String(coins.length))}
+      {stat("LCAI on curves", fmtLcai(raised, 0))}
+      {stat("Graduated to Filament", String(grads))}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Coin card — glow intensity encodes graduation proximity            */
 /* ------------------------------------------------------------------ */
 
 function CoinCard({ coin }: { coin: ForgeCoin }) {
@@ -55,29 +137,20 @@ function CoinCard({ coin }: { coin: ForgeCoin }) {
     <Link
       href={`/forge/${coin.address}`}
       className="block rounded-2xl p-4 transition-all hover:-translate-y-0.5"
-      style={{
-        background: "var(--ae-haze)",
-        border: "1px solid var(--clr-border)",
-      }}
+      style={{ background: "var(--ae-haze)", ...heatStyle(coin.progressBps, coin.graduated) }}
     >
       <div className="flex gap-3 items-start">
         <CoinImage coin={coin} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span
-              className="font-semibold truncate"
-              style={{ color: "var(--clr-heading)" }}
-            >
+            <span className="font-semibold truncate" style={{ color: "var(--clr-heading)" }}>
               {coin.name}
             </span>
             <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>
               ${coin.symbol}
             </span>
           </div>
-          <p
-            className="text-xs mt-1 line-clamp-2"
-            style={{ color: "var(--ae-nebula)" }}
-          >
+          <p className="text-xs mt-1 line-clamp-2" style={{ color: "var(--ae-nebula)" }}>
             {coin.metadata.description || "No description"}
           </p>
         </div>
@@ -113,27 +186,20 @@ function KingOfTheHill({ coin }: { coin: ForgeCoin }) {
   return (
     <Link
       href={`/forge/${coin.address}`}
-      className="block rounded-2xl p-5 mb-8 transition-all hover:-translate-y-0.5"
+      className="block rounded-2xl p-5 mb-8 transition-all hover:-translate-y-0.5 forge-breathe"
       style={{
         background: "linear-gradient(135deg, var(--ae-haze), var(--ae-veil))",
         border: "1px solid var(--ae-aurum)",
-        boxShadow: "var(--shadow-primary)",
       }}
     >
-      <div
-        className="text-xs font-semibold tracking-widest uppercase mb-3"
-        style={{ color: "var(--ae-aurum)" }}
-      >
+      <div className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "var(--ae-aurum)" }}>
         ✦ King of the Hill
       </div>
       <div className="flex gap-4 items-center flex-wrap">
         <CoinImage coin={coin} size={72} />
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2">
-            <span
-              className="text-xl font-semibold"
-              style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}
-            >
+            <span className="text-xl font-semibold" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
               {coin.name}
             </span>
             <span style={{ color: "var(--ae-nebula)" }}>${coin.symbol}</span>
@@ -209,25 +275,23 @@ function CreateModal({
         style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2
-          className="text-xl mb-1"
-          style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}
-        >
+        <h2 className="text-xl mb-1" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
           Forge a coin
         </h2>
         <p className="text-xs mb-5" style={{ color: "var(--ae-nebula)" }}>
-          Fair launch on the bonding curve. Sell out the curve and it lists on
+          Fair launch on the bonding curve. Only name and symbol are required —
+          everything else is optional. Sell out the curve and it lists on
           Filament automatically with liquidity burned forever.
         </p>
 
         <div className="space-y-3">
-          <input className={field} style={fieldStyle} placeholder="Name (e.g. Photon Pup)" maxLength={64} value={name} onChange={(e) => setName(e.target.value)} />
-          <input className={field} style={fieldStyle} placeholder="Symbol (e.g. PPUP)" maxLength={16} value={symbol} onChange={(e) => setSymbol(e.target.value)} />
-          <textarea className={field} style={fieldStyle} placeholder="Description" rows={3} maxLength={500} value={description} onChange={(e) => setDescription(e.target.value)} />
-          <input className={field} style={fieldStyle} placeholder="Image URL (https:// or ipfs://)" value={image} onChange={(e) => setImage(e.target.value)} />
+          <input className={field} style={fieldStyle} placeholder="Name — required (e.g. Photon Pup)" maxLength={64} value={name} onChange={(e) => setName(e.target.value)} />
+          <input className={field} style={fieldStyle} placeholder="Symbol — required (e.g. PPUP)" maxLength={16} value={symbol} onChange={(e) => setSymbol(e.target.value)} />
+          <textarea className={field} style={fieldStyle} placeholder="Description (optional, but coins with stories sell)" rows={3} maxLength={500} value={description} onChange={(e) => setDescription(e.target.value)} />
+          <input className={field} style={fieldStyle} placeholder="Image URL (optional — https:// or ipfs://)" value={image} onChange={(e) => setImage(e.target.value)} />
           <div className="grid grid-cols-2 gap-3">
-            <input className={field} style={fieldStyle} placeholder="Twitter/X" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
-            <input className={field} style={fieldStyle} placeholder="Telegram" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
+            <input className={field} style={fieldStyle} placeholder="Twitter/X (optional)" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
+            <input className={field} style={fieldStyle} placeholder="Telegram (optional)" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
           </div>
           <input className={field} style={fieldStyle} placeholder="Website (optional)" value={website} onChange={(e) => setWebsite(e.target.value)} />
           <div>
@@ -269,50 +333,6 @@ function CreateModal({
   );
 }
 
-
-/* ------------------------------------------------------------------ */
-/*  How it works + stats                                               */
-/* ------------------------------------------------------------------ */
-
-function HowItWorks() {
-  const steps = [
-    { n: "1", t: "Forge", d: "Anyone launches a coin for 300 LCAI. All 1B tokens start on the curve — no team allocation, no presale." },
-    { n: "2", t: "Trade the curve", d: "Buy and sell with LCAI. Price rises with every buy. Early buyers get the lowest prices. Sell back anytime." },
-    { n: "3", t: "Graduate", d: "Curve sells out → coin auto-lists on Filament with all raised LCAI as liquidity, burned forever. No rug possible." },
-  ];
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6">
-      {steps.map((s) => (
-        <div key={s.n} className="rounded-2xl p-4" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: "var(--ae-aurum)", color: "var(--ae-ink)" }}>{s.n}</span>
-            <span className="font-semibold text-sm" style={{ color: "var(--clr-heading)" }}>{s.t}</span>
-          </div>
-          <p className="text-xs leading-relaxed" style={{ color: "var(--ae-nebula)" }}>{s.d}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function StatsStrip({ coins }: { coins: ForgeCoin[] }) {
-  const raised = coins.reduce((a, c) => a + c.lcaiRaised, 0n);
-  const grads = coins.filter((c) => c.graduated).length;
-  const stat = (label: string, value: string) => (
-    <div className="flex-1 min-w-[110px] text-center rounded-xl py-3 px-2" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
-      <div className="text-lg font-bold" style={{ color: "var(--ae-aurum)" }}>{value}</div>
-      <div className="text-[11px]" style={{ color: "var(--ae-nebula)" }}>{label}</div>
-    </div>
-  );
-  return (
-    <div className="flex gap-3 flex-wrap mb-2">
-      {stat("Coins forged", String(coins.length))}
-      {stat("LCAI on curves", fmtLcai(raised, 0))}
-      {stat("Graduated to Filament", String(grads))}
-    </div>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
 /* ------------------------------------------------------------------ */
@@ -320,9 +340,10 @@ function StatsStrip({ coins }: { coins: ForgeCoin[] }) {
 type Filter = "all" | "live" | "graduated";
 
 export default function ForgePage() {
-  const { fetchCoins, getCreationFee } = useForge();
+  const { fetchCoins, getCreationFee, fetchActivity } = useForge();
   const [coins, setCoins] = useState<ForgeCoin[] | null>(null);
   const [fee, setFee] = useState<bigint>(0n);
+  const [activity, setActivity] = useState<(ForgeTrade & { token: `0x${string}` })[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
@@ -332,6 +353,7 @@ export default function ForgePage() {
       const [c, f] = await Promise.all([fetchCoins(), getCreationFee()]);
       setCoins(c);
       setFee(f);
+      fetchActivity().then(setActivity);
     } catch {
       setCoins([]);
     }
@@ -387,10 +409,7 @@ export default function ForgePage() {
     <main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
       <div className="flex items-end justify-between flex-wrap gap-4 mb-2">
         <div>
-          <h1
-            className="text-3xl"
-            style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}
-          >
+          <h1 className="text-4xl forge-title" style={{ fontFamily: "var(--font-display), serif" }}>
             The Forge
           </h1>
           <p className="text-sm mt-1" style={{ color: "var(--ae-nebula)" }}>
@@ -423,6 +442,13 @@ export default function ForgePage() {
         />
       </div>
 
+      {activity.length > 0 && !query && (
+        <ActivityTicker
+          items={activity}
+          symbols={Object.fromEntries((coins ?? []).map((c) => [c.address.toLowerCase(), c.symbol]))}
+        />
+      )}
+
       {coins !== null && coins.length > 0 && !query && filter === "all" && <StatsStrip coins={coins} />}
       {coins !== null && coins.length < 4 && <HowItWorks />}
 
@@ -450,9 +476,7 @@ export default function ForgePage() {
         </div>
       )}
 
-      {showCreate && (
-        <CreateModal fee={fee} onClose={() => setShowCreate(false)} onCreated={load} />
-      )}
+      {showCreate && <CreateModal fee={fee} onClose={() => setShowCreate(false)} onCreated={load} />}
     </main>
   );
 }

@@ -23,7 +23,7 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-2"><span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[var(--ae-aurum)] border border-[rgba(227,179,65,0.3)] rounded px-2 py-0.5 opacity-80">Exchange</span></div>
             <nav className="flex items-center gap-8">
-              <Link href="/" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Swap</Link>
+              <Link href="/" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Exchange</Link>
               <Link href="/pools" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Pools</Link>
               <Link href="/forge" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Forge</Link>
               <Link href="/guide" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Guide</Link>

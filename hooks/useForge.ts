@@ -133,6 +133,33 @@ export default function useForge() {
     [publicClient]
   );
 
+  /** Recent trades across ALL coins — powers the live ticker. */
+  const fetchActivity = useCallback(async (): Promise<(ForgeTrade & { token: `0x${string}` })[]> => {
+    try {
+      const latest = await publicClient.getBlockNumber();
+      const from = latest > 250_000n ? latest - 250_000n : 0n;
+      const logs = await publicClient.getContractEvents({
+        address: FORGE_ADDRESS,
+        abi: forgeAbi,
+        eventName: "Trade",
+        fromBlock: from,
+        toBlock: "latest",
+      });
+      return logs.slice(-14).map((l) => ({
+        token: l.args.token as `0x${string}`,
+        trader: l.args.trader as `0x${string}`,
+        isBuy: l.args.isBuy as boolean,
+        lcaiAmount: l.args.lcaiAmount as bigint,
+        tokenAmount: l.args.tokenAmount as bigint,
+        priceWei: ((l.args.vLcai as bigint) * 10n ** 18n) / (l.args.vTok as bigint),
+        block: l.blockNumber,
+        tx: l.transactionHash,
+      }));
+    } catch {
+      return [];
+    }
+  }, [publicClient]);
+
   const fetchCreatorBalance = useCallback(
     async (token: `0x${string}`, creator: `0x${string}`): Promise<bigint> => {
       const t = getContract({ abi: launchTokenAbi, address: token, client: { public: publicClient } });
@@ -295,6 +322,7 @@ export default function useForge() {
   }, [publicClient]);
 
   return {
+    fetchActivity,
     fetchCoins,
     fetchCoin,
     fetchTrades,
