@@ -3,122 +3,282 @@ import Link from "next/link";
 export const metadata = {
   title: "Forge Guide — Filament",
   description:
-    "How the Forge works — fair-launch memecoins on the LightChain AI network with automatic listing on Filament.",
+    "How the Forge works — fair-launch memecoins on LightChain AI with real economics explained.",
 };
+
+const callout = (color: string, bg: string, border: string, children: React.ReactNode) => (
+  <div className="rounded-xl p-4 my-4" style={{ background: bg, border: `1px solid ${border}` }}>
+    <p className="text-sm" style={{ color }}>
+      {children}
+    </p>
+  </div>
+);
 
 export default function ForgeGuidePage() {
   return (
     <div className="container max-w-2xl mx-auto py-12 px-4">
+
+      {/* ---- Hero ---- */}
       <h1 className="text-3xl font-bold text-[var(--clr-heading)] ae-display mb-2">
         How the <span className="theme-gradient">Forge</span> works
       </h1>
+      <p className="text-[var(--clr-body)] mb-2">
+        The Forge is a fair-launch memecoin platform on LightChain AI. Fair launch means
+        exactly what it sounds like: <strong className="text-[var(--clr-heading)]">nobody
+        gets a head start.</strong> No team allocation, no presale, no insider
+        wallets. The creator buys at the same price as everyone else — or earlier,
+        if they put in an initial buy at creation.
+      </p>
       <p className="text-[var(--clr-body)] mb-10">
-        The Forge is a fair-launch pad for memecoins on LightChain AI. Every coin starts on a
-        bonding curve — a smart contract that sells tokens at a price that rises as more people
-        buy. When the curve sells out, the coin automatically lists on Filament with its
-        liquidity locked forever. No presale, no team allocation, no rug.
+        Every coin starts on a bonding curve, a smart contract that is the market.
+        When the curve sells out, the coin graduates: it gets permanent liquidity on
+        Filament DEX with the LP tokens burned so nobody can ever pull it.
       </p>
 
+      {/* ---- The actual point ---- */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">The lifecycle of a coin</h2>
-        <ol className="space-y-3 text-sm text-[var(--clr-body)] list-decimal list-inside">
-          <li>
-            <strong className="text-[var(--clr-heading)]">Forged.</strong> Anyone creates a coin for 300 LCAI.
-            Every coin has exactly 1,000,000,000 tokens — all of them start inside the curve. Nobody,
-            including the creator, gets free tokens.
-          </li>
-          <li>
-            <strong className="text-[var(--clr-heading)]">Traded on the curve.</strong> People buy and sell
-            with native LCAI. Price starts tiny and rises automatically with every buy. You can sell back
-            to the curve at any time before graduation.
-          </li>
-          <li>
-            <strong className="text-[var(--clr-heading)]">Graduated.</strong> When 800M of the 1B tokens have
-            been bought (roughly 293,000 LCAI raised), the coin graduates in that same transaction: all the
-            raised LCAI is paired with the remaining 200M tokens as a liquidity pool on Filament, and the
-            LP tokens are burned. From then on it trades on the open market like any other token.
-          </li>
-        </ol>
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-1 border-b border-[var(--clr-border)] pb-2">
+          Why early buyers win — the real economics
+        </h2>
+        <p className="text-sm text-[var(--clr-body)] mt-3 mb-3">
+          The bonding curve sets a starting price and raises it automatically with
+          every buy. The earlier you get in, the cheaper your tokens. This is not
+          hype — it is math baked into the contract.
+        </p>
+        <p className="text-sm text-[var(--clr-body)] mb-4">
+          Here is a concrete example. Say a coin launches and you are the very
+          first buyer, putting in <strong className="text-[var(--clr-heading)]">50 LCAI</strong>:
+        </p>
+
+        {/* Example table */}
+        <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid var(--clr-border)" }}>
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ background: "var(--ae-night)" }}>
+                <th className="text-left px-4 py-2.5 font-semibold text-[var(--clr-heading)]">Event</th>
+                <th className="text-right px-4 py-2.5 font-semibold text-[var(--clr-heading)]">Your position</th>
+              </tr>
+            </thead>
+            <tbody style={{ background: "var(--ae-haze)" }}>
+              <tr style={{ borderTop: "1px solid var(--clr-border)" }}>
+                <td className="px-4 py-3 text-[var(--clr-body)]">You buy first — 50 LCAI at the lowest curve price</td>
+                <td className="px-4 py-3 text-right font-mono text-[var(--clr-heading)]">~36,900,000 tokens</td>
+              </tr>
+              <tr style={{ borderTop: "1px solid var(--clr-border)" }}>
+                <td className="px-4 py-3 text-[var(--clr-body)]">The community buys the rest of the curve (293k LCAI total raised)</td>
+                <td className="px-4 py-3 text-right font-mono" style={{ color: "var(--ae-aurum)" }}>Price has risen ~3x</td>
+              </tr>
+              <tr style={{ borderTop: "1px solid var(--clr-border)" }}>
+                <td className="px-4 py-3 text-[var(--clr-body)]">Coin graduates — your tokens unlock, Filament pool opens</td>
+                <td className="px-4 py-3 text-right font-mono" style={{ color: "var(--clr-success)" }}>~146 LCAI value</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-sm text-[var(--clr-body)] mb-2">
+          Your 50 LCAI bought at the bottom of the curve. By graduation the price is
+          roughly 3x where you bought. Your tokens are worth ~146 LCAI before the
+          open market even starts trading — purely from being early on a curve that
+          sold out.
+        </p>
+
+        {callout(
+          "var(--ae-aurum)",
+          "rgba(227,179,65,0.08)",
+          "rgba(227,179,65,0.25)",
+          <>
+            <strong>The earlier you buy, the better the graduation math works for you.</strong>{" "}
+            Someone who buys at 90% of the curve has almost no upside from graduation
+            itself — they bought near the final price. Someone who buys at 5% of the
+            curve gets the full ride.
+          </>
+        )}
       </section>
 
+      {/* ---- Tokens locked ---- */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Buying a coin</h2>
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          Why tokens are locked before graduation
+        </h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          Before graduation, the tokens you hold on the curve cannot be transferred
+          to another wallet or listed on any other exchange. They can only be sold
+          back to the curve. This is intentional and it protects you:
+        </p>
+        <ul className="space-y-2 text-sm text-[var(--clr-body)] list-disc list-inside mb-3">
+          <li>Nobody can create a fake liquidity pool with the token before the real one opens</li>
+          <li>Nobody can front-run the launch by sniping tokens and dumping them immediately on a side market</li>
+          <li>The only market that exists before graduation is the curve — which always has a price and always lets you sell back</li>
+        </ul>
+        {callout(
+          "var(--clr-success)",
+          "rgba(74,222,128,0.08)",
+          "rgba(74,222,128,0.25)",
+          <>
+            <strong>Graduation is the unlock event.</strong> The moment the curve sells
+            out, your tokens become standard ERC-20s that transfer freely and trade on
+            Filament. Graduation is not a risk — it is the finish line.
+          </>
+        )}
+      </section>
+
+      {/* ---- LP burn ---- */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          The LP burn — why it matters
+        </h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          When a coin graduates, the contract takes all the LCAI raised on the curve
+          and pairs it with 200,000,000 tokens to create a liquidity pool on Filament.
+          Whoever creates that pool normally receives LP tokens — proof of ownership
+          that lets them withdraw the liquidity later.
+        </p>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          <strong className="text-[var(--clr-heading)]">The Forge sends those LP tokens
+          straight to the burn address.</strong> Nobody holds them. The contract itself
+          cannot withdraw the liquidity. The team cannot withdraw it. There is no
+          multisig, no timelock, no governance vote that could change this — it is
+          done in the same transaction as graduation and cannot be reversed.
+        </p>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          This is how the Forge eliminates the most common memecoin scam — the rug
+          pull. A rug pull requires someone to hold LP tokens. Nobody does.
+        </p>
+        {callout(
+          "var(--clr-body)",
+          "var(--ae-night)",
+          "var(--clr-border)",
+          <>
+            <strong className="text-[var(--clr-heading)]">In plain English:</strong>{" "}
+            the liquidity that backs every graduated coin on Filament is there
+            permanently. The pool cannot be drained. Ever. You can verify this
+            yourself on{" "}
+            <a
+              href="https://mainnet.lightscan.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+              style={{ color: "var(--ae-aurum)" }}
+            >
+              lightscan
+            </a>
+            .
+          </>
+        )}
+      </section>
+
+      {/* ---- Can I sell before graduation ---- */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          Can I sell before graduation?
+        </h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          Yes, anytime. The curve contract is always the buyer. You do not need
+          another person to be on the other side of your sell — the contract pays
+          you back in LCAI at the current curve price, minus the 1% fee.
+        </p>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          If the coin has had a lot of sells since you bought, you may get back less
+          than you put in. If it has had a lot of buys, you get back more. The curve
+          price moves in both directions.
+        </p>
+        {callout(
+          "var(--clr-warning, #f59e0b)",
+          "rgba(245,158,11,0.08)",
+          "rgba(245,158,11,0.25)",
+          <>
+            <strong>Your 50 LCAI does not become 50 LCAI guaranteed.</strong> It
+            becomes however many tokens you bought, at whatever the curve price is
+            when you sell. Early buyers profit if the coin sells out. Late buyers
+            profit less from graduation but still profit if the open market keeps
+            buying after. Everyone can lose if the coin dies on the curve.
+          </>
+        )}
+      </section>
+
+      {/* ---- How to buy ---- */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          How to buy a coin
+        </h2>
         <ol className="space-y-2 text-sm text-[var(--clr-body)] list-decimal list-inside">
-          <li>Connect your wallet on LCAI mainnet and open any coin from the <Link href="/forge" className="text-[var(--ae-aurum)] underline">Forge</Link>.</li>
-          <li>Enter how much LCAI you want to spend in the <strong className="text-[var(--clr-heading)]">Buy</strong> panel. The estimate shows how many tokens you&apos;ll get.</li>
-          <li>Click <strong className="text-[var(--clr-heading)]">Buy</strong> and confirm in your wallet. Done — the tokens are yours.</li>
+          <li>Connect your wallet on LCAI mainnet and open any coin from the <Link href="/forge" className="underline" style={{ color: "var(--ae-aurum)" }}>Forge</Link>.</li>
+          <li>Enter how much LCAI you want to spend. The panel shows you exactly how many tokens you will receive at the current curve price.</li>
+          <li>Click Buy and confirm in your wallet. Tokens are in your wallet immediately — but cannot be transferred until graduation.</li>
         </ol>
-        <p className="text-xs text-[var(--clr-body)] mt-3 opacity-70">
-          There is a 1% fee on curve trades and a 2% slippage guard applied automatically. Earlier buys get lower prices — that&apos;s the whole game.
+        <p className="text-xs mt-3" style={{ color: "var(--ae-nebula)" }}>
+          1% fee on all curve trades. 2% slippage guard applied automatically to protect against sandwich attacks.
         </p>
       </section>
 
+      {/* ---- How to launch ---- */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Selling a coin</h2>
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          How to launch your own coin
+        </h2>
         <ol className="space-y-2 text-sm text-[var(--clr-body)] list-decimal list-inside">
-          <li>Open the coin page and switch to <strong className="text-[var(--clr-heading)]">Sell</strong>.</li>
-          <li>Enter the amount (or hit Max). Your first sell asks for two confirmations: an approval, then the sell itself.</li>
-          <li>You receive LCAI back at the current curve price, minus the 1% fee.</li>
-        </ol>
-        <p className="text-xs text-[var(--clr-body)] mt-3 opacity-70">
-          Before graduation, coins can only be traded through the Forge — you can&apos;t transfer them wallet-to-wallet. That&apos;s deliberate: it blocks snipers from creating fake pools. Transfers unlock the moment a coin graduates.
-        </p>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Forging your own coin</h2>
-        <ol className="space-y-2 text-sm text-[var(--clr-body)] list-decimal list-inside">
-          <li>Click <strong className="text-[var(--clr-heading)]">+ Forge a coin</strong> on the Forge page.</li>
-          <li>Pick a name and symbol. Add a description, an image URL, and your socials — this is what traders see, so make it count.</li>
-          <li>Optionally enter an <strong className="text-[var(--clr-heading)]">initial buy</strong>. This purchase happens in the same transaction as creation, which means nobody can buy before you. Strongly recommended.</li>
+          <li>Click <strong className="text-[var(--clr-heading)]">+ Forge a coin</strong>. Only a name and symbol are required.</li>
+          <li>Add a description, image, and socials if you have them. Coins with a story and a face sell better than anonymous tickers.</li>
+          <li>
+            Enter an initial buy amount. This is strongly recommended —{" "}
+            <strong className="text-[var(--clr-heading)]">your first buy happens in the
+            same transaction as creation</strong>, which means it is physically
+            impossible for anyone to buy before you. Without an initial buy you
+            create the coin at zero and walk away.
+          </li>
           <li>Confirm in your wallet. Cost: 300 LCAI creation fee + your initial buy.</li>
         </ol>
-        <div className="mt-4 p-3 rounded-lg bg-[rgba(227,179,65,0.08)] border border-[rgba(227,179,65,0.2)] text-xs text-[var(--clr-body)]">
-          <strong className="text-[var(--ae-aurum)]">Creators get no free tokens.</strong> Your only edge is buying first at the lowest price. Every coin page publicly shows how much of the supply the creator holds — the community is watching.
-        </div>
+        {callout(
+          "var(--clr-body)",
+          "var(--ae-night)",
+          "var(--clr-border)",
+          <>
+            <strong className="text-[var(--clr-heading)]">You get no free tokens as creator.</strong>{" "}
+            Your only advantage is buying first at the cheapest possible price. Every
+            coin page shows the creator&apos;s current holding percentage in real time.
+            The community can see exactly how much you hold and whether you are selling.
+          </>
+        )}
       </section>
 
+      {/* ---- Honest risks ---- */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Graduation and the progress bar</h2>
-        <p className="text-sm text-[var(--clr-body)] mb-3">
-          Every live coin shows a gold progress bar — that&apos;s how much of the curve has been bought.
-          At 100% the coin graduates automatically, inside the final buy transaction:
-        </p>
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          Honest risks
+        </h2>
         <ul className="space-y-2 text-sm text-[var(--clr-body)] list-disc list-inside">
-          <li>All raised LCAI (minus a 2% graduation fee) is paired with 200M tokens on Filament.</li>
-          <li>The LP tokens are sent to the burn address — <strong className="text-[var(--clr-heading)]">that liquidity can never be withdrawn, by anyone, ever.</strong></li>
-          <li>Token transfers unlock and the coin trades freely on the <Link href="/" className="text-[var(--ae-aurum)] underline">swap page</Link>.</li>
-        </ul>
-        <p className="text-xs text-[var(--clr-body)] mt-3 opacity-70">
-          The curve is calibrated so the opening market price on Filament matches the final curve price — graduation is a doorway, not a cliff.
-        </p>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Honest risks</h2>
-        <ul className="space-y-2 text-sm text-[var(--clr-body)] list-disc list-inside">
-          <li>Memecoins are speculation, not investment. Most never graduate. Only spend what you can lose entirely.</li>
-          <li>The contract prevents rug-pulls of liquidity — it cannot prevent a coin from simply going to zero because people stop caring.</li>
-          <li>Creators and early buyers can sell into your buys. Check the creator&apos;s holding % and the recent trades on every coin page.</li>
-          <li>Anyone can forge a coin with any name. A coin called &quot;LCAI2&quot; has nothing to do with LightChain. Verify addresses, not names.</li>
+          <li>Most memecoins never graduate. If a coin stalls on the curve and people sell, early buyers can still lose money.</li>
+          <li>The contract prevents liquidity rugs — it cannot prevent a coin from going to zero because people stop caring.</li>
+          <li>Creators and early buyers can sell into your buys at any time before graduation.</li>
+          <li>Anyone can launch a coin with any name. A coin called &quot;LCAI2&quot; has nothing to do with LightChain AI. Verify the contract address, not the name.</li>
+          <li>This is speculation, not investment. Only spend what you can afford to lose entirely.</li>
         </ul>
       </section>
 
+      {/* ---- Fine print ---- */}
       <section>
-        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">The fine print</h2>
-        <div className="rounded-xl bg-[var(--ae-haze)] border border-[var(--clr-border)] p-4 text-sm font-mono text-[var(--clr-body)] space-y-1">
-          <div><span className="text-[var(--ae-aurum)]">Forge contract</span> — 0x17b48A0070DC048E81f7104a1bA65F937BbD8D94</div>
-          <div><span className="text-[var(--ae-aurum)]">Supply per coin</span> — 1,000,000,000 (fixed, no minting)</div>
-          <div><span className="text-[var(--ae-aurum)]">Curve / LP split</span> — 800M curve / 200M liquidity</div>
-          <div><span className="text-[var(--ae-aurum)]">Creation fee</span> — 300 LCAI</div>
-          <div><span className="text-[var(--ae-aurum)]">Trade fee</span> — 1% (hard-capped at 3% in bytecode)</div>
-          <div><span className="text-[var(--ae-aurum)]">Graduation fee</span> — 2% of raise (hard-capped at 5%)</div>
-          <div><span className="text-[var(--ae-aurum)]">Graduation raise</span> — ~293,000 LCAI</div>
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          The numbers
+        </h2>
+        <div className="rounded-xl p-4 text-sm font-mono space-y-1.5" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Forge contract</span> — 0x17b48A0070DC048E81f7104a1bA65F937BbD8D94</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Supply per coin</span> — 1,000,000,000 (fixed, no minting)</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Curve / LP split</span> — 800M on curve / 200M to Filament pool</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Creation fee</span> — 300 LCAI (~$1)</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Trade fee</span> — 1% (hard-capped at 3% in bytecode)</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Graduation raise</span> — ~293,000 LCAI total</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Early buyer upside</span> — up to ~3x from graduation alone if first in</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>LP destination</span> — 0x000000000000000000000000000000000000dEaD</div>
         </div>
-        <p className="text-xs text-[var(--clr-body)] mt-3 opacity-70">
-          Fee caps are enforced by the contract itself — the operator cannot raise them beyond those limits or touch curve reserves. Verify everything on lightscan.app.
+        <p className="text-xs mt-3" style={{ color: "var(--ae-nebula)" }}>
+          Fee caps are enforced by the contract itself. Verify everything on{" "}
+          <a href="https://mainnet.lightscan.app" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--ae-aurum)" }}>
+            lightscan
+          </a>. The burn address is public record — anyone can confirm the LP was sent there.
         </p>
       </section>
+
     </div>
   );
 }
