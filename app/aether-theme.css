@@ -134,6 +134,28 @@ html.light .ae-sky {
 @keyframes ae-orbit {
   to { transform: rotate(360deg); }
 }
+
+/* light mode forge fixes */
+html.light .forge-title {
+  background: linear-gradient(90deg, #7a5c0e, #b8860b, #8a6a12, #b8860b, #7a5c0e);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: forgeEmber 6s ease-in-out infinite;
+}
+
+/* 3. King of the hill — flip gradient direction in light mode so gold text readable */
+html.light .forge-breathe {
+  background: linear-gradient(135deg, #ffffff, #eceef8) !important;
+}
+html.light .forge-breathe [style*="color: var(--ae-aurum)"] {
+  color: #7a5c0e !important;
+}
+html.light .forge-breathe [style*="color: var(--ae-nebula)"] {
+  color: var(--ae-nebula) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ae-astrolabe svg { animation: none; }
 }
@@ -230,8 +252,11 @@ html.light {
   --clr-heading: #14100a;
   --clr-body: #4a4560;
   --clr-black: #14100a;
-  --ae-night: #f4f6fc;
-  --ae-haze: #e8eaf4;
+  --ae-night: #eceef8;
+  --ae-haze: #e0e3f2;
+  --ae-veil: #d4d8ee;
+  --ae-nebula: #6b6880;
+  --ae-ink: #ffffff;
 }
 html.light .swap__navbar {
   background: rgba(244,246,252,0.92) !important;
@@ -300,6 +325,28 @@ html.light .theme-gradient {
   animation: forgeTicker 40s linear infinite;
 }
 .forge-ticker-track:hover { animation-play-state: paused; }
+
+
+/* light mode forge fixes */
+html.light .forge-title {
+  background: linear-gradient(90deg, #7a5c0e, #b8860b, #8a6a12, #b8860b, #7a5c0e);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: forgeEmber 6s ease-in-out infinite;
+}
+
+/* 3. King of the hill — flip gradient direction in light mode so gold text readable */
+html.light .forge-breathe {
+  background: linear-gradient(135deg, #ffffff, #eceef8) !important;
+}
+html.light .forge-breathe [style*="color: var(--ae-aurum)"] {
+  color: #7a5c0e !important;
+}
+html.light .forge-breathe [style*="color: var(--ae-nebula)"] {
+  color: var(--ae-nebula) !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .forge-title { animation: none; }
