@@ -145,15 +145,10 @@ html.light .forge-title {
   animation: forgeEmber 6s ease-in-out infinite;
 }
 
-/* 3. King of the hill — flip gradient direction in light mode so gold text readable */
+/* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #ffffff, #eceef8) !important;
-}
-html.light .forge-breathe [style*="color: var(--ae-aurum)"] {
-  color: #7a5c0e !important;
-}
-html.light .forge-breathe [style*="color: var(--ae-nebula)"] {
-  color: var(--ae-nebula) !important;
+  background: linear-gradient(135deg, #1a1635, #0f0d2a) !important;
+  border-color: var(--ae-aurum) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -189,8 +184,8 @@ a.btn-default:hover, button.btn-default:hover, div.btn-default:hover, .btn-defau
 /* theme-aware logo swap (template rules are unreliable) */
 html.dark .swap__navbar-logolight { display: none !important; }
 html.dark .swap__navbar-logodark { display: block !important; }
-html.light .swap__navbar-logolight, html:not(.dark) .swap__navbar-logolight { display: block; }
-html.light .swap__navbar-logodark, html:not(.dark) .swap__navbar-logodark { display: none; }
+html.light .swap__navbar-logolight, html:not(.dark) .swap__navbar-logolight { display: block !important; }
+html.light .swap__navbar-logodark, html:not(.dark) .swap__navbar-logodark { display: none !important; }
 
 /* header + nav: quiet glass over the sky, no violet gradients */
 .header-default, .swap__navbar {
@@ -337,15 +332,10 @@ html.light .forge-title {
   animation: forgeEmber 6s ease-in-out infinite;
 }
 
-/* 3. King of the hill — flip gradient direction in light mode so gold text readable */
+/* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #ffffff, #eceef8) !important;
-}
-html.light .forge-breathe [style*="color: var(--ae-aurum)"] {
-  color: #7a5c0e !important;
-}
-html.light .forge-breathe [style*="color: var(--ae-nebula)"] {
-  color: var(--ae-nebula) !important;
+  background: linear-gradient(135deg, #1a1635, #0f0d2a) !important;
+  border-color: var(--ae-aurum) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
