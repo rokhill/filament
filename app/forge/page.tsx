@@ -240,6 +240,7 @@ function CreateModal({
   const [website, setWebsite] = useState("");
   const [initialBuy, setInitialBuy] = useState("");
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const submit = async () => {
     if (!name.trim() || !symbol.trim()) {
@@ -288,7 +289,58 @@ function CreateModal({
           <input className={field} style={fieldStyle} placeholder="Name — required (e.g. Photon Pup)" maxLength={64} value={name} onChange={(e) => setName(e.target.value)} />
           <input className={field} style={fieldStyle} placeholder="Symbol — required (e.g. PPUP)" maxLength={16} value={symbol} onChange={(e) => setSymbol(e.target.value)} />
           <textarea className={field} style={fieldStyle} placeholder="Description (optional, but coins with stories sell)" rows={3} maxLength={500} value={description} onChange={(e) => setDescription(e.target.value)} />
-          <input className={field} style={fieldStyle} placeholder="Image URL (optional — https:// or ipfs://)" value={image} onChange={(e) => setImage(e.target.value)} />
+          <div>
+            <div className="flex gap-2">
+              <input
+                className={field}
+                style={{ ...fieldStyle, flex: 1 }}
+                placeholder="Image URL (optional — https:// or ipfs://)"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+              />
+              <label
+                className="rounded-xl px-3.5 py-2.5 text-sm font-semibold cursor-pointer transition-opacity hover:opacity-80 flex items-center gap-1.5 whitespace-nowrap"
+                style={{ background: "var(--ae-veil)", color: "var(--clr-heading)", border: "1px solid var(--clr-border)" }}
+              >
+                {uploading ? "Uploading…" : "📁 Upload"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (file.size > 10 * 1024 * 1024) { toast.error("Image must be under 10 MB"); return; }
+                    setUploading(true);
+                    try {
+                      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+                      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+                      if (!cloudName || !uploadPreset) throw new Error("Image upload not configured");
+                      const fd = new FormData();
+                      fd.append("file", file);
+                      fd.append("upload_preset", uploadPreset);
+                      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                        method: "POST",
+                        body: fd,
+                      });
+                      const json = await res.json();
+                      if (json.secure_url) { setImage(json.secure_url); toast.success("Image uploaded"); }
+                      else throw new Error(json.error?.message ?? "Upload failed");
+                    } catch (err: any) {
+                      toast.error(err.message ?? "Upload failed — paste an image URL instead");
+                    } finally {
+                      setUploading(false);
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            {image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={image} alt="preview" className="mt-2 rounded-xl object-cover" style={{ width: 64, height: 64, background: "var(--ae-veil)" }} onError={() => setImage("")} />
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <input className={field} style={fieldStyle} placeholder="Twitter/X (optional)" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
             <input className={field} style={fieldStyle} placeholder="Telegram (optional)" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
