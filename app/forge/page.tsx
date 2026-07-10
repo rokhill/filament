@@ -1,11 +1,26 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 import Link from "next/link";
 import { toast } from "sonner";
 import useForge, { ForgeCoin, ForgeTrade, fmtLcai, fmtTokens } from "@/hooks/useForge";
-import { encodeMetadata, ipfsToHttp, shortAddr } from "@/config/forge";
+import { encodeMetadata, ipfsToHttp, shortAddr, FORGE_ADDRESS } from "@/config/forge";
 import ProgressBar, { heatStyle } from "@/components/forge/progress-bar";
+
+const ADMIN_WALLET = "0xDB902DC48ef55d5D69F6cB72583518577C6C021c".toLowerCase();
+const BLOCKED_KEY = "filament:forge:blocked";
+
+function getBlocked(): string[] {
+  try { return JSON.parse(localStorage.getItem(BLOCKED_KEY) ?? "[]"); } catch { return []; }
+}
+function toggleBlocked(addr: string) {
+  const list = getBlocked();
+  const a = addr.toLowerCase();
+  const next = list.includes(a) ? list.filter(x => x !== a) : [...list, a];
+  localStorage.setItem(BLOCKED_KEY, JSON.stringify(next));
+  return next;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Shared bits                                                        */
@@ -42,6 +57,29 @@ function CoinImage({ coin, size = 64 }: { coin: ForgeCoin; size?: number }) {
       className="rounded-xl object-cover"
       style={{ width: size, height: size, background: "var(--ae-veil)" }}
     />
+  );
+}
+
+
+/* ------------------------------------------------------------------ */
+/*  Admin hide button                                                  */
+/* ------------------------------------------------------------------ */
+
+function AdminHideButton({ coin, blocked, onToggle }: { coin: ForgeCoin; blocked: string[]; onToggle: () => void }) {
+  const isBlocked = blocked.includes(coin.address.toLowerCase());
+  return (
+    <button
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBlocked(coin.address); onToggle(); }}
+      className="absolute top-2 right-2 rounded-lg px-2 py-1 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity z-10"
+      style={{
+        background: isBlocked ? "rgba(74,222,128,.15)" : "rgba(248,113,113,.15)",
+        border: `1px solid ${isBlocked ? "rgba(74,222,128,.4)" : "rgba(248,113,113,.4)"}`,
+        color: isBlocked ? "var(--clr-success)" : "var(--clr-danger)",
+      }}
+      title={isBlocked ? "Unhide coin" : "Hide coin from public grid"}
+    >
+      {isBlocked ? "SHOW" : "HIDE"}
+    </button>
   );
 }
 
@@ -132,8 +170,12 @@ function StatsStrip({ coins }: { coins: ForgeCoin[] }) {
 /*  Coin card — glow intensity encodes graduation proximity            */
 /* ------------------------------------------------------------------ */
 
-function CoinCard({ coin }: { coin: ForgeCoin }) {
+function CoinCard({ coin, isAdmin, blocked, onBlockChange }: { coin: ForgeCoin; isAdmin?: boolean; blocked?: string[]; onBlockChange?: () => void }) {
   return (
+    <div className="relative group">
+      {isAdmin && blocked && onBlockChange && (
+        <AdminHideButton coin={coin} blocked={blocked} onToggle={onBlockChange} />
+      )}
     <Link
       href={`/forge/${coin.address}`}
       className="block rounded-2xl p-4 transition-all hover:-translate-y-0.5"
@@ -175,6 +217,7 @@ function CoinCard({ coin }: { coin: ForgeCoin }) {
         )}
       </div>
     </Link>
+    </div>
   );
 }
 
@@ -385,18 +428,99 @@ function CreateModal({
   );
 }
 
+
+/* ------------------------------------------------------------------ */
+/*  My Holdings (portfolio)                                            */
+/* ------------------------------------------------------------------ */
+
+function MyHoldings({ coins }: { coins: ForgeCoin[] }) {
+  const { getBalance } = useForge();
+  const { address } = useAccount();
+  const [balances, setBalances] = useState<Record<string, bigint>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!address || coins.length === 0) { setLoading(false); return; }
+    Promise.all(
+      coins.map(async (c) => {
+        const bal = await getBalance(c.address);
+        return [c.address, bal] as [string, bigint];
+      })
+    ).then((results) => {
+      setBalances(Object.fromEntries(results));
+      setLoading(false);
+    });
+  }, [address, coins, getBalance]);
+
+  const holdings = coins.filter((c) => (balances[c.address] ?? 0n) > 0n);
+
+  if (!address) return (
+    <div className="py-16 text-center text-sm" style={{ color: "var(--ae-nebula)" }}>
+      Connect your wallet to see your holdings.
+    </div>
+  );
+  if (loading) return (
+    <div className="py-16 text-center text-sm" style={{ color: "var(--ae-nebula)" }}>
+      Reading your balances…
+    </div>
+  );
+  if (holdings.length === 0) return (
+    <div className="py-16 text-center" style={{ color: "var(--ae-nebula)" }}>
+      <p className="text-lg mb-1" style={{ color: "var(--clr-heading)" }}>No holdings yet.</p>
+      <p className="text-sm">Buy a coin on the curve to see it here.</p>
+    </div>
+  );
+
+  return (
+    <div className="space-y-3">
+      {holdings.map((c) => {
+        const bal = balances[c.address] ?? 0n;
+        const valueWei = (bal * c.priceWei) / 10n ** 18n;
+        return (
+          <Link key={c.address} href={`/forge/${c.address}`}
+            className="flex items-center gap-4 rounded-2xl p-4 transition-all hover:-translate-y-0.5"
+            style={{ background: "var(--ae-haze)", ...heatStyle(c.progressBps, c.graduated) }}
+          >
+            <div className="flex items-center justify-center rounded-xl font-bold text-lg w-12 h-12 flex-shrink-0"
+              style={{ background: "var(--ae-veil)", color: "var(--ae-aurum)" }}>
+              {c.symbol.slice(0, 2)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold" style={{ color: "var(--clr-heading)" }}>{c.name}</span>
+                <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>${c.symbol}</span>
+                {c.graduated && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(74,222,128,.12)", color: "var(--clr-success)" }}>GRADUATED</span>}
+              </div>
+              <div className="text-xs mt-0.5" style={{ color: "var(--ae-nebula)" }}>
+                {fmtTokens(bal)} tokens
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(valueWei, 2)} LCAI</div>
+              <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>est. value</div>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
 /* ------------------------------------------------------------------ */
 
-type Filter = "all" | "live" | "graduated";
+type Filter = "all" | "live" | "graduated" | "holdings";
 
 export default function ForgePage() {
   const { fetchCoins, getCreationFee, fetchActivity } = useForge();
+  const { address } = useAccount();
   const [coins, setCoins] = useState<ForgeCoin[] | null>(null);
   const [fee, setFee] = useState<bigint>(0n);
   const [activity, setActivity] = useState<(ForgeTrade & { token: `0x${string}` })[]>([]);
   const [showCreate, setShowCreate] = useState(false);
+  const [blocked, setBlocked] = useState<string[]>([]);
+  const isAdmin = address?.toLowerCase() === ADMIN_WALLET;
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
 
@@ -413,6 +537,7 @@ export default function ForgePage() {
 
   useEffect(() => {
     load();
+    setBlocked(getBlocked());
     const t = setInterval(load, 30_000);
     return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -427,9 +552,10 @@ export default function ForgePage() {
 
   const visible = useMemo(() => {
     if (!coins) return [];
-    let v = coins;
+    let v = coins.filter((c) => !blocked.includes(c.address.toLowerCase()) || isAdmin);
     if (filter === "live") v = v.filter((c) => !c.graduated);
     if (filter === "graduated") v = v.filter((c) => c.graduated);
+    if (filter === "holdings") return v; // portfolio handled separately
     if (query.trim()) {
       const q = query.toLowerCase();
       v = v.filter(
@@ -485,6 +611,7 @@ export default function ForgePage() {
         {tab("all", "All")}
         {tab("live", "On the curve")}
         {tab("graduated", "Graduated")}
+        {tab("holdings", "My Holdings")}
         <input
           className="ml-auto rounded-full px-4 py-1.5 text-xs outline-none w-52 focus:shadow-[var(--shadow-input)]"
           style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)", color: "var(--clr-heading)" }}
@@ -506,7 +633,9 @@ export default function ForgePage() {
 
       {king && !query && filter === "all" && <KingOfTheHill coin={king} />}
 
-      {coins === null ? (
+      {filter === "holdings" ? (
+        <MyHoldings coins={coins ?? []} />
+      ) : coins === null ? (
         <div className="py-24 text-center text-sm" style={{ color: "var(--ae-nebula)" }}>
           Reading the chain…
         </div>
@@ -523,11 +652,10 @@ export default function ForgePage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {visible.map((c) => (
-            <CoinCard key={c.address} coin={c} />
+            <CoinCard key={c.address} coin={c} isAdmin={isAdmin} blocked={blocked} onBlockChange={() => setBlocked(getBlocked())} />
           ))}
         </div>
       )}
-
       {showCreate && <CreateModal fee={fee} onClose={() => setShowCreate(false)} onCreated={load} />}
     </main>
   );
