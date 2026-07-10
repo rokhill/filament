@@ -269,6 +269,50 @@ function CreateModal({
   );
 }
 
+
+/* ------------------------------------------------------------------ */
+/*  How it works + stats                                               */
+/* ------------------------------------------------------------------ */
+
+function HowItWorks() {
+  const steps = [
+    { n: "1", t: "Forge", d: "Anyone launches a coin for 300 LCAI. All 1B tokens start on the curve — no team allocation, no presale." },
+    { n: "2", t: "Trade the curve", d: "Buy and sell with LCAI. Price rises with every buy. Early buyers get the lowest prices. Sell back anytime." },
+    { n: "3", t: "Graduate", d: "Curve sells out → coin auto-lists on Filament with all raised LCAI as liquidity, burned forever. No rug possible." },
+  ];
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6">
+      {steps.map((s) => (
+        <div key={s.n} className="rounded-2xl p-4" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: "var(--ae-aurum)", color: "var(--ae-ink)" }}>{s.n}</span>
+            <span className="font-semibold text-sm" style={{ color: "var(--clr-heading)" }}>{s.t}</span>
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--ae-nebula)" }}>{s.d}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StatsStrip({ coins }: { coins: ForgeCoin[] }) {
+  const raised = coins.reduce((a, c) => a + c.lcaiRaised, 0n);
+  const grads = coins.filter((c) => c.graduated).length;
+  const stat = (label: string, value: string) => (
+    <div className="flex-1 min-w-[110px] text-center rounded-xl py-3 px-2" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+      <div className="text-lg font-bold" style={{ color: "var(--ae-aurum)" }}>{value}</div>
+      <div className="text-[11px]" style={{ color: "var(--ae-nebula)" }}>{label}</div>
+    </div>
+  );
+  return (
+    <div className="flex gap-3 flex-wrap mb-2">
+      {stat("Coins forged", String(coins.length))}
+      {stat("LCAI on curves", fmtLcai(raised, 0))}
+      {stat("Graduated to Filament", String(grads))}
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
 /* ------------------------------------------------------------------ */
@@ -351,7 +395,10 @@ export default function ForgePage() {
           </h1>
           <p className="text-sm mt-1" style={{ color: "var(--ae-nebula)" }}>
             Fair-launch memecoins on LightChain AI. Sell out the curve, list on
-            Filament — liquidity burned, forever.
+            Filament — liquidity burned, forever.{" "}
+            <Link href="/forge/guide" className="underline" style={{ color: "var(--ae-aurum)" }}>
+              New here? Read how it works →
+            </Link>
           </p>
         </div>
         <button
@@ -376,6 +423,9 @@ export default function ForgePage() {
         />
       </div>
 
+      {coins !== null && coins.length > 0 && !query && filter === "all" && <StatsStrip coins={coins} />}
+      {coins !== null && coins.length < 4 && <HowItWorks />}
+
       {king && !query && filter === "all" && <KingOfTheHill coin={king} />}
 
       {coins === null ? (
@@ -387,7 +437,10 @@ export default function ForgePage() {
           <p className="text-lg mb-2" style={{ color: "var(--clr-heading)" }}>
             Nothing here yet.
           </p>
-          <p className="text-sm">Be the first — forge a coin and light it up.</p>
+          <p className="text-sm mb-4">Be the first — forge a coin and light it up.</p>
+          <Link href="/forge/guide" className="text-sm underline" style={{ color: "var(--ae-aurum)" }}>
+            Read the guide first
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
