@@ -44,6 +44,12 @@ export function ipfsToHttp(url?: string): string | undefined {
     : url;
 }
 
+// Coins hidden from public grid — add addresses here and redeploy to hide
+export const BLOCKED_COINS: string[] = [
+  "0xE0025336b2a45961B9885Ab4B82A57fa3005Cb76", // duplicate Black Dog
+  "0xFF171cbF37Bd9bb9253965704218A1fbC65859C2", // SmokeTest
+];
+
 export function shortAddr(a: string): string {
   return a.slice(0, 6) + "…" + a.slice(-4);
 }

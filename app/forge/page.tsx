@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import Link from "next/link";
 import { toast } from "sonner";
 import useForge, { ForgeCoin, ForgeTrade, fmtLcai, fmtTokens } from "@/hooks/useForge";
-import { encodeMetadata, ipfsToHttp, shortAddr, FORGE_ADDRESS } from "@/config/forge";
+import { encodeMetadata, ipfsToHttp, shortAddr, FORGE_ADDRESS, BLOCKED_COINS } from "@/config/forge";
 import ProgressBar, { heatStyle } from "@/components/forge/progress-bar";
 
 const ADMIN_WALLET = "0xDB902DC48ef55d5D69F6cB72583518577C6C021c".toLowerCase();
@@ -552,7 +552,7 @@ export default function ForgePage() {
 
   const visible = useMemo(() => {
     if (!coins) return [];
-    let v = coins.filter((c) => !blocked.includes(c.address.toLowerCase()) || isAdmin);
+    let v = coins.filter((c) => !BLOCKED_COINS.map(a => a.toLowerCase()).includes(c.address.toLowerCase()));
     if (filter === "live") v = v.filter((c) => !c.graduated);
     if (filter === "graduated") v = v.filter((c) => c.graduated);
     if (filter === "holdings") return v; // portfolio handled separately
