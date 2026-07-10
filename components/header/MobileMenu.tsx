@@ -16,13 +16,18 @@ const MobileMenu = () => {
         <div className="container mx-auto">
           <div className="flex justify-between items-center">
             <div><DarkSwitch /></div>
-            <div className="swap__navbar-logo">
-              <Link className="swap__navbar-logolight" href="/">
-                <Image src={logoLight} width={176} height={30} alt="Filament" />
-              </Link>
-              <Link className="swap__navbar-logodark" href="/">
-                <Image src={logoDark} width={176} height={35} alt="Filament" />
-              </Link>
+            <div className="flex flex-col items-center">
+              <div className="swap__navbar-logo">
+                <Link className="swap__navbar-logolight" href="/">
+                  <Image src={logoLight} width={140} height={28} alt="Filament" />
+                </Link>
+                <Link className="swap__navbar-logodark" href="/">
+                  <Image src={logoDark} width={140} height={28} alt="Filament" />
+                </Link>
+              </div>
+              <span className="text-[9px] font-bold tracking-[0.15em] uppercase mt-0.5" style={{ color: "var(--ae-aurum)", opacity: 0.8 }}>
+                Exchange · Forge
+              </span>
             </div>
             <div className="mobile-menu-bar block lg:hidden ms-4">
               <div className="swap__hamberger">
@@ -41,23 +46,44 @@ const MobileMenu = () => {
       )}>
         <div>
           <div className="py-4 px-6 flex items-center justify-between swap__navbar-small--head">
-            <Link className="swap__navbar-small--logo swap__navbar-logodark" href="/" onClick={() => setIsOpen(false)}>
-              <Image src={logoDark} width={176} height={35} alt="Filament" />
-            </Link>
+            <div>
+              <Link className="swap__navbar-small--logo swap__navbar-logodark" href="/" onClick={() => setIsOpen(false)}>
+                <Image src={logoDark} width={140} height={28} alt="Filament" />
+              </Link>
+              <p className="text-[9px] font-bold tracking-[0.15em] uppercase mt-1" style={{ color: "var(--ae-aurum)", opacity: 0.8 }}>
+                DEX · Memecoin Launchpad · LightChain AI
+              </p>
+            </div>
             <button className="btn-close" onClick={() => setIsOpen(false)}>
               <i className="fa-solid fa-xmark"></i>
             </button>
           </div>
           <div className="px-4 py-4">
             <ul className="flex flex-col gap-4 mb-6">
-              <li><Link href="/" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Exchange</Link></li>
-              <li><Link href="/pools" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Pools</Link></li>
-              <li><Link href="/forge" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Forge</Link></li>
-              <li><Link href="/guide" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>Guide</Link></li>
+              <li>
+                <Link href="/" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>
+                  Exchange <span className="text-xs font-normal ml-1" style={{ color: "var(--ae-nebula)" }}>Swap tokens</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/pools" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>
+                  Pools <span className="text-xs font-normal ml-1" style={{ color: "var(--ae-nebula)" }}>Provide liquidity</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/forge" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>
+                  Forge <span className="text-xs font-normal ml-1" style={{ color: "var(--ae-aurum)" }}>Memecoin launchpad</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/guide" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>
+                  Guide
+                </Link>
+              </li>
             </ul>
             <WalletConnectButton className="!w-full mt-4" />
             <hr className="block mt-6 mb-4 border-[var(--clr-border)]" />
-            <p className="text-xs text-[var(--clr-body)] text-center">Non-custodial AMM on LightChain AI mainnet</p>
+            <p className="text-xs text-[var(--clr-body)] text-center">Non-custodial · Self-custody · LightChain AI mainnet</p>
           </div>
         </div>
       </div>
