@@ -350,7 +350,7 @@ function CreateModal({
             <input
               className={field}
               style={fieldStyle}
-              placeholder="Initial buy in LCAI (optional, anti-snipe)"
+              placeholder="Buy tokens at launch (optional, in LCAI)"
               inputMode="decimal"
               value={initialBuy}
               onChange={(e) => setInitialBuy(e.target.value.replace(/[^0-9.]/g, ""))}
