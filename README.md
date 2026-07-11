@@ -10,6 +10,8 @@ Live at [filament.exchange](https://filament.exchange)
 
 Filament is an independent, community-built decentralized exchange on the LightChain AI network. It lets anyone swap tokens, provide liquidity, and fair-launch memecoins — all on-chain, non-custodial, with no intermediaries. Your wallet signs every transaction. Filament never holds your funds.
 
+Filament has two products built into one application:
+
 ### Exchange
 
 A Uniswap V2-compatible AMM for swapping tokens on LCAI mainnet. Swap any token pair, provide liquidity to earn 0.30% of every swap in your pool, or remove liquidity at any time. Built with independently deployed contracts — our own Factory, Router, and WLCAI addresses, not shared with any other deployment.
@@ -40,7 +42,9 @@ The first fair-launch memecoin launchpad on LightChain AI. Every coin launches o
 | WLCAI | `0xD73cedfc5b894323BdB18A1e31E7BB186fCe5F64` | — |
 | UniswapV2Factory | `0x5Cf3b069dDB232d1adc5139a9eFb30C48F629389` | — |
 | UniswapV2Router02 | `0x0fA126B579eA894baD98D89815B3494640d29ac6` | — |
-| FilamentForge | `0x17b48A0070DC048E81f7104a1bA65F937BbD8D94` | ✅ [lightscan](https://mainnet.lightscan.app/address/0x17b48A0070DC048E81f7104a1bA65F937BbD8D94) |
+| FilamentForge | `0xB4Ba841e14943184840A939134ffc5c8Ab9403E1` | ✅ [lightscan](https://mainnet.lightscan.app/address/0xB4Ba841e14943184840A939134ffc5c8Ab9403E1) |
+
+All contracts are independently deployed. The Factory's `INIT_CODE_HASH` was recomputed for this deployment. `feeToSetter` is owned by the Filament deployer, not the Lightchain team.
 
 ---
 
@@ -53,6 +57,8 @@ The first fair-launch memecoin launchpad on LightChain AI. Every coin launches o
 | Graduation fee | 2% of raise | When a coin's curve sells out (~5,860 LCAI per graduation) |
 | Swap fee | 0.30% | Every Exchange swap (paid to LPs, not the protocol) |
 
+Fee caps are enforced in contract bytecode. Trade fee max: 3%. Graduation fee max: 5%. These limits cannot be raised by anyone.
+
 ---
 
 ## Security
@@ -62,7 +68,7 @@ The first fair-launch memecoin launchpad on LightChain AI. Every coin launches o
 - **LP burned** — graduated coin liquidity goes to `0x000...dead`, unredeemable by anyone
 - **Curve reserves** — operator cannot withdraw LCAI held in bonding curves
 - **Fee caps** — hard-coded in bytecode, not settable above maximums
-- **Transfer lock** — Forge tokens cannot be transferred before graduation
+- **Transfer lock** — Forge tokens cannot be transferred before graduation, preventing snipe pools
 
 ---
 
@@ -80,11 +86,12 @@ The first fair-launch memecoin launchpad on LightChain AI. Every coin launches o
 - **Forge:** https://filament.exchange/forge
 - **Guide:** https://filament.exchange/guide
 - **Forge Guide:** https://filament.exchange/forge/guide
+- **dApp Hub:** https://hub.lightchain.ai
 
 ---
 
 ## Licenses
 
-Frontend: MIT · Contracts: GPL-3.0 (Uniswap V2)
+Frontend: MIT · Contracts: GPL-3.0 (Uniswap V2), WLCAI is canonical WETH9 ported to Solidity 0.5.x
 
 *Built on LightChain AI mainnet by the Filament community.*

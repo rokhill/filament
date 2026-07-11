@@ -18,6 +18,7 @@ export type ForgeCoin = {
   progressBps: number;
   lcaiRaised: bigint;
   graduated: boolean;
+  isLegacy?: boolean;
 };
 
 export type ForgeTrade = {
@@ -43,20 +44,22 @@ export default function useForge() {
   });
 
   // ------------------------------------------------------------ list
-  const fetchCoins = useCallback(async (): Promise<ForgeCoin[]> => {
-    const count = Number(await forgeRead.read.tokenCount());
+  const fetchFromForge = useCallback(async (forgeAddr: `0x${string}`, legacy: boolean): Promise<ForgeCoin[]> => {
+    const reader = getContract({ abi: forgeAbi, address: forgeAddr, client: { public: publicClient } });
+    let count = 0;
+    try { count = Number(await reader.read.tokenCount()); } catch { return []; }
     if (count === 0) return [];
     const idx = Array.from({ length: count }, (_, i) => BigInt(i));
     const addrs = (await Promise.all(
-      idx.map((i) => forgeRead.read.allTokens([i]))
+      idx.map((i) => reader.read.allTokens([i]))
     )) as `0x${string}`[];
 
-    const coins = await Promise.all(
+    return Promise.all(
       addrs.map(async (a): Promise<ForgeCoin> => {
         const t = getContract({ abi: launchTokenAbi, address: a, client: { public: publicClient } });
         const [curve, stats, name, symbol] = await Promise.all([
-          forgeRead.read.curves([a]),
-          forgeRead.read.curveStats([a]),
+          reader.read.curves([a]),
+          reader.read.curveStats([a]),
           t.read.name(),
           t.read.symbol(),
         ]);
@@ -70,11 +73,17 @@ export default function useForge() {
           progressBps: Number(stats[1]),
           lcaiRaised: stats[2],
           graduated: curve[5],
+          isLegacy: legacy,
         };
       })
     );
-    return coins.reverse(); // newest first
   }, [publicClient]);
+
+  const fetchCoins = useCallback(async (): Promise<ForgeCoin[]> => {
+    return fetchFromForge(FORGE_ADDRESS, false);
+  }, [fetchFromForge]);
+
+
 
   // ------------------------------------------------------------ detail
   const fetchCoin = useCallback(
