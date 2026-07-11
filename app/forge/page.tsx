@@ -475,10 +475,7 @@ function MyHoldings({ coins, lcaiUsd }: { coins: ForgeCoin[]; lcaiUsd: number })
             className="flex items-center gap-4 rounded-2xl p-4 transition-all hover:-translate-y-0.5"
             style={{ background: "var(--ae-haze)", ...heatStyle(c.progressBps, c.graduated) }}
           >
-            <div className="flex items-center justify-center rounded-xl font-bold text-lg w-12 h-12 flex-shrink-0"
-              style={{ background: "var(--ae-veil)", color: "var(--ae-aurum)" }}>
-              {c.symbol.slice(0, 2)}
-            </div>
+            <CoinImage coin={c} size={48} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-semibold" style={{ color: "var(--clr-heading)" }}>{c.name}</span>
@@ -613,7 +610,18 @@ export default function ForgePage() {
         {tab("all", "All")}
         {tab("live", "On the curve")}
         {tab("graduated", "Graduated")}
-        {tab("holdings", "My Holdings")}
+        <button
+          key="holdings"
+          onClick={() => setFilter("holdings")}
+          className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all"
+          style={
+            filter === "holdings"
+              ? { background: "var(--ae-aurum)", color: "var(--ae-ink)" }
+              : { background: "var(--ae-veil)", color: "var(--ae-aurum)", border: "1px solid var(--ae-aurum)" }
+          }
+        >
+          ✦ My Holdings
+        </button>
         {isAdmin && tab("hidden" as Filter, "🚫 Hidden")}
         <input
           className="ml-auto rounded-full px-4 py-1.5 text-xs outline-none w-52 focus:shadow-[var(--shadow-input)]"
