@@ -41,6 +41,7 @@ const Header = () => {
               <Link href="/" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Exchange</Link>
               <Link href="/pools" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Pools</Link>
               <Link href="/forge" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Forge</Link>
+              <Link href="/portfolio" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Portfolio</Link>
               <Link href="/guide" className="text-sm font-medium text-[var(--clr-body)] hover:text-[var(--ae-aurum)] transition-colors">Guide</Link>
             </nav>
 

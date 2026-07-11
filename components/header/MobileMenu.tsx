@@ -76,6 +76,11 @@ const MobileMenu = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/portfolio" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>
+                  Portfolio <span className="text-xs font-normal ml-1" style={{ color: "var(--ae-nebula)" }}>Your holdings</span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/guide" className="text-[var(--clr-heading)] font-semibold text-base" onClick={() => setIsOpen(false)}>
                   Guide
                 </Link>
