@@ -1,6 +1,6 @@
 // Filament Forge — launchpad configuration
 export const FORGE_ADDRESS = (process.env.NEXT_PUBLIC_FORGE_ADDRESS ||
-  "0x17b48A0070DC048E81f7104a1bA65F937BbD8D94") as `0x${string}`;
+  "0xB4Ba841e14943184840A939134ffc5c8Ab9403E1") as `0x${string}`;
 
 export const CURVE_SUPPLY = 800_000_000n * 10n ** 18n;
 export const TOTAL_SUPPLY = 1_000_000_000n * 10n ** 18n;
