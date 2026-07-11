@@ -321,7 +321,23 @@ export default function useForge() {
     }
   }, [publicClient]);
 
+
+// ------------------------------------------------------------ USD price
+  const getLcaiUsdPrice = useCallback(async (): Promise<number> => {
+    try {
+      const res = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=lightchain-ai&vs_currencies=usd",
+        { cache: "no-store" }
+      );
+      const json = await res.json();
+      return json?.["lightchain-ai"]?.usd ?? 0;
+    } catch {
+      return 0;
+    }
+  }, []);
+
   return {
+    getLcaiUsdPrice,
     fetchActivity,
     fetchCoins,
     fetchCoin,

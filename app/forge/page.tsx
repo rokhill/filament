@@ -4,24 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import Link from "next/link";
 import { toast } from "sonner";
+import { formatEther } from "viem";
 import useForge, { ForgeCoin, ForgeTrade, fmtLcai, fmtTokens } from "@/hooks/useForge";
 import { encodeMetadata, ipfsToHttp, shortAddr, FORGE_ADDRESS, BLOCKED_COINS } from "@/config/forge";
 import ProgressBar, { heatStyle } from "@/components/forge/progress-bar";
 
 const ADMIN_WALLET = "0xDB902DC48ef55d5D69F6cB72583518577C6C021c".toLowerCase();
-const BLOCKED_KEY = "filament:forge:blocked";
-
-function getBlocked(): string[] {
-  try { return JSON.parse(localStorage.getItem(BLOCKED_KEY) ?? "[]"); } catch { return []; }
-}
-function toggleBlocked(addr: string) {
-  const list = getBlocked();
-  const a = addr.toLowerCase();
-  const next = list.includes(a) ? list.filter(x => x !== a) : [...list, a];
-  localStorage.setItem(BLOCKED_KEY, JSON.stringify(next));
-  return next;
-}
-
 /* ------------------------------------------------------------------ */
 /*  Shared bits                                                        */
 /* ------------------------------------------------------------------ */
@@ -69,7 +57,7 @@ function AdminHideButton({ coin, blocked, onToggle }: { coin: ForgeCoin; blocked
   const isBlocked = blocked.includes(coin.address.toLowerCase());
   return (
     <button
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBlocked(coin.address); onToggle(); }}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(); }}
       className="absolute top-2 right-2 rounded-lg px-2 py-1 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity z-10"
       style={{
         background: isBlocked ? "rgba(74,222,128,.15)" : "rgba(248,113,113,.15)",
@@ -433,7 +421,7 @@ function CreateModal({
 /*  My Holdings (portfolio)                                            */
 /* ------------------------------------------------------------------ */
 
-function MyHoldings({ coins }: { coins: ForgeCoin[] }) {
+function MyHoldings({ coins, lcaiUsd }: { coins: ForgeCoin[]; lcaiUsd: number }) {
   const { getBalance } = useForge();
   const { address } = useAccount();
   const [balances, setBalances] = useState<Record<string, bigint>>({});
@@ -441,15 +429,21 @@ function MyHoldings({ coins }: { coins: ForgeCoin[] }) {
 
   useEffect(() => {
     if (!address || coins.length === 0) { setLoading(false); return; }
-    Promise.all(
-      coins.map(async (c) => {
-        const bal = await getBalance(c.address);
-        return [c.address, bal] as [string, bigint];
-      })
-    ).then((results) => {
+    // Sequential reads to avoid RPC rate limits
+    const load = async () => {
+      const results: [string, bigint][] = [];
+      for (const c of coins) {
+        try {
+          const bal = await getBalance(c.address);
+          results.push([c.address, bal]);
+        } catch {
+          results.push([c.address, 0n]);
+        }
+      }
       setBalances(Object.fromEntries(results));
       setLoading(false);
-    });
+    };
+    load();
   }, [address, coins, getBalance]);
 
   const holdings = coins.filter((c) => (balances[c.address] ?? 0n) > 0n);
@@ -497,7 +491,11 @@ function MyHoldings({ coins }: { coins: ForgeCoin[] }) {
             </div>
             <div className="text-right flex-shrink-0">
               <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(valueWei, 2)} LCAI</div>
-              <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>est. value</div>
+              {lcaiUsd > 0 && (
+                <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>
+                  ~${(Number(formatEther(valueWei)) * lcaiUsd).toFixed(2)} USD
+                </div>
+              )}
             </div>
           </Link>
         );
@@ -510,17 +508,19 @@ function MyHoldings({ coins }: { coins: ForgeCoin[] }) {
 /*  Page                                                               */
 /* ------------------------------------------------------------------ */
 
-type Filter = "all" | "live" | "graduated" | "holdings";
+type Filter = "all" | "live" | "graduated" | "holdings" | "hidden";
 
 export default function ForgePage() {
-  const { fetchCoins, getCreationFee, fetchActivity } = useForge();
+  const { fetchCoins, getCreationFee, fetchActivity, getLcaiUsdPrice } = useForge();
   const { address } = useAccount();
   const [coins, setCoins] = useState<ForgeCoin[] | null>(null);
   const [fee, setFee] = useState<bigint>(0n);
   const [activity, setActivity] = useState<(ForgeTrade & { token: `0x${string}` })[]>([]);
+  const [lcaiUsd, setLcaiUsd] = useState<number>(0);
   const [showCreate, setShowCreate] = useState(false);
-  const [blocked, setBlocked] = useState<string[]>([]);
+  const [localBlocked, setLocalBlocked] = useState<string[]>([]);
   const isAdmin = address?.toLowerCase() === ADMIN_WALLET;
+  const blocked = [...BLOCKED_COINS.map(a => a.toLowerCase()), ...localBlocked];
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
 
@@ -530,6 +530,7 @@ export default function ForgePage() {
       setCoins(c);
       setFee(f);
       fetchActivity().then(setActivity);
+      getLcaiUsdPrice().then(setLcaiUsd);
     } catch {
       setCoins([]);
     }
@@ -537,7 +538,7 @@ export default function ForgePage() {
 
   useEffect(() => {
     load();
-    setBlocked(getBlocked());
+    setLocalBlocked([]);
     const t = setInterval(load, 30_000);
     return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -552,7 +553,8 @@ export default function ForgePage() {
 
   const visible = useMemo(() => {
     if (!coins) return [];
-    let v = coins.filter((c) => !BLOCKED_COINS.map(a => a.toLowerCase()).includes(c.address.toLowerCase()));
+    if (filter === "hidden") return coins.filter((c) => blocked.includes(c.address.toLowerCase()));
+    let v = coins.filter((c) => !blocked.includes(c.address.toLowerCase()));
     if (filter === "live") v = v.filter((c) => !c.graduated);
     if (filter === "graduated") v = v.filter((c) => c.graduated);
     if (filter === "holdings") return v; // portfolio handled separately
@@ -612,6 +614,7 @@ export default function ForgePage() {
         {tab("live", "On the curve")}
         {tab("graduated", "Graduated")}
         {tab("holdings", "My Holdings")}
+        {isAdmin && tab("hidden" as Filter, "🚫 Hidden")}
         <input
           className="ml-auto rounded-full px-4 py-1.5 text-xs outline-none w-52 focus:shadow-[var(--shadow-input)]"
           style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)", color: "var(--clr-heading)" }}
@@ -634,7 +637,7 @@ export default function ForgePage() {
       {king && !query && filter === "all" && <KingOfTheHill coin={king} />}
 
       {filter === "holdings" ? (
-        <MyHoldings coins={coins ?? []} />
+        <MyHoldings coins={coins ?? []} lcaiUsd={lcaiUsd} />
       ) : coins === null ? (
         <div className="py-24 text-center text-sm" style={{ color: "var(--ae-nebula)" }}>
           Reading the chain…
@@ -652,7 +655,7 @@ export default function ForgePage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {visible.map((c) => (
-            <CoinCard key={c.address} coin={c} isAdmin={isAdmin} blocked={blocked} onBlockChange={() => setBlocked(getBlocked())} />
+            <CoinCard key={c.address} coin={c} isAdmin={isAdmin} blocked={blocked} onBlockChange={() => setLocalBlocked(prev => { const a = c.address.toLowerCase(); return prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a]; })} />
           ))}
         </div>
       )}
