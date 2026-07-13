@@ -462,89 +462,6 @@ html.light .forge-breathe {
   .pf-hero::before, .pf-hero::after { animation: none; }
 }
 
-
-
-
-
-/* ============================================================
-   SPARK — Filament's electric signature.
-   The spark rides a rotating arm anchored at the card centre,
-   animated purely with transform (GPU-composited, works on every
-   Android/iOS browser). The arm is invisible; only the tip glows.
-   ============================================================ */
-
-@keyframes sparkBreath {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(227,179,65,.42), 0 0 22px -8px rgba(227,179,65,.42); }
-  50% { box-shadow: 0 0 0 1px rgba(245,214,128,.7), 0 0 42px -4px rgba(245,214,128,.6); }
-}
-.spark-card {
-  position: relative;
-  border-radius: 18px;
-  animation: sparkBreath 3.2s ease-in-out infinite;
-  overflow: hidden;           /* clips the spark to the card edge */
-  isolation: isolate;
-}
-
-/* A large glowing dot orbits just outside the content box; because the card
-   clips overflow, you only ever see the arc of it that touches the border —
-   which reads as a spark travelling the edge. Pure transform = never drops. */
-.spark-card > .spark-dot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 200%;
-  height: 200%;
-  margin: -100% 0 0 -100%;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    transparent 318deg,
-    rgba(227,179,65,.22) 336deg,
-    rgba(245,214,128,.75) 352deg,
-    #fff6da 358deg,
-    transparent 360deg
-  );
-  animation-name: sparkSpin;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
-}
-@keyframes sparkSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* the card's real content sits above the spinning gradient */
-.spark-card > .spark-inner {
-  position: relative;
-  z-index: 2;
-  border-radius: inherit;
-}
-/* an inner panel masks the centre so only the rim glows */
-.spark-card::after {
-  content: "";
-  position: absolute;
-  inset: 1.5px;
-  border-radius: inherit;
-  background: inherit;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.spark-hover { transition: box-shadow .25s, transform .2s; }
-.spark-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 1px rgba(227,179,65,.45), 0 0 28px -8px rgba(227,179,65,.5);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .spark-card { animation: none; box-shadow: 0 0 0 1px rgba(227,179,65,.5); }
-  .spark-card > .spark-dot { animation: none; opacity: .35; }
-}
-
 /* ============================================================
    FILAMENT DESIGN SYSTEM
    One set of surface/text/border tokens that resolve correctly
@@ -684,3 +601,35 @@ body { background: var(--fs-0); }
   border-color: var(--ft-gold);
 }
 html.light .f-pill--on { color: #fff; }
+
+/* ============================================================
+   FEATURED CARD — a quiet gold-lit card for earned moments
+   (King of the Hill, Closest to Graduation, Portfolio total).
+   No animation: reliable everywhere, reads premium not busy.
+   ============================================================ */
+
+.f-featured {
+  position: relative;
+  border-radius: 18px;
+  background: var(--fs-1);
+  border: 1px solid var(--fs-line-strong);
+  box-shadow: 0 0 0 1px rgba(227,179,65,.06), 0 18px 40px -24px rgba(227,179,65,.35);
+}
+/* a single warm highlight along the top edge — the "lit filament" */
+.f-featured::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ft-gold-bright), transparent);
+  opacity: .85;
+}
+
+/* keep the harmless hover lift for ordinary cards */
+.spark-hover { transition: box-shadow .25s, transform .2s; }
+.spark-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(227,179,65,.4), 0 0 26px -10px rgba(227,179,65,.4);
+}

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import useMarkets, { MarketStats, Venue, ForgeMarket, fmtUsd } from "@/hooks/useMarkets";
 import { fmtLcai } from "@/hooks/useForge";
-import SparkCard from "@/components/forge/spark-card";
 
 /* ------------------------------------------------------------------ */
 /*  Chart — gold, glowing, touch + mouse interactive                   */
@@ -189,12 +188,12 @@ export default function MarketsPage() {
       <div className="f-section"><h2>The Forge</h2></div>
       <div className="grid grid-cols-3 gap-3 mb-4">
         <Stat label="Coins Forged" value={forge ? String(forge.coinCount) : "—"} />
-        <Stat label="LCAI on Curves" value={forge ? fmtLcai(forge.totalRaised, 0) : "—"} color="var(--ft-gold)" />
+        <Stat label="LCAI Raised" value={forge ? fmtLcai(forge.totalRaised, 0) : "—"} color="var(--ft-gold)" />
         <Stat label="Graduated" value={forge ? String(forge.graduated) : "—"} />
       </div>
 
       {forge?.topCoin && (
-        <SparkCard className="mb-4" style={{ background: "var(--fs-1)" }}>
+        <div className="f-featured mb-4">
           <Link href={`/forge/${forge.topCoin.address}`} className="block p-5">
             <div className="f-eyebrow mb-2">Closest to Graduation</div>
             <div className="flex items-center justify-between gap-3">
@@ -206,7 +205,7 @@ export default function MarketsPage() {
               </span>
             </div>
           </Link>
-        </SparkCard>
+        </div>
       )}
 
       {forge && forge.recent.length > 0 && (
