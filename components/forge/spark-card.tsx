@@ -3,10 +3,13 @@
 import { ReactNode } from "react";
 
 /**
- * Filament's signature card: breathes (glow pulses) and has a bright spark
- * orbiting its border. The spark uses CSS offset-path with a rounded-rect
- * ray shape, animated with a plain @keyframes on offset-distance — supported
- * in all current browsers, no @property or SMIL calc needed.
+ * Filament's signature card: a breathing glow with a spark travelling its
+ * border. The spark is a conic gradient rotated with `transform` (GPU
+ * composited) and clipped by the card's overflow — so only the rim lights up.
+ * Works on every browser including Android Chrome.
+ *
+ * `background` must be passed via `innerStyle` so the masking ::after picks
+ * it up correctly.
  */
 export default function SparkCard({
   children,
@@ -22,7 +25,7 @@ export default function SparkCard({
   return (
     <div className={`spark-card ${className}`} style={style}>
       <span className="spark-dot" style={{ animationDuration: `${duration}s` }} aria-hidden />
-      {children}
+      <div className="spark-inner">{children}</div>
     </div>
   );
 }

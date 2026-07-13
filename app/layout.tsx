@@ -11,6 +11,7 @@ import "../public/scss/style.scss";
 // Filament design system (must load last)
 import "./aether-theme.css";
 
+import { Fraunces, Instrument_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import ContextProvider from "@/context";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -27,9 +28,17 @@ export const metadata: Metadata = {
     "Filament — a non-custodial AMM on the LightChain AI network. Swap tokens and provide liquidity, settled entirely on-chain.",
 };
 
-const body = { className: "", variable: "" };
-const display = { variable: "" };
-const mono = { variable: "" };
+const bodyFont = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
+const display = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
+  display: "swap",
+});
 
 export default async function RootLayout({
   children,
@@ -41,7 +50,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("antialiased", body.className, body.variable, display.variable, mono.variable)}>
+      <body className={cn("antialiased", bodyFont.variable, display.variable)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

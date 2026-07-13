@@ -469,11 +469,13 @@ html.light .forge-breathe {
 
 }
 
+}
+
 /* ============================================================
    SPARK — Filament's electric signature.
-   Breathing glow + a spark that travels the card border.
-   Uses plain top/left keyframes (universal mobile support) —
-   no offset-path, no @property, no SMIL.
+   The spark rides a rotating arm anchored at the card centre,
+   animated purely with transform (GPU-composited, works on every
+   Android/iOS browser). The arm is invisible; only the tip glows.
    ============================================================ */
 
 @keyframes sparkBreath {
@@ -484,30 +486,57 @@ html.light .forge-breathe {
   position: relative;
   border-radius: 18px;
   animation: sparkBreath 3.2s ease-in-out infinite;
+  overflow: hidden;           /* clips the spark to the card edge */
+  isolation: isolate;
 }
 
-/* the spark travels the perimeter: top → right → bottom → left */
-.spark-dot {
+/* A large glowing dot orbits just outside the content box; because the card
+   clips overflow, you only ever see the arc of it that touches the border —
+   which reads as a spark travelling the edge. Pure transform = never drops. */
+.spark-card > .spark-dot {
   position: absolute;
-  width: 7px;
-  height: 7px;
-  margin: -3.5px 0 0 -3.5px;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  margin: -100% 0 0 -100%;
   border-radius: 50%;
-  background: #fff6da;
-  box-shadow: 0 0 6px 1px #f5d680, 0 0 14px 3px rgba(227,179,65,.75);
-  pointer-events: none;
-  z-index: 3;
-  animation-name: sparkOrbit;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 318deg,
+    rgba(227,179,65,.22) 336deg,
+    rgba(245,214,128,.75) 352deg,
+    #fff6da 358deg,
+    transparent 360deg
+  );
+  animation-name: sparkSpin;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  will-change: top, left;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
 }
-@keyframes sparkOrbit {
-  0%   { top: 0;    left: 0; }
-  25%  { top: 0;    left: 100%; }
-  50%  { top: 100%; left: 100%; }
-  75%  { top: 100%; left: 0; }
-  100% { top: 0;    left: 0; }
+@keyframes sparkSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* the card's real content sits above the spinning gradient */
+.spark-card > .spark-inner {
+  position: relative;
+  z-index: 2;
+  border-radius: inherit;
+}
+/* an inner panel masks the centre so only the rim glows */
+.spark-card::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  border-radius: inherit;
+  background: inherit;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .spark-hover { transition: box-shadow .25s, transform .2s; }
@@ -518,5 +547,145 @@ html.light .forge-breathe {
 
 @media (prefers-reduced-motion: reduce) {
   .spark-card { animation: none; box-shadow: 0 0 0 1px rgba(227,179,65,.5); }
-  .spark-dot { display: none; }
+  .spark-card > .spark-dot { animation: none; opacity: .35; }
 }
+
+/* ============================================================
+   FILAMENT DESIGN SYSTEM
+   One set of surface/text/border tokens that resolve correctly
+   in BOTH modes. Every page consumes these — no per-page hex.
+   ============================================================ */
+
+:root {
+  /* surfaces: 0 = page, 1 = card, 2 = raised/inset */
+  --fs-0: #080b14;
+  --fs-1: #10152a;
+  --fs-2: #0a0e1c;
+  --fs-line: rgba(227,179,65,0.10);
+  --fs-line-strong: rgba(227,179,65,0.28);
+
+  /* text */
+  --ft-hi: #f0f2f8;      /* headings */
+  --ft-mid: #a8afc4;     /* body */
+  --ft-low: #6b7391;     /* captions, meta */
+  --ft-gold: #e3b341;
+  --ft-gold-bright: #f5d680;
+
+  /* semantic */
+  --ft-up: #5ee6a8;
+  --ft-down: #ff7a7a;
+}
+
+html.light {
+  --fs-0: #f7f5f0;
+  --fs-1: #ffffff;
+  --fs-2: #f2efe8;
+  --fs-line: rgba(120,95,20,0.14);
+  --fs-line-strong: rgba(156,122,30,0.42);
+
+  --ft-hi: #17130c;
+  --ft-mid: #4e4736;
+  --ft-low: #857c68;
+  --ft-gold: #8a6a12;
+  --ft-gold-bright: #a9820f;
+
+  --ft-up: #0f7d54;
+  --ft-down: #b03636;
+}
+
+body { background: var(--fs-0); }
+
+/* ---------- typography ---------- */
+.f-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ft-hi);
+}
+.f-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ft-gold);
+}
+.f-num {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--ft-hi);
+}
+.f-label { font-size: 12px; color: var(--ft-low); font-weight: 500; }
+.f-body  { color: var(--ft-mid); }
+.f-meta  { font-size: 12px; color: var(--ft-low); }
+
+/* ---------- the one card ---------- */
+.f-card {
+  background: var(--fs-1);
+  border: 1px solid var(--fs-line);
+  border-radius: 16px;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.f-card--inset { background: var(--fs-2); }
+.f-card--link:hover {
+  border-color: var(--fs-line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 0 28px -10px rgba(227,179,65,.35);
+}
+
+/* section heading with a gold rule */
+.f-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0 14px;
+}
+.f-section h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ft-hi);
+  white-space: nowrap;
+}
+.f-section::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--fs-line-strong), transparent);
+}
+
+/* mono for addresses / hashes, truncated on small screens */
+.f-mono {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: var(--ft-low);
+}
+.f-trunc {
+  display: block;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (min-width: 640px) { .f-trunc { max-width: 260px; } }
+
+/* pill toggle */
+.f-pill {
+  border-radius: 999px;
+  padding: 5px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: var(--fs-2);
+  color: var(--ft-low);
+  transition: all .18s;
+  cursor: pointer;
+}
+.f-pill:hover { color: var(--ft-gold); border-color: var(--fs-line); }
+.f-pill--on {
+  background: var(--ft-gold);
+  color: #14100a;
+  border-color: var(--ft-gold);
+}
+html.light .f-pill--on { color: #fff; }
