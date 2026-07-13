@@ -461,3 +461,76 @@ html.light .forge-breathe {
 @media (prefers-reduced-motion: reduce) {
   .pf-hero::before, .pf-hero::after { animation: none; }
 }
+
+/* ============================================================
+   SPARK — the signature that ties both products together.
+   A breathing glow + a live spark that runs the card's border,
+   leaving a fading trail. This is Filament's electric DNA.
+   ============================================================ */
+
+/* breathing glow behind any .spark-card */
+@keyframes sparkBreath {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(227,179,65,.35), 0 0 20px -6px rgba(227,179,65,.35); }
+  50% { box-shadow: 0 0 0 1px rgba(245,214,128,.55), 0 0 34px -4px rgba(245,214,128,.55); }
+}
+
+.spark-card {
+  position: relative;
+  border-radius: 18px;
+  animation: sparkBreath 3.4s ease-in-out infinite;
+  isolation: isolate;
+}
+
+/* the running spark — a bright arc that travels the perimeter.
+   Built with a conic-gradient border mask so it hugs the edge. */
+.spark-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--spark-angle, 0deg),
+    transparent 0deg,
+    transparent 300deg,
+    rgba(245,214,128,.35) 335deg,
+    #fff6da 350deg,
+    #f5d680 358deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: sparkRun 3.4s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@property --spark-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes sparkRun {
+  to { --spark-angle: 360deg; }
+}
+
+/* subtle hover spark for ordinary cards — glow only, no full loop */
+.spark-hover {
+  transition: box-shadow .25s, transform .2s;
+}
+.spark-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(227,179,65,.4), 0 0 26px -8px rgba(227,179,65,.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spark-card { animation: none; box-shadow: 0 0 0 1px rgba(227,179,65,.45); }
+  .spark-card::before { animation: none; opacity: .5; }
+}
+
+/* Fallback for browsers without @property (spark still glows, just no travel) */
+@supports not (background: conic-gradient(from var(--spark-angle))) {
+  .spark-card::before { display: none; }
+}

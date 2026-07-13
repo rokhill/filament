@@ -11,7 +11,10 @@ import { shortAddr } from "@/config/forge";
 /* ------------------------------------------------------------------ */
 
 function PriceChart({ data }: { data: [number, number][] }) {
+  const [hover, setHover] = useState<{ i: number; x: number; y: number } | null>(null);
   const points = useMemo(() => data.map((d) => d[1]), [data]);
+  const times = useMemo(() => data.map((d) => d[0]), [data]);
+
   if (points.length < 2) {
     return (
       <div className="h-56 rounded-2xl flex items-center justify-center text-sm"
@@ -20,6 +23,7 @@ function PriceChart({ data }: { data: [number, number][] }) {
       </div>
     );
   }
+
   const W = 800, H = 220;
   const min = Math.min(...points), max = Math.max(...points);
   const span = max - min || max || 1;
@@ -27,20 +31,53 @@ function PriceChart({ data }: { data: [number, number][] }) {
   const y = (p: number) => H - 16 - ((p - min) / span) * (H - 32);
   const path = points.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p).toFixed(1)}`).join(" ");
   const area = `${path} L${W},${H} L0,${H} Z`;
+
+  // on-brand: GOLD when the window is up, red only when down
   const up = points[points.length - 1] >= points[0];
-  const stroke = up ? "var(--clr-success)" : "var(--clr-danger)";
+  const stroke = up ? "#f5d680" : "#f87171";
+  const glow = up ? "#e3b341" : "#f87171";
+
+  const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - rect.left) / rect.width) * W;
+    const i = Math.max(0, Math.min(points.length - 1, Math.round((px / W) * (points.length - 1))));
+    setHover({ i, x: x(i), y: y(points[i]) });
+  };
+
+  const hp = hover ? points[hover.i] : null;
+  const ht = hover ? new Date(times[hover.i]) : null;
 
   return (
-    <div className="rounded-2xl p-3" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" preserveAspectRatio="none" style={{ height: 220 }}>
+    <div className="rounded-2xl p-3 relative" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+      {hover && hp !== null && ht && (
+        <div className="absolute top-3 left-3 z-10 rounded-lg px-3 py-1.5 text-xs pointer-events-none"
+          style={{ background: "var(--ae-veil)", border: "1px solid var(--ae-aurum)" }}>
+          <span style={{ color: "var(--ae-aurum)", fontWeight: 600 }}>${hp < 0.01 ? hp.toPrecision(3) : hp.toFixed(5)}</span>
+          <span style={{ color: "var(--ae-nebula)", marginLeft: 8 }}>
+            {ht.toLocaleDateString(undefined, { month: "short", day: "numeric" })} {ht.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+          </span>
+        </div>
+      )}
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full cursor-crosshair" preserveAspectRatio="none"
+        style={{ height: 220 }} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
         <defs>
           <linearGradient id="mktArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={up ? "#4ade80" : "#f87171"} stopOpacity="0.22" />
-            <stop offset="100%" stopColor={up ? "#4ade80" : "#f87171"} stopOpacity="0" />
+            <stop offset="0%" stopColor={glow} stopOpacity="0.24" />
+            <stop offset="100%" stopColor={glow} stopOpacity="0" />
           </linearGradient>
+          <filter id="mktGlow" x="-5%" y="-20%" width="110%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
         </defs>
         <path d={area} fill="url(#mktArea)" />
-        <path d={path} fill="none" stroke={stroke} strokeWidth="2" strokeLinejoin="round" />
+        <path d={path} fill="none" stroke={stroke} strokeWidth="2" strokeLinejoin="round" filter="url(#mktGlow)" />
+        {hover && (
+          <>
+            <line x1={hover.x} y1="0" x2={hover.x} y2={H} stroke="var(--ae-aurum)" strokeWidth="1" strokeOpacity="0.4" strokeDasharray="3 3" />
+            <circle cx={hover.x} cy={hover.y} r="4" fill="#fff6da" stroke={stroke} strokeWidth="2" filter="url(#mktGlow)" />
+          </>
+        )}
       </svg>
     </div>
   );
@@ -173,8 +210,8 @@ export default function MarketsPage() {
 
       {forge?.topCoin && (
         <Link href={`/forge/${forge.topCoin.address}`}
-          className="block rounded-2xl p-4 mb-4 transition-all hover:-translate-y-0.5"
-          style={{ background: "linear-gradient(135deg, var(--ae-haze), var(--ae-veil))", border: "1px solid var(--ae-aurum)" }}>
+          className="spark-card block p-4 mb-4"
+          style={{ background: "linear-gradient(135deg, var(--ae-haze), var(--ae-veil))" }}>
           <div className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ae-aurum)" }}>✦ Closest to Graduation</div>
           <div className="flex items-center justify-between">
             <span className="font-semibold" style={{ color: "var(--clr-heading)" }}>
@@ -189,7 +226,7 @@ export default function MarketsPage() {
         <div className="space-y-2">
           {forge.recent.map((c) => (
             <Link key={c.address} href={`/forge/${c.address}`}
-              className="flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-colors hover:brightness-110"
+              className="spark-hover flex items-center justify-between rounded-xl px-4 py-3 text-sm"
               style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
               <span style={{ color: "var(--clr-heading)" }}>{c.name} <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>${c.symbol}</span></span>
               <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>{(c.progressBps / 100).toFixed(1)}% to graduation</span>
