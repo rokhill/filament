@@ -116,8 +116,8 @@ html.light .ae-sky {
   background-image: radial-gradient(1200px 500px at 50% 115%, rgba(227, 179, 65, 0.18), transparent 65%);
 }
 
-/* ---------- signature: astrolabe behind the swap card ---------- */
-.ae-astrolabe {
+/* ---------- signature: LIVE electric filament behind the swap card ---------- */
+.ae-filament {
   position: absolute;
   inset: 0;
   display: flex;
@@ -126,11 +126,44 @@ html.light .ae-sky {
   pointer-events: none;
   overflow: hidden;
 }
-.ae-astrolabe svg {
-  width: min(1100px, 160vw);
+.ae-filament svg {
+  width: min(1100px, 170vw);
   height: auto;
-  opacity: 0.9;
 }
+
+/* the wire breathes — brightness rises and falls like current load */
+@keyframes filPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.ae-fil-wire { animation: filPulse 2.8s ease-in-out infinite; }
+
+/* the whole coil halo glows in sync, slightly slower */
+@keyframes filHalo {
+  0%, 100% { opacity: 0.10; }
+  50% { opacity: 0.30; }
+}
+.ae-fil-halo { animation: filHalo 2.8s ease-in-out infinite; }
+
+/* a bright charge races along the coil — dash traveling the full path */
+.ae-fil-charge {
+  stroke-dasharray: 60 1400;
+  stroke-dashoffset: 1460;
+  opacity: 0.9;
+  animation: filCharge 3.4s linear infinite;
+}
+@keyframes filCharge {
+  from { stroke-dashoffset: 1460; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* peak nodes flash as the charge passes */
+@keyframes filNode {
+  0%, 100% { r: 2.5; opacity: 0.5; }
+  50% { r: 4.5; opacity: 1; }
+}
+.ae-fil-node { animation: filNode 2.8s ease-in-out infinite; }
+
 @keyframes ae-orbit {
   to { transform: rotate(360deg); }
 }
@@ -152,7 +185,8 @@ html.light .forge-breathe {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ae-astrolabe svg { animation: none; }
+  .ae-fil-wire, .ae-fil-halo, .ae-fil-charge, .ae-fil-node { animation: none; }
+  .ae-fil-charge { opacity: 0; }
 }
 
 /* ---------- template style corrections ---------- */
