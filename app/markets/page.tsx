@@ -5,6 +5,7 @@ import Link from "next/link";
 import useMarkets, { MarketStats, Venue, ForgeMarket, fmtUsd } from "@/hooks/useMarkets";
 import { fmtLcai } from "@/hooks/useForge";
 import { shortAddr } from "@/config/forge";
+import SparkCard from "@/components/forge/spark-card";
 
 /* ------------------------------------------------------------------ */
 /*  Price chart — pure SVG                                             */
@@ -32,16 +33,26 @@ function PriceChart({ data }: { data: [number, number][] }) {
   const path = points.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p).toFixed(1)}`).join(" ");
   const area = `${path} L${W},${H} L0,${H} Z`;
 
-  // on-brand: GOLD when the window is up, red only when down
-  const up = points[points.length - 1] >= points[0];
-  const stroke = up ? "#f5d680" : "#f87171";
-  const glow = up ? "#e3b341" : "#f87171";
+  // always Filament gold
+  const stroke = "#f5d680";
+  const glow = "#e3b341";
 
-  const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const px = ((e.clientX - rect.left) / rect.width) * W;
+  const setFromClientX = (clientX: number, el: SVGSVGElement) => {
+    const rect = el.getBoundingClientRect();
+    const px = ((clientX - rect.left) / rect.width) * W;
     const i = Math.max(0, Math.min(points.length - 1, Math.round((px / W) * (points.length - 1))));
     setHover({ i, x: x(i), y: y(points[i]) });
+  };
+
+  const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    setFromClientX(e.clientX, e.currentTarget);
+  };
+
+  // touch support — drag a finger across the chart on mobile
+  const onTouch = (e: React.TouchEvent<SVGSVGElement>) => {
+    const t = e.touches[0];
+    if (!t) return;
+    setFromClientX(t.clientX, e.currentTarget);
   };
 
   const hp = hover ? points[hover.i] : null;
@@ -59,7 +70,12 @@ function PriceChart({ data }: { data: [number, number][] }) {
         </div>
       )}
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full cursor-crosshair" preserveAspectRatio="none"
-        style={{ height: 220 }} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
+        style={{ height: 220, touchAction: "pan-y" }}
+        onMouseMove={onMove}
+        onMouseLeave={() => setHover(null)}
+        onTouchStart={onTouch}
+        onTouchMove={onTouch}
+        onTouchEnd={() => setHover(null)}>
         <defs>
           <linearGradient id="mktArea" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={glow} stopOpacity="0.24" />
@@ -209,17 +225,17 @@ export default function MarketsPage() {
       </div>
 
       {forge?.topCoin && (
-        <Link href={`/forge/${forge.topCoin.address}`}
-          className="spark-card block p-4 mb-4"
-          style={{ background: "linear-gradient(135deg, var(--ae-haze), var(--ae-veil))" }}>
-          <div className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ae-aurum)" }}>✦ Closest to Graduation</div>
-          <div className="flex items-center justify-between">
-            <span className="font-semibold" style={{ color: "var(--clr-heading)" }}>
-              {forge.topCoin.name} <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>${forge.topCoin.symbol}</span>
-            </span>
-            <span className="text-sm" style={{ color: "var(--ae-aurum)" }}>{(forge.topCoin.progressBps / 100).toFixed(1)}%</span>
-          </div>
-        </Link>
+        <SparkCard className="mb-4" style={{ background: "linear-gradient(135deg, var(--ae-haze), var(--ae-veil))" }}>
+          <Link href={`/forge/${forge.topCoin.address}`} className="block p-4">
+            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ae-aurum)" }}>✦ Closest to Graduation</div>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold" style={{ color: "var(--clr-heading)" }}>
+                {forge.topCoin.name} <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>${forge.topCoin.symbol}</span>
+              </span>
+              <span className="text-sm" style={{ color: "var(--ae-aurum)" }}>{(forge.topCoin.progressBps / 100).toFixed(1)}%</span>
+            </div>
+          </Link>
+        </SparkCard>
       )}
 
       {forge && forge.recent.length > 0 && (

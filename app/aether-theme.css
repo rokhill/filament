@@ -462,75 +462,61 @@ html.light .forge-breathe {
   .pf-hero::before, .pf-hero::after { animation: none; }
 }
 
-/* ============================================================
-   SPARK — the signature that ties both products together.
-   A breathing glow + a live spark that runs the card's border,
-   leaving a fading trail. This is Filament's electric DNA.
-   ============================================================ */
 
-/* breathing glow behind any .spark-card */
-@keyframes sparkBreath {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(227,179,65,.35), 0 0 20px -6px rgba(227,179,65,.35); }
-  50% { box-shadow: 0 0 0 1px rgba(245,214,128,.55), 0 0 34px -4px rgba(245,214,128,.55); }
 }
 
+}
+
+}
+
+/* ============================================================
+   SPARK — Filament's electric signature.
+   Breathing glow + a spark that travels the card border.
+   Uses plain top/left keyframes (universal mobile support) —
+   no offset-path, no @property, no SMIL.
+   ============================================================ */
+
+@keyframes sparkBreath {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(227,179,65,.42), 0 0 22px -8px rgba(227,179,65,.42); }
+  50% { box-shadow: 0 0 0 1px rgba(245,214,128,.7), 0 0 42px -4px rgba(245,214,128,.6); }
+}
 .spark-card {
   position: relative;
   border-radius: 18px;
-  animation: sparkBreath 3.4s ease-in-out infinite;
-  isolation: isolate;
+  animation: sparkBreath 3.2s ease-in-out infinite;
 }
 
-/* the running spark — a bright arc that travels the perimeter.
-   Built with a conic-gradient border mask so it hugs the edge. */
-.spark-card::before {
-  content: "";
+/* the spark travels the perimeter: top → right → bottom → left */
+.spark-dot {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(
-    from var(--spark-angle, 0deg),
-    transparent 0deg,
-    transparent 300deg,
-    rgba(245,214,128,.35) 335deg,
-    #fff6da 350deg,
-    #f5d680 358deg,
-    transparent 360deg
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  animation: sparkRun 3.4s linear infinite;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: #fff6da;
+  box-shadow: 0 0 6px 1px #f5d680, 0 0 14px 3px rgba(227,179,65,.75);
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
+  animation-name: sparkOrbit;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: top, left;
+}
+@keyframes sparkOrbit {
+  0%   { top: 0;    left: 0; }
+  25%  { top: 0;    left: 100%; }
+  50%  { top: 100%; left: 100%; }
+  75%  { top: 100%; left: 0; }
+  100% { top: 0;    left: 0; }
 }
 
-@property --spark-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes sparkRun {
-  to { --spark-angle: 360deg; }
-}
-
-/* subtle hover spark for ordinary cards — glow only, no full loop */
-.spark-hover {
-  transition: box-shadow .25s, transform .2s;
-}
+.spark-hover { transition: box-shadow .25s, transform .2s; }
 .spark-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 0 1px rgba(227,179,65,.4), 0 0 26px -8px rgba(227,179,65,.45);
+  box-shadow: 0 0 0 1px rgba(227,179,65,.45), 0 0 28px -8px rgba(227,179,65,.5);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spark-card { animation: none; box-shadow: 0 0 0 1px rgba(227,179,65,.45); }
-  .spark-card::before { animation: none; opacity: .5; }
-}
-
-/* Fallback for browsers without @property (spark still glows, just no travel) */
-@supports not (background: conic-gradient(from var(--spark-angle))) {
-  .spark-card::before { display: none; }
+  .spark-card { animation: none; box-shadow: 0 0 0 1px rgba(227,179,65,.5); }
+  .spark-dot { display: none; }
 }
