@@ -94,24 +94,28 @@ export default function PortfolioPage() {
       <h1 className="text-3xl mb-1" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>Portfolio</h1>
       <p className="text-xs mb-6" style={{ color: "var(--ae-nebula)" }}>{shortAddr(address)}</p>
 
-      {/* Total value banner */}
-      <div className="rounded-2xl p-5 mb-6" style={{ background: "linear-gradient(135deg, var(--ae-haze), var(--ae-veil))", border: "1px solid var(--ae-aurum)", boxShadow: "var(--shadow-primary)" }}>
-        <div className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ae-aurum)" }}>Total Value</div>
-        <div className="text-3xl font-bold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(totalLcaiEquivalent, 2)} LCAI</div>
-        {lcaiUsd > 0 && <div className="text-sm mt-0.5" style={{ color: "var(--ae-nebula)" }}>{usd(totalLcaiEquivalent)} USD</div>}
+      {/* Total value — the one bold moment */}
+      <div className="pf-hero rounded-3xl px-6 py-10 mb-6 text-center">
+        <div className="pf-eyebrow mb-3">Total Portfolio Value</div>
+        <div className="pf-total text-6xl sm:text-7xl">
+          {fmtLcai(totalLcaiEquivalent, 2)}
+        </div>
+        <div className="mt-2 text-sm font-medium" style={{ color: "var(--ae-nebula)" }}>
+          LCAI{lcaiUsd > 0 ? ` · ${usd(totalLcaiEquivalent)} USD` : ""}
+        </div>
       </div>
 
       {/* Base assets */}
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="rounded-2xl p-4" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
-          <div className="text-xs mb-1" style={{ color: "var(--ae-nebula)" }}>LCAI (native)</div>
-          <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(nativeLcai, 3)}</div>
-          {lcaiUsd > 0 && <div className="text-[11px]" style={{ color: "var(--ae-nebula)" }}>{usd(nativeLcai)}</div>}
+        <div className="pf-card rounded-2xl p-4">
+          <div className="text-xs mb-1.5" style={{ color: "var(--ae-nebula)" }}>LCAI · native</div>
+          <div className="text-lg font-semibold" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>{fmtLcai(nativeLcai, 3)}</div>
+          {lcaiUsd > 0 && <div className="text-[11px] mt-0.5" style={{ color: "var(--ae-nebula)" }}>{usd(nativeLcai)}</div>}
         </div>
-        <div className="rounded-2xl p-4" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
-          <div className="text-xs mb-1" style={{ color: "var(--ae-nebula)" }}>WLCAI (wrapped)</div>
-          <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(wlcai, 3)}</div>
-          {lcaiUsd > 0 && <div className="text-[11px]" style={{ color: "var(--ae-nebula)" }}>{usd(wlcai)}</div>}
+        <div className="pf-card rounded-2xl p-4">
+          <div className="text-xs mb-1.5" style={{ color: "var(--ae-nebula)" }}>WLCAI · wrapped</div>
+          <div className="text-lg font-semibold" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>{fmtLcai(wlcai, 3)}</div>
+          {lcaiUsd > 0 && <div className="text-[11px] mt-0.5" style={{ color: "var(--ae-nebula)" }}>{usd(wlcai)}</div>}
         </div>
       </div>
 
@@ -134,8 +138,7 @@ export default function PortfolioPage() {
         <div className="space-y-3">
           {holdings.map((h) => (
             <Link key={h.address} href={`/forge/${h.address}`}
-              className="flex items-center gap-4 rounded-2xl p-4 transition-all hover:-translate-y-0.5"
-              style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
+              className="pf-card flex items-center gap-4 rounded-2xl p-4">
               <CoinIcon coin={h} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
