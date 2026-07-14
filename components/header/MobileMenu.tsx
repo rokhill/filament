@@ -31,7 +31,7 @@ const MobileMenu = () => {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/bulb-mark.png" alt="" className="fil-brand-bulb" aria-hidden />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/filament-script.png" alt="Filament" className="fil-brand-mark" />
+            <img src="/brand/filament-wire.png" alt="Filament" className="fil-brand-mark" />
           </Link>
 
           <DarkSwitch />
@@ -44,7 +44,7 @@ const MobileMenu = () => {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/bulb-mark.png" alt="" className="fil-brand-bulb" aria-hidden />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/filament-script.png" alt="Filament" className="fil-brand-mark" />
+            <img src="/brand/filament-wire.png" alt="Filament" className="fil-brand-mark" />
           </Link>
           <button className="fil-icon-btn" onClick={() => setIsOpen(false)} aria-label="Close menu">
             <i className="fa-solid fa-xmark" />

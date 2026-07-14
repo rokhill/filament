@@ -807,9 +807,9 @@ html.light .fil-header {
   transition: filter .3s, transform .3s;
 }
 .fil-brand-mark {
-  height: 38px;
+  height: 26px;
   width: auto;
-  filter: drop-shadow(0 0 12px rgba(227, 179, 65, 0.35));
+  filter: drop-shadow(0 0 10px rgba(255, 140, 30, 0.30));
   transition: filter .3s;
 }
 .fil-brand:hover .fil-brand-bulb {
@@ -817,11 +817,11 @@ html.light .fil-header {
   transform: translateY(-1px);
 }
 .fil-brand:hover .fil-brand-mark {
-  filter: drop-shadow(0 0 20px rgba(245, 214, 128, 0.6));
+  filter: drop-shadow(0 0 18px rgba(255, 170, 50, 0.60));
 }
 /* light mode: the glow reads as haze — ground it instead */
 html.light .fil-brand-mark {
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.28)) saturate(1.15) brightness(0.82);
+  filter: drop-shadow(0 1px 2px rgba(90,50,0,0.35)) saturate(1.25) brightness(0.92) contrast(1.1);
 }
 html.light .fil-brand-bulb {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
@@ -944,7 +944,7 @@ button.fil-wallet:hover {
   padding: 0 14px;
 }
 .fil-brand--mobile .fil-brand-bulb { height: 36px; width: 36px; }
-.fil-brand--mobile .fil-brand-mark { height: 30px; }
+.fil-brand--mobile .fil-brand-mark { height: 22px; }
 
 .fil-icon-btn {
   width: 38px; height: 38px;
@@ -1164,7 +1164,7 @@ html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
   flex-wrap: wrap;
 }
 .fil-brand--footer .fil-brand-bulb { height: 34px; width: 34px; }
-.fil-brand--footer .fil-brand-mark { height: 28px; }
+.fil-brand--footer .fil-brand-mark { height: 22px; }
 
 .fil-footer-copy {
   flex: 1;
@@ -1237,41 +1237,28 @@ html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
 }
 
 /* ============================================================
-   THE FORGE IS ALWAYS DARK.
-   The Exchange can be light or dark — but the Forge is fire.
-   Dark is its identity. In light mode the page around it stays
-   cream; the Forge canvas itself remains a black slab, so every
-   card inside must override the light tokens.
+   FORGE IN LIGHT MODE
+   The masthead banner stays dark (it's fire art on black).
+   Everything else respects light mode properly.
    ============================================================ */
 
-.forge-canvas,
 html.light .forge-canvas {
-  /* re-declare the dark scale INSIDE the forge, both modes */
-  --fs-0: #060606;
-  --fs-1: #12101a;
-  --fs-2: #0b0a10;
-  --fs-line: rgba(227,179,65,0.14);
-  --fs-line-strong: rgba(227,179,65,0.34);
-  --ft-hi: #f2eee6;
-  --ft-mid: #b8b0a2;
-  --ft-low: #8a8275;
-  --ft-gold: #e3b341;
-  --ft-gold-bright: #f5d680;
-
-  --ae-haze: #12101a;
-  --ae-veil: #1b1826;
-  --ae-night: #0b0a10;
-  --ae-nebula: #9a9184;
-  --ae-aurum: #e3b341;
-  --clr-heading: #f2eee6;
-  --clr-body: #b8b0a2;
-  --clr-border: rgba(227,179,65,0.14);
-
   background:
     radial-gradient(70% 40% at 50% -8%, rgba(227,150,20,0.10), transparent 60%),
-    #060606;
-  color: #b8b0a2;
+    var(--fs-0, #f7f5f0);
+  color: var(--ft-mid);
 }
+/* the masthead card is always the dark fire slab */
+.forge-masthead,
+html.light .forge-masthead {
+  background:
+    radial-gradient(70% 120% at 50% 50%, rgba(227,120,20,0.12), transparent 70%),
+    linear-gradient(180deg, #0c0a08, #060606);
+  border: 1px solid rgba(227,179,65,0.22);
+}
+/* light-mode text around the launchpad intro */
+html.light .forge-tagline { color: #4e4736; }
+html.light .forge-masthead-sub { color: #c99a3e; }
 
 /* ============================================================
    GOLD TRIM — every card gets a hairline of gold.
