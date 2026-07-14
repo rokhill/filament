@@ -785,7 +785,7 @@ html.light .fil-header {
   max-width: 1180px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 68px;
+  height: 76px;
   display: flex;
   align-items: center;
   gap: 28px;
@@ -799,15 +799,15 @@ html.light .fil-header {
   flex-shrink: 0;
 }
 .fil-brand-bulb {
-  height: 44px;
-  width: 44px;
+  height: 48px;
+  width: 48px;
   object-fit: contain;
   border-radius: 9px;
   filter: drop-shadow(0 0 14px rgba(255, 140, 30, 0.40));
   transition: filter .3s, transform .3s;
 }
 .fil-brand-mark {
-  height: 26px;
+  height: 40px;
   width: auto;
   filter: drop-shadow(0 0 10px rgba(255, 140, 30, 0.30));
   transition: filter .3s;
@@ -944,7 +944,7 @@ button.fil-wallet:hover {
   padding: 0 14px;
 }
 .fil-brand--mobile .fil-brand-bulb { height: 36px; width: 36px; }
-.fil-brand--mobile .fil-brand-mark { height: 22px; }
+.fil-brand--mobile .fil-brand-mark { height: 30px; }
 
 .fil-icon-btn {
   width: 38px; height: 38px;
@@ -1164,7 +1164,7 @@ html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
   flex-wrap: wrap;
 }
 .fil-brand--footer .fil-brand-bulb { height: 34px; width: 34px; }
-.fil-brand--footer .fil-brand-mark { height: 22px; }
+.fil-brand--footer .fil-brand-mark { height: 28px; }
 
 .fil-footer-copy {
   flex: 1;
@@ -1309,4 +1309,55 @@ html.light .spark-hover:hover {
 /* featured cards keep the stronger gold edge */
 .f-featured {
   border-color: var(--fs-line-strong, rgba(227,179,65,0.34));
+}
+
+/* ============================================================
+   EMBER HOVER — everywhere.
+   Every card, row, and tile in the app gets the gold trim and
+   the warm ember flush on hover. One interaction language.
+   ============================================================ */
+
+.f-card,
+.pf-card,
+.f-featured,
+.spark-hover,
+.forge-canvas .f-card,
+.ex-canvas .f-card {
+  border: 1px solid var(--fs-line, rgba(227,179,65,0.14));
+  transition:
+    border-color .22s ease,
+    box-shadow .28s ease,
+    transform .18s ease;
+}
+
+/* the flush */
+.f-card:hover,
+.pf-card:hover,
+.spark-hover:hover,
+.f-featured:hover,
+a.f-card:hover,
+button.f-card:hover {
+  border-color: rgba(227, 179, 65, 0.58);
+  box-shadow:
+    0 0 0 1px rgba(227, 179, 65, 0.16),
+    0 0 28px -8px rgba(245, 190, 80, 0.48),
+    0 12px 32px -18px rgba(255, 140, 30, 0.38);
+  transform: translateY(-2px);
+}
+
+html.light .f-card:hover,
+html.light .pf-card:hover,
+html.light .spark-hover:hover,
+html.light .f-featured:hover {
+  border-color: rgba(156, 122, 30, 0.78);
+  box-shadow:
+    0 0 0 1px rgba(184, 134, 11, 0.16),
+    0 0 28px -10px rgba(227, 150, 20, 0.42),
+    0 12px 28px -16px rgba(120, 80, 10, 0.30);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .f-card:hover, .pf-card:hover, .spark-hover:hover, .f-featured:hover {
+    transform: none;
+  }
 }
