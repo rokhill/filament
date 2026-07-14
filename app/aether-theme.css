@@ -634,54 +634,87 @@ html.light .f-pill--on { color: #fff; }
   box-shadow: 0 0 0 1px rgba(227,179,65,.4), 0 0 26px -10px rgba(227,179,65,.4);
 }
 
+
+
+
+
 /* ============================================================
-   FILAMENT FORGE — hyperrealistic brand hero
-   True-black canvas so the gold assets glow. Built around the
-   medallion badge and the FORGE lettermark art.
+   FILAMENT FORGE — masthead + launchpad intro
+   1. A page-wide masthead card carrying the FORGE lettermark art.
+   2. Below it, the launchpad: medallion mark + description.
+   True-black canvas so the gold artwork glows.
    ============================================================ */
 
 .forge-canvas {
-  /* deep black with a faint warm ember at the top where the badge sits */
   background:
-    radial-gradient(90% 60% at 50% -5%, rgba(227,150,20,0.10), transparent 55%),
-    #050506;
-  border-radius: 24px;
+    radial-gradient(70% 40% at 50% -8%, rgba(227,150,20,0.10), transparent 60%),
+    #060606;
+  border-radius: 20px;
 }
 
-.forge-hero {
+/* ---------- 1. masthead ---------- */
+.forge-masthead {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 8px 0 28px;
+  padding: 26px 20px 22px;
+  margin-bottom: 22px;
+  border-radius: 18px;
+  background:
+    radial-gradient(70% 120% at 50% 50%, rgba(227,120,20,0.10), transparent 70%),
+    linear-gradient(180deg, #0c0a08, #060606);
+  border: 1px solid rgba(227,179,65,0.18);
+  box-shadow: inset 0 1px 0 rgba(245,214,128,0.08), 0 20px 50px -30px rgba(227,120,20,0.5);
 }
-.forge-hero-badge {
-  width: min(300px, 62vw);
+.forge-masthead-art {
+  width: min(380px, 74vw);
   height: auto;
-  filter: drop-shadow(0 0 40px rgba(227,179,65,0.28)) drop-shadow(0 8px 24px rgba(0,0,0,0.6));
-  animation: forgeBadgeGlow 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 26px rgba(255,120,20,0.35));
+  animation: forgeEmberPulse 4.5s ease-in-out infinite;
 }
-@keyframes forgeBadgeGlow {
-  0%, 100% { filter: drop-shadow(0 0 34px rgba(227,179,65,0.22)) drop-shadow(0 8px 24px rgba(0,0,0,0.6)); }
-  50%      { filter: drop-shadow(0 0 52px rgba(245,214,128,0.42)) drop-shadow(0 8px 24px rgba(0,0,0,0.6)); }
+@keyframes forgeEmberPulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(255,120,20,0.28)); }
+  50%      { filter: drop-shadow(0 0 34px rgba(255,160,40,0.55)); }
 }
-.forge-hero-tagline {
-  max-width: 440px;
-  margin: 18px auto 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #b9b2a0;
+.forge-masthead-sub {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: #c99a3e;
 }
-.forge-hero-actions {
+
+/* ---------- 2. launchpad intro row ---------- */
+.forge-intro {
   display: flex;
-  gap: 12px;
   align-items: center;
-  margin-top: 22px;
+  gap: 18px;
+  padding: 0 4px 20px;
   flex-wrap: wrap;
-  justify-content: center;
 }
+.forge-mark {
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 16px rgba(227,179,65,0.30));
+}
+.forge-tagline {
+  flex: 1;
+  min-width: 240px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #cfc7b6;
+}
+.forge-guide-link {
+  color: #e3b341;
+  font-weight: 600;
+}
+.forge-guide-link:hover { color: #f5d680; text-decoration: underline; }
+
 .forge-cta {
-  padding: 13px 26px;
+  padding: 12px 24px;
   border-radius: 12px;
   font-weight: 700;
   font-size: 15px;
@@ -689,27 +722,20 @@ html.light .f-pill--on { color: #fff; }
   border: none;
   cursor: pointer;
   background: linear-gradient(180deg, #ffe08a, #e3b341 60%, #b8860b);
-  box-shadow: 0 0 26px -6px rgba(245,214,128,0.7), inset 0 1px 0 rgba(255,255,255,0.5);
+  box-shadow: 0 0 24px -8px rgba(245,214,128,0.7), inset 0 1px 0 rgba(255,255,255,0.5);
   transition: transform .15s, box-shadow .2s;
 }
 .forge-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 40px -4px rgba(245,214,128,0.9), inset 0 1px 0 rgba(255,255,255,0.6);
+  box-shadow: 0 0 38px -6px rgba(245,214,128,0.9), inset 0 1px 0 rgba(255,255,255,0.6);
 }
-.forge-cta-ghost {
-  padding: 13px 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #e3b341;
-  border: 1px solid rgba(227,179,65,0.35);
-  transition: border-color .2s, background .2s;
-}
-.forge-cta-ghost:hover {
-  border-color: rgba(227,179,65,0.7);
-  background: rgba(227,179,65,0.06);
-}
+.forge-intro-cta { flex-shrink: 0; }
 
+@media (max-width: 620px) {
+  .forge-mark { width: 62px; height: 62px; }
+  .forge-tagline { font-size: 15px; }
+  .forge-intro-cta { width: 100%; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .forge-hero-badge { animation: none; }
+  .forge-masthead-art { animation: none; }
 }

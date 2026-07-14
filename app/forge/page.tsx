@@ -584,22 +584,27 @@ export default function ForgePage() {
 
   return (
     <main className="forge-canvas mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
-      {/* Branded hero — the Filament Forge medallion */}
-      <div className="forge-hero">
+      {/* Page masthead — the FORGE lettermark */}
+      <div className="forge-masthead">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/forge-badge.png" alt="Filament Forge" className="forge-hero-badge" />
-        <p className="forge-hero-tagline">
+        <img src="/brand/forge-wordmark.png" alt="Forge" className="forge-masthead-art" />
+        <div className="forge-masthead-sub">Launchpad</div>
+      </div>
+
+      {/* The launchpad — badge as a mark, description beside it */}
+      <div className="forge-intro">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/forge-badge.png" alt="Filament Forge" className="forge-mark" />
+        <p className="forge-tagline">
           Fair-launch memecoins on LightChain AI. Sell out the curve, list on
-          Filament — liquidity burned, forever.
-        </p>
-        <div className="forge-hero-actions">
-          <button className="forge-cta" onClick={() => setShowCreate(true)}>
-            + Forge a coin
-          </button>
-          <Link href="/forge/guide" className="forge-cta-ghost">
-            How it works →
+          Filament — liquidity burned, forever.{" "}
+          <Link href="/forge/guide" className="forge-guide-link">
+            New here? Read how it works →
           </Link>
-        </div>
+        </p>
+        <button className="forge-cta forge-intro-cta" onClick={() => setShowCreate(true)}>
+          + Forge a coin
+        </button>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap my-6">
