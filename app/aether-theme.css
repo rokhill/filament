@@ -438,10 +438,29 @@ html.light .forge-breathe {
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 0.95;
-  background: linear-gradient(180deg, var(--ae-starlight), #c9cfe0);
+  background: linear-gradient(180deg, #f5f7fb, #c9cfe0);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+/* light mode: white-on-cream is invisible — go molten gold instead */
+html.light .pf-total {
+  background: linear-gradient(180deg, #b8860b, #7a5c0e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+html.light .pf-hero {
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(227,179,65,0.16), transparent 60%),
+    linear-gradient(160deg, #fffdf7, #f4efe3);
+  border-color: rgba(156,122,30,0.45);
+}
+html.light .pf-hero::before { opacity: .35; }
+html.light .pf-hero::after  { opacity: .5; }
+html.light .pf-card {
+  background: #ffffff;
+  border-color: rgba(156,122,30,0.28);
 }
 
 .pf-eyebrow {
@@ -1215,4 +1234,92 @@ html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
 
 @media (prefers-reduced-motion: reduce) {
   .fil-boot-bulb { animation: none; }
+}
+
+/* ============================================================
+   THE FORGE IS ALWAYS DARK.
+   The Exchange can be light or dark — but the Forge is fire.
+   Dark is its identity. In light mode the page around it stays
+   cream; the Forge canvas itself remains a black slab, so every
+   card inside must override the light tokens.
+   ============================================================ */
+
+.forge-canvas,
+html.light .forge-canvas {
+  /* re-declare the dark scale INSIDE the forge, both modes */
+  --fs-0: #060606;
+  --fs-1: #12101a;
+  --fs-2: #0b0a10;
+  --fs-line: rgba(227,179,65,0.14);
+  --fs-line-strong: rgba(227,179,65,0.34);
+  --ft-hi: #f2eee6;
+  --ft-mid: #b8b0a2;
+  --ft-low: #8a8275;
+  --ft-gold: #e3b341;
+  --ft-gold-bright: #f5d680;
+
+  --ae-haze: #12101a;
+  --ae-veil: #1b1826;
+  --ae-night: #0b0a10;
+  --ae-nebula: #9a9184;
+  --ae-aurum: #e3b341;
+  --clr-heading: #f2eee6;
+  --clr-body: #b8b0a2;
+  --clr-border: rgba(227,179,65,0.14);
+
+  background:
+    radial-gradient(70% 40% at 50% -8%, rgba(227,150,20,0.10), transparent 60%),
+    #060606;
+  color: #b8b0a2;
+}
+
+/* ============================================================
+   GOLD TRIM — every card gets a hairline of gold.
+   Defines cards in light mode, unifies the product, and gives
+   a hover that feels like heat rising off the forge.
+   ============================================================ */
+
+.f-card,
+.pf-card,
+.spark-hover,
+.f-featured {
+  border: 1px solid var(--fs-line, rgba(227,179,65,0.14));
+  transition:
+    border-color .22s ease,
+    box-shadow .28s ease,
+    transform .18s ease;
+}
+
+/* the ember flush: border warms, heat blooms from the edge */
+.f-card--link:hover,
+.pf-card:hover,
+.spark-hover:hover,
+.f-card.is-interactive:hover {
+  border-color: rgba(227, 179, 65, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(227, 179, 65, 0.18),
+    0 0 26px -8px rgba(245, 190, 80, 0.45),
+    0 10px 30px -18px rgba(255, 140, 30, 0.35);
+  transform: translateY(-2px);
+}
+
+html.light .f-card,
+html.light .pf-card,
+html.light .spark-hover {
+  border-color: rgba(156, 122, 30, 0.30);
+  background: #ffffff;
+}
+html.light .f-card--link:hover,
+html.light .pf-card:hover,
+html.light .spark-hover:hover {
+  border-color: rgba(156, 122, 30, 0.75);
+  box-shadow:
+    0 0 0 1px rgba(184, 134, 11, 0.16),
+    0 0 26px -10px rgba(227, 150, 20, 0.40),
+    0 10px 26px -16px rgba(120, 80, 10, 0.28);
+}
+
+/* featured cards keep the stronger gold edge */
+.f-featured {
+  border-color: var(--fs-line-strong, rgba(227,179,65,0.34));
 }
