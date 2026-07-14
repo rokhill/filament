@@ -1403,3 +1403,61 @@ html.light .f-featured:hover {
   border-color: rgba(227, 179, 65, 0.38);
   box-shadow: 0 0 26px -12px rgba(245, 190, 80, 0.35);
 }
+
+/* ============================================================
+   THE SWAP CARD — the most important surface in the app.
+   Gold trim, warm lit top edge, and an ember flush on hover.
+   This is where money moves; it should feel handled.
+   ============================================================ */
+
+.ex-canvas .swap-form,
+.ex-canvas form,
+.ex-canvas > .container > div > form,
+.ex-canvas [class*="rounded-2xl"]:not(button):not([class*="rounded-full"]) {
+  position: relative;
+  border: 1px solid rgba(227, 179, 65, 0.20) !important;
+  box-shadow:
+    0 0 0 1px rgba(227, 179, 65, 0.05),
+    0 24px 60px -34px rgba(227, 150, 20, 0.40);
+  transition: border-color .25s ease, box-shadow .3s ease;
+}
+
+/* a warm lit filament along the top edge of the swap card */
+.ex-canvas form::before,
+.ex-canvas .swap-form::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14%;
+  right: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #f5d680, transparent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* hover: the whole card warms up */
+.ex-canvas form:hover,
+.ex-canvas .swap-form:hover {
+  border-color: rgba(227, 179, 65, 0.45) !important;
+  box-shadow:
+    0 0 0 1px rgba(227, 179, 65, 0.12),
+    0 0 34px -12px rgba(245, 190, 80, 0.42),
+    0 24px 60px -34px rgba(227, 150, 20, 0.50);
+}
+
+html.light .ex-canvas form,
+html.light .ex-canvas .swap-form {
+  border-color: rgba(156, 122, 30, 0.32) !important;
+  box-shadow:
+    0 0 0 1px rgba(184, 134, 11, 0.06),
+    0 20px 50px -34px rgba(120, 80, 10, 0.30);
+}
+html.light .ex-canvas form:hover,
+html.light .ex-canvas .swap-form:hover {
+  border-color: rgba(156, 122, 30, 0.72) !important;
+  box-shadow:
+    0 0 0 1px rgba(184, 134, 11, 0.14),
+    0 0 30px -12px rgba(227, 150, 20, 0.38),
+    0 20px 50px -34px rgba(120, 80, 10, 0.34);
+}

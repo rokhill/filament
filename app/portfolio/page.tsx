@@ -83,7 +83,8 @@ export default function PortfolioPage() {
   if (!address) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-16 text-center min-h-[70vh]">
-        <h1 className="text-3xl mb-3" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>Portfolio</h1>
+        <div className="f-eyebrow mb-2">Your Holdings · LightChain AI</div>
+        <h1 className="f-display text-4xl sm:text-5xl mb-3">Portfolio</h1>
         <p className="text-sm" style={{ color: "var(--ae-nebula)" }}>Connect your wallet to see your holdings.</p>
       </main>
     );
@@ -91,8 +92,9 @@ export default function PortfolioPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10 min-h-[70vh]">
-      <h1 className="text-3xl mb-1" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>Portfolio</h1>
-      <p className="text-xs mb-6" style={{ color: "var(--ae-nebula)" }}>{shortAddr(address)}</p>
+      <div className="f-eyebrow mb-2">Your Holdings · LightChain AI</div>
+      <h1 className="f-display text-4xl sm:text-5xl">Portfolio</h1>
+      <p className="f-mono mt-2 mb-7">{shortAddr(address)}</p>
 
       {/* Total value — the one bold moment */}
       <div className="pf-hero rounded-3xl px-6 py-10 mb-6 text-center">
@@ -120,8 +122,10 @@ export default function PortfolioPage() {
       </div>
 
       {/* Forge holdings */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold" style={{ color: "var(--clr-heading)" }}>Forge Holdings</h2>
+      <div className="f-section">
+        <h2>Forge Holdings</h2>
+      </div>
+      <div className="flex items-center justify-end -mt-2 mb-3">
         <button onClick={load} disabled={loading} className="text-xs underline" style={{ color: "var(--ae-aurum)" }}>
           {loading ? "Refreshing…" : "Refresh"}
         </button>
