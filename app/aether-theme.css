@@ -654,10 +654,12 @@ html.light .f-pill--on { color: #fff; }
 
 /* ---------- 1. masthead ---------- */
 .forge-masthead {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 26px 20px 22px;
+  padding: 20px 20px 18px;
   margin-bottom: 22px;
   border-radius: 18px;
   background:
@@ -667,7 +669,7 @@ html.light .f-pill--on { color: #fff; }
   box-shadow: inset 0 1px 0 rgba(245,214,128,0.08), 0 20px 50px -30px rgba(227,120,20,0.5);
 }
 .forge-masthead-art {
-  width: min(380px, 74vw);
+  width: min(300px, 62vw);
   height: auto;
   filter: drop-shadow(0 0 26px rgba(255,120,20,0.35));
   animation: forgeEmberPulse 4.5s ease-in-out infinite;
@@ -694,8 +696,8 @@ html.light .f-pill--on { color: #fff; }
   flex-wrap: wrap;
 }
 .forge-mark {
-  width: 76px;
-  height: 76px;
+  width: 96px;
+  height: 96px;
   flex-shrink: 0;
   filter: drop-shadow(0 0 16px rgba(227,179,65,0.30));
 }
@@ -703,9 +705,9 @@ html.light .f-pill--on { color: #fff; }
   flex: 1;
   min-width: 240px;
   margin: 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #cfc7b6;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #d8d0be;
 }
 .forge-guide-link {
   color: #e3b341;
@@ -732,8 +734,8 @@ html.light .f-pill--on { color: #fff; }
 .forge-intro-cta { flex-shrink: 0; }
 
 @media (max-width: 620px) {
-  .forge-mark { width: 62px; height: 62px; }
-  .forge-tagline { font-size: 15px; }
+  .forge-mark { width: 74px; height: 74px; }
+  .forge-tagline { font-size: 16px; }
   .forge-intro-cta { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -778,15 +780,15 @@ html.light .fil-header {
   flex-shrink: 0;
 }
 .fil-brand-bulb {
-  height: 40px;
-  width: 40px;
+  height: 44px;
+  width: 44px;
   object-fit: contain;
   border-radius: 9px;
   filter: drop-shadow(0 0 14px rgba(255, 140, 30, 0.40));
   transition: filter .3s, transform .3s;
 }
 .fil-brand-mark {
-  height: 30px;
+  height: 38px;
   width: auto;
   filter: drop-shadow(0 0 12px rgba(227, 179, 65, 0.35));
   transition: filter .3s;
@@ -881,14 +883,27 @@ html.light .fil-brand-bulb {
 /* wallet = the one primary action */
 .fil-wallet button,
 button.fil-wallet {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  line-height: 1 !important;
+  min-height: 42px !important;
   background: linear-gradient(180deg, #ffe08a, #e3b341 60%, #b8860b) !important;
   color: #1a1206 !important;
   font-weight: 700 !important;
   border: none !important;
   border-radius: 11px !important;
-  padding: 10px 18px !important;
+  padding: 0 18px !important;
   box-shadow: 0 0 22px -8px rgba(245, 214, 128, 0.7), inset 0 1px 0 rgba(255,255,255,0.45) !important;
   transition: transform .15s, box-shadow .2s !important;
+}
+/* any icon/appkit inner element gets centered too */
+.fil-wallet button > *,
+button.fil-wallet > * {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
 }
 .fil-wallet button:hover,
 button.fil-wallet:hover {
@@ -909,8 +924,8 @@ button.fil-wallet:hover {
   height: 60px;
   padding: 0 14px;
 }
-.fil-brand--mobile .fil-brand-bulb { height: 32px; width: 32px; }
-.fil-brand--mobile .fil-brand-mark { height: 24px; }
+.fil-brand--mobile .fil-brand-bulb { height: 36px; width: 36px; }
+.fil-brand--mobile .fil-brand-mark { height: 30px; }
 
 .fil-icon-btn {
   width: 38px; height: 38px;
@@ -1052,3 +1067,103 @@ html.light .ex-canvas {
 @media (prefers-reduced-motion: reduce) {
   .ex-masthead-bulb { animation: none; }
 }
+
+/* ============================================================
+   FORGE EMBERS — real sparks flying off the burst.
+   A field of small ember particles rising and drifting from the
+   masthead, timed to the glow pulse. Pure CSS, GPU transforms.
+   ============================================================ */
+
+.forge-embers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.forge-ember {
+  position: absolute;
+  bottom: 38%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #ffcf6a;
+  box-shadow: 0 0 5px 1px rgba(255, 150, 40, 0.9), 0 0 10px 2px rgba(255, 90, 10, 0.45);
+  opacity: 0;
+  animation-name: emberRise;
+  animation-timing-function: cubic-bezier(.25,.6,.35,1);
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+@keyframes emberRise {
+  0%   { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  8%   { opacity: 1; }
+  70%  { opacity: 0.9; }
+  100% { transform: translate(var(--dx, 10px), -110px) scale(0.2); opacity: 0; }
+}
+
+/* a spread of embers with varied drift, size, delay and speed */
+.forge-ember:nth-child(1)  { left: 22%; --dx: -14px; animation-duration: 3.2s; animation-delay: 0s;    }
+.forge-ember:nth-child(2)  { left: 30%; --dx:  10px; animation-duration: 4.1s; animation-delay: .5s;  width:2px; height:2px; }
+.forge-ember:nth-child(3)  { left: 38%; --dx: -22px; animation-duration: 3.6s; animation-delay: 1.2s; }
+.forge-ember:nth-child(4)  { left: 45%; --dx:  16px; animation-duration: 2.9s; animation-delay: .2s;  width:4px; height:4px; }
+.forge-ember:nth-child(5)  { left: 52%; --dx:  -8px; animation-duration: 4.4s; animation-delay: 1.8s; }
+.forge-ember:nth-child(6)  { left: 58%; --dx:  24px; animation-duration: 3.4s; animation-delay: .8s;  width:2px; height:2px; }
+.forge-ember:nth-child(7)  { left: 65%; --dx: -12px; animation-duration: 3.9s; animation-delay: 2.2s; }
+.forge-ember:nth-child(8)  { left: 72%; --dx:  18px; animation-duration: 3.1s; animation-delay: 1.5s; width:4px; height:4px; }
+.forge-ember:nth-child(9)  { left: 34%; --dx:  28px; animation-duration: 4.6s; animation-delay: 2.6s; }
+.forge-ember:nth-child(10) { left: 48%; --dx: -26px; animation-duration: 3.7s; animation-delay: 3.1s; width:2px; height:2px; }
+.forge-ember:nth-child(11) { left: 62%; --dx:   6px; animation-duration: 4.2s; animation-delay: .9s;  }
+.forge-ember:nth-child(12) { left: 27%; --dx:  20px; animation-duration: 3.3s; animation-delay: 2.9s; }
+
+/* keep the art and text above the embers */
+.forge-masthead-art,
+.forge-masthead-sub { position: relative; z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .forge-embers { display: none; }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.fil-footer {
+  border-top: 1px solid rgba(227,179,65,0.12);
+  background: var(--fs-0, #060608);
+}
+html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
+
+.fil-footer-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.fil-brand--footer .fil-brand-bulb { height: 34px; width: 34px; }
+.fil-brand--footer .fil-brand-mark { height: 28px; }
+
+.fil-footer-copy {
+  flex: 1;
+  min-width: 240px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ft-low, #6b7391);
+  margin: 0;
+}
+.fil-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.fil-footer-links a {
+  color: var(--ft-mid, #a8afc4);
+  transition: color .18s;
+}
+.fil-footer-links a:hover { color: var(--ft-gold, #e3b341); }

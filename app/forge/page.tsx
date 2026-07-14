@@ -586,6 +586,11 @@ export default function ForgePage() {
     <main className="forge-canvas mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
       {/* Page masthead — the FORGE lettermark */}
       <div className="forge-masthead">
+        <div className="forge-embers" aria-hidden>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <span key={i} className="forge-ember" />
+          ))}
+        </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/brand/forge-wordmark.png" alt="Forge" className="forge-masthead-art" />
         <div className="forge-masthead-sub">Launchpad</div>
