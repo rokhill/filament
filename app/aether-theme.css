@@ -739,3 +739,316 @@ html.light .f-pill--on { color: #fff; }
 @media (prefers-reduced-motion: reduce) {
   .forge-masthead-art { animation: none; }
 }
+
+/* ============================================================
+   HEADER — the trust signal.
+   Wordmark, calm nav, live network status, wallet as the one
+   primary action. Quiet, confident, financial-grade.
+   ============================================================ */
+
+.fil-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(6, 6, 8, 0.78);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid rgba(227, 179, 65, 0.14);
+}
+html.light .fil-header {
+  background: rgba(247, 245, 240, 0.82);
+  border-bottom-color: rgba(120, 95, 20, 0.16);
+}
+
+.fil-header-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* ---------- brand ---------- */
+.fil-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.fil-brand-bulb {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  border-radius: 9px;
+  filter: drop-shadow(0 0 14px rgba(255, 140, 30, 0.40));
+  transition: filter .3s, transform .3s;
+}
+.fil-brand-mark {
+  height: 30px;
+  width: auto;
+  filter: drop-shadow(0 0 12px rgba(227, 179, 65, 0.35));
+  transition: filter .3s;
+}
+.fil-brand:hover .fil-brand-bulb {
+  filter: drop-shadow(0 0 22px rgba(255, 170, 50, 0.75));
+  transform: translateY(-1px);
+}
+.fil-brand:hover .fil-brand-mark {
+  filter: drop-shadow(0 0 20px rgba(245, 214, 128, 0.6));
+}
+/* light mode: the glow reads as haze — ground it instead */
+html.light .fil-brand-mark {
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.28)) saturate(1.15) brightness(0.82);
+}
+html.light .fil-brand-bulb {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* ---------- nav ---------- */
+.fil-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+.fil-nav-link {
+  position: relative;
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ft-mid, #a8afc4);
+  transition: color .18s, background .18s;
+}
+.fil-nav-link:hover {
+  color: var(--ft-hi, #f0f2f8);
+  background: rgba(227, 179, 65, 0.07);
+}
+.fil-nav-link.is-active {
+  color: var(--ft-hi, #f0f2f8);
+  font-weight: 600;
+}
+.fil-nav-link.is-active::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 1px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #e3b341, transparent);
+}
+
+/* ---------- right side ---------- */
+.fil-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+/* live network status — the single strongest trust cue in a DEX header */
+.fil-network {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: var(--ft-mid, #a8afc4);
+  background: rgba(94, 230, 168, 0.06);
+  border: 1px solid rgba(94, 230, 168, 0.22);
+  white-space: nowrap;
+}
+.fil-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #5ee6a8;
+  box-shadow: 0 0 0 0 rgba(94, 230, 168, 0.6);
+  animation: filPulseDot 2.4s ease-out infinite;
+}
+@keyframes filPulseDot {
+  0%   { box-shadow: 0 0 0 0 rgba(94, 230, 168, 0.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(94, 230, 168, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(94, 230, 168, 0); }
+}
+
+/* wallet = the one primary action */
+.fil-wallet button,
+button.fil-wallet {
+  background: linear-gradient(180deg, #ffe08a, #e3b341 60%, #b8860b) !important;
+  color: #1a1206 !important;
+  font-weight: 700 !important;
+  border: none !important;
+  border-radius: 11px !important;
+  padding: 10px 18px !important;
+  box-shadow: 0 0 22px -8px rgba(245, 214, 128, 0.7), inset 0 1px 0 rgba(255,255,255,0.45) !important;
+  transition: transform .15s, box-shadow .2s !important;
+}
+.fil-wallet button:hover,
+button.fil-wallet:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 34px -6px rgba(245, 214, 128, 0.9), inset 0 1px 0 rgba(255,255,255,0.55) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fil-dot { animation: none; }
+}
+
+/* ---------- mobile header + drawer ---------- */
+.fil-mheader-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 60px;
+  padding: 0 14px;
+}
+.fil-brand--mobile .fil-brand-bulb { height: 32px; width: 32px; }
+.fil-brand--mobile .fil-brand-mark { height: 24px; }
+
+.fil-icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(227,179,65,0.07);
+  border: 1px solid rgba(227,179,65,0.16);
+  color: var(--ft-gold, #e3b341);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.fil-drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(84vw, 340px);
+  z-index: 60;
+  padding: 18px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: linear-gradient(180deg, #0b0a0e, #060608);
+  border-right: 1px solid rgba(227,179,65,0.16);
+  transform: translateX(-100%);
+  transition: transform .28s cubic-bezier(.32,.72,0,1);
+  overflow-y: auto;
+}
+html.light .fil-drawer {
+  background: linear-gradient(180deg, #ffffff, #f7f5f0);
+  border-right-color: rgba(120,95,20,0.16);
+}
+.fil-drawer.is-open { transform: translateX(0); }
+
+.fil-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.fil-network--drawer { align-self: flex-start; }
+
+.fil-drawer-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.fil-drawer-link {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  transition: background .18s;
+}
+.fil-drawer-link:hover { background: rgba(227,179,65,0.07); }
+.fil-drawer-link.is-active {
+  background: rgba(227,179,65,0.10);
+  box-shadow: inset 2px 0 0 var(--ft-gold, #e3b341);
+}
+.fil-drawer-label { font-size: 16px; font-weight: 600; color: var(--ft-hi, #f0f2f8); }
+.fil-drawer-sub { font-size: 12px; color: var(--ft-low, #6b7391); }
+
+.fil-wallet--full { width: 100%; }
+.fil-wallet--full button { width: 100% !important; }
+
+.fil-drawer-foot {
+  margin-top: auto;
+  padding-top: 12px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ft-low, #6b7391);
+}
+
+.fil-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* ============================================================
+   EXCHANGE — the sober sibling to the Forge.
+   Same materials (gold, black, bulb) but calm and financial.
+   The Forge gets the fire; the Exchange glows steady.
+   ============================================================ */
+
+.ex-canvas {
+  position: relative;
+  min-height: 70vh;
+  background:
+    radial-gradient(60% 40% at 50% 0%, rgba(227, 150, 20, 0.07), transparent 60%),
+    var(--fs-0, #060608);
+}
+html.light .ex-canvas {
+  background:
+    radial-gradient(60% 40% at 50% 0%, rgba(227, 150, 20, 0.10), transparent 60%),
+    var(--fs-0, #f7f5f0);
+}
+
+.ex-masthead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 2px 2px;
+}
+.ex-masthead-bulb {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 12px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 18px rgba(255, 140, 30, 0.35));
+  animation: exBulbGlow 5s ease-in-out infinite;
+}
+@keyframes exBulbGlow {
+  0%, 100% { filter: drop-shadow(0 0 14px rgba(255, 140, 30, 0.28)); }
+  50%      { filter: drop-shadow(0 0 24px rgba(255, 175, 55, 0.50)); }
+}
+.ex-masthead-text { display: flex; flex-direction: column; gap: 2px; }
+.ex-masthead-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--ft-hi, #f0f2f8);
+}
+.ex-masthead-sub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ft-gold, #e3b341);
+}
+
+.ex-tagline {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ft-mid, #a8afc4);
+  padding: 0 2px 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ex-masthead-bulb { animation: none; }
+}

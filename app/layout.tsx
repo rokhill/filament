@@ -1,5 +1,5 @@
 // app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 // Font Awesome
@@ -23,9 +23,28 @@ import Footer from "@/components/footer/Footer2";
 
 
 export const metadata: Metadata = {
-  title: "Filament",
+  title: "Filament — DEX & Memecoin Launchpad on LightChain AI",
   description:
-    "Filament — a non-custodial AMM on the LightChain AI network. Swap tokens and provide liquidity, settled entirely on-chain.",
+    "Filament is a non-custodial DEX and memecoin launchpad on LightChain AI. Swap tokens, provide liquidity, and fair-launch coins that auto-list with burned liquidity.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/brand/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/brand/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/brand/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  openGraph: {
+    title: "Filament — DEX & Memecoin Launchpad",
+    description:
+      "Non-custodial DEX and fair-launch memecoin launchpad on LightChain AI mainnet.",
+    images: ["/brand/bulb-icon.png"],
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#060608",
 };
 
 const bodyFont = Instrument_Sans({
