@@ -18,7 +18,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 import { cn } from "@/lib/utils";
-import BootSplash from "@/components/boot-splash";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer2";
 
@@ -92,11 +91,7 @@ export default async function RootLayout({
         <link rel="apple-touch-startup-image" href="/brand/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" />
       </head>
       <body className={cn("antialiased", bodyFont.variable, display.variable)} style={{ background: "#050506" }}>
-        {/* Instant black canvas painted on first frame — covers the PWA white flash
-            until React mounts the animated BootSplash on top. */}
-        <div id="pre-boot" style={{ position: "fixed", inset: 0, background: "#050506", zIndex: 9998, pointerEvents: "none" }} />
-        <script dangerouslySetInnerHTML={{ __html: `(function(){var p=document.getElementById('pre-boot');if(p){requestAnimationFrame(function(){requestAnimationFrame(function(){p.remove();});});}})();` }} />
-        <BootSplash />
+        
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
