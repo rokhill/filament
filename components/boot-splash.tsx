@@ -12,6 +12,9 @@ export default function BootSplash() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // remove the static pre-paint canvas — the animated splash covers it now
+    const pre = document.getElementById("pre-boot");
+    if (pre) pre.remove();
     if (sessionStorage.getItem("fil:booted")) return;
     setShow(true);
     sessionStorage.setItem("fil:booted", "1");

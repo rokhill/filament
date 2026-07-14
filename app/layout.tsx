@@ -75,8 +75,13 @@ export default async function RootLayout({
   const cookies = headersList.get("cookie");
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning style={{ background: "#050506" }}>
       <head>
+        {/* Kill the white PWA launch flash: paint black before any CSS loads */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          html, body { background: #050506 !important; }
+          html.light, html.light body { background: #f7f5f0 !important; }
+        ` }} />
         {/* iOS launch screens — a full-bleed bulb on black */}
         <link rel="apple-touch-startup-image" href="/brand/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
         <link rel="apple-touch-startup-image" href="/brand/splash-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
@@ -86,7 +91,10 @@ export default async function RootLayout({
         <link rel="apple-touch-startup-image" href="/brand/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" />
         <link rel="apple-touch-startup-image" href="/brand/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" />
       </head>
-      <body className={cn("antialiased", bodyFont.variable, display.variable)}>
+      <body className={cn("antialiased", bodyFont.variable, display.variable)} style={{ background: "#050506" }}>
+        {/* Instant black canvas painted on first frame — covers the PWA white flash
+            until React mounts the animated BootSplash on top. */}
+        <div id="pre-boot" style={{ position: "fixed", inset: 0, background: "#050506", zIndex: 9998 }} />
         <BootSplash />
         <ThemeProvider
           attribute="class"
