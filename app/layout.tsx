@@ -18,6 +18,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 import { cn } from "@/lib/utils";
+import BootSplash from "@/components/boot-splash";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer2";
 
@@ -26,6 +27,12 @@ export const metadata: Metadata = {
   title: "Filament — DEX & Memecoin Launchpad on LightChain AI",
   description:
     "Filament is a non-custodial DEX and memecoin launchpad on LightChain AI. Swap tokens, provide liquidity, and fair-launch coins that auto-list with burned liquidity.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Filament",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -69,7 +76,18 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* iOS launch screens — a full-bleed bulb on black */}
+        <link rel="apple-touch-startup-image" href="/brand/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
+        <link rel="apple-touch-startup-image" href="/brand/splash-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
+        <link rel="apple-touch-startup-image" href="/brand/splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" />
+        <link rel="apple-touch-startup-image" href="/brand/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
+        <link rel="apple-touch-startup-image" href="/brand/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
+        <link rel="apple-touch-startup-image" href="/brand/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" />
+        <link rel="apple-touch-startup-image" href="/brand/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" />
+      </head>
       <body className={cn("antialiased", bodyFont.variable, display.variable)}>
+        <BootSplash />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
