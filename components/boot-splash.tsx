@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * Boot splash — the bulb takes the whole screen, ignites, flickers like a
  * real incandescent filament settling, then fades. Once per session.
  */
 export default function BootSplash() {
+  const pathname = usePathname();
   const [show, setShow] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
@@ -22,6 +24,12 @@ export default function BootSplash() {
     const t2 = setTimeout(() => setShow(false), 2800);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
+
+  // Kill any lingering pre-boot overlay on EVERY navigation
+  useEffect(() => {
+    const pre = document.getElementById("pre-boot");
+    if (pre) pre.remove();
+  }, [pathname]);
 
   if (!show) return null;
 
