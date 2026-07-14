@@ -633,3 +633,83 @@ html.light .f-pill--on { color: #fff; }
   transform: translateY(-2px);
   box-shadow: 0 0 0 1px rgba(227,179,65,.4), 0 0 26px -10px rgba(227,179,65,.4);
 }
+
+/* ============================================================
+   FILAMENT FORGE — hyperrealistic brand hero
+   True-black canvas so the gold assets glow. Built around the
+   medallion badge and the FORGE lettermark art.
+   ============================================================ */
+
+.forge-canvas {
+  /* deep black with a faint warm ember at the top where the badge sits */
+  background:
+    radial-gradient(90% 60% at 50% -5%, rgba(227,150,20,0.10), transparent 55%),
+    #050506;
+  border-radius: 24px;
+}
+
+.forge-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 0 28px;
+}
+.forge-hero-badge {
+  width: min(300px, 62vw);
+  height: auto;
+  filter: drop-shadow(0 0 40px rgba(227,179,65,0.28)) drop-shadow(0 8px 24px rgba(0,0,0,0.6));
+  animation: forgeBadgeGlow 5s ease-in-out infinite;
+}
+@keyframes forgeBadgeGlow {
+  0%, 100% { filter: drop-shadow(0 0 34px rgba(227,179,65,0.22)) drop-shadow(0 8px 24px rgba(0,0,0,0.6)); }
+  50%      { filter: drop-shadow(0 0 52px rgba(245,214,128,0.42)) drop-shadow(0 8px 24px rgba(0,0,0,0.6)); }
+}
+.forge-hero-tagline {
+  max-width: 440px;
+  margin: 18px auto 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #b9b2a0;
+}
+.forge-hero-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 22px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.forge-cta {
+  padding: 13px 26px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #1a1206;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ffe08a, #e3b341 60%, #b8860b);
+  box-shadow: 0 0 26px -6px rgba(245,214,128,0.7), inset 0 1px 0 rgba(255,255,255,0.5);
+  transition: transform .15s, box-shadow .2s;
+}
+.forge-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 40px -4px rgba(245,214,128,0.9), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.forge-cta-ghost {
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #e3b341;
+  border: 1px solid rgba(227,179,65,0.35);
+  transition: border-color .2s, background .2s;
+}
+.forge-cta-ghost:hover {
+  border-color: rgba(227,179,65,0.7);
+  background: rgba(227,179,65,0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forge-hero-badge { animation: none; }
+}

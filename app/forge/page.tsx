@@ -583,27 +583,23 @@ export default function ForgePage() {
   );
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
-      <div className="flex items-end justify-between flex-wrap gap-4 mb-2">
-        <div>
-          <h1 className="text-4xl forge-title" style={{ fontFamily: "var(--font-display), serif" }}>
-            The Forge
-          </h1>
-          <p className="text-sm mt-1" style={{ color: "var(--ae-nebula)" }}>
-            Fair-launch memecoins on LightChain AI. Sell out the curve, list on
-            Filament — liquidity burned, forever.{" "}
-            <Link href="/forge/guide" className="underline" style={{ color: "var(--ae-aurum)" }}>
-              New here? Read how it works →
-            </Link>
-          </p>
+    <main className="forge-canvas mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
+      {/* Branded hero — the Filament Forge medallion */}
+      <div className="forge-hero">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/forge-badge.png" alt="Filament Forge" className="forge-hero-badge" />
+        <p className="forge-hero-tagline">
+          Fair-launch memecoins on LightChain AI. Sell out the curve, list on
+          Filament — liquidity burned, forever.
+        </p>
+        <div className="forge-hero-actions">
+          <button className="forge-cta" onClick={() => setShowCreate(true)}>
+            + Forge a coin
+          </button>
+          <Link href="/forge/guide" className="forge-cta-ghost">
+            How it works →
+          </Link>
         </div>
-        <button
-          className="rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-          style={{ background: "var(--ae-aurum)", color: "var(--ae-ink)", boxShadow: "var(--shadow-primary)" }}
-          onClick={() => setShowCreate(true)}
-        >
-          + Forge a coin
-        </button>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap my-6">
