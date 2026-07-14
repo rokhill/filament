@@ -20,6 +20,7 @@ const Footer = () => {
           <Link href="/guide">Guide</Link>
           <Link href="/forge/guide">Forge Guide</Link>
           <a href="https://mainnet.lightscan.app" target="_blank" rel="noopener noreferrer">Explorer</a>
+          <Link href="/disclaimer" className="fil-footer-legal">Risk Disclaimer</Link>
         </div>
       </div>
     </footer>

@@ -15,8 +15,8 @@ export default function BootSplash() {
     if (sessionStorage.getItem("fil:booted")) return;
     setShow(true);
     sessionStorage.setItem("fil:booted", "1");
-    const t1 = setTimeout(() => setLeaving(true), 1600);
-    const t2 = setTimeout(() => setShow(false), 2250);
+    const t1 = setTimeout(() => setLeaving(true), 2100);
+    const t2 = setTimeout(() => setShow(false), 2800);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 

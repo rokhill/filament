@@ -785,7 +785,7 @@ html.light .fil-header {
   max-width: 1180px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 76px;
+  height: 84px;
   display: flex;
   align-items: center;
   gap: 28px;
@@ -799,15 +799,15 @@ html.light .fil-header {
   flex-shrink: 0;
 }
 .fil-brand-bulb {
-  height: 48px;
-  width: 48px;
+  height: clamp(42px, 5vw, 58px);
+  width: clamp(42px, 5vw, 58px);
   object-fit: contain;
   border-radius: 9px;
   filter: drop-shadow(0 0 14px rgba(255, 140, 30, 0.40));
   transition: filter .3s, transform .3s;
 }
 .fil-brand-mark {
-  height: 40px;
+  height: clamp(38px, 5.2vw, 62px);
   width: auto;
   filter: drop-shadow(0 0 10px rgba(255, 140, 30, 0.30));
   transition: filter .3s;
@@ -939,12 +939,12 @@ button.fil-wallet:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  height: 60px;
-  padding: 0 14px;
+  gap: 10px;
+  height: 68px;
+  padding: 0 12px;
 }
-.fil-brand--mobile .fil-brand-bulb { height: 36px; width: 36px; }
-.fil-brand--mobile .fil-brand-mark { height: 30px; }
+.fil-brand--mobile .fil-brand-bulb { height: 40px; width: 40px; }
+.fil-brand--mobile .fil-brand-mark { height: clamp(26px, 7.5vw, 38px); max-width: 52vw; object-fit: contain; }
 
 .fil-icon-btn {
   width: 38px; height: 38px;
@@ -1214,7 +1214,7 @@ html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
   height: 100%;
   object-fit: cover;
   object-position: center;
-  animation: bootIgnite 1.6s ease-out both;
+  animation: bootIgnite 2.1s ease-out both;
   will-change: filter, opacity, transform;
 }
 
@@ -1360,4 +1360,46 @@ html.light .f-featured:hover {
   .f-card:hover, .pf-card:hover, .spark-hover:hover, .f-featured:hover {
     transform: none;
   }
+}
+
+.fil-footer-legal {
+  color: var(--ft-low, #6b7391) !important;
+  font-size: 12px;
+}
+.fil-footer-legal:hover { color: var(--ft-gold, #e3b341) !important; }
+
+
+/* ============================================================
+   EMBER HOVER — Forge & Exchange
+   These pages use their own card classes; give them the same
+   gold trim + ember flush as Markets and Portfolio.
+   ============================================================ */
+
+/* Forge: coin cards, stat tiles, step cards, KOTH */
+.forge-canvas a[class*="rounded-2xl"],
+.forge-canvas div[class*="rounded-2xl"],
+.forge-canvas a[class*="rounded-xl"],
+.ex-canvas [class*="rounded-2xl"] {
+  transition: border-color .22s ease, box-shadow .28s ease, transform .18s ease;
+}
+
+.forge-canvas a[class*="rounded-2xl"]:hover,
+.forge-canvas a[class*="rounded-xl"]:hover {
+  border-color: rgba(227, 179, 65, 0.58) !important;
+  box-shadow:
+    0 0 0 1px rgba(227, 179, 65, 0.16),
+    0 0 28px -8px rgba(245, 190, 80, 0.48),
+    0 12px 32px -18px rgba(255, 140, 30, 0.38) !important;
+  transform: translateY(-2px);
+}
+
+/* the swap card + its panels on the Exchange */
+.ex-canvas .swap-card,
+.ex-canvas form,
+.ex-canvas [class*="rounded-2xl"]:hover {
+  transition: border-color .22s ease, box-shadow .28s ease;
+}
+.ex-canvas [class*="rounded-2xl"]:hover {
+  border-color: rgba(227, 179, 65, 0.38);
+  box-shadow: 0 0 26px -12px rgba(245, 190, 80, 0.35);
 }
