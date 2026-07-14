@@ -94,7 +94,8 @@ export default async function RootLayout({
       <body className={cn("antialiased", bodyFont.variable, display.variable)} style={{ background: "#050506" }}>
         {/* Instant black canvas painted on first frame — covers the PWA white flash
             until React mounts the animated BootSplash on top. */}
-        <div id="pre-boot" style={{ position: "fixed", inset: 0, background: "#050506", zIndex: 9998 }} />
+        <div id="pre-boot" style={{ position: "fixed", inset: 0, background: "#050506", zIndex: 9998, pointerEvents: "none" }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var p=document.getElementById('pre-boot');if(p){requestAnimationFrame(function(){requestAnimationFrame(function(){p.remove();});});}})();` }} />
         <BootSplash />
         <ThemeProvider
           attribute="class"

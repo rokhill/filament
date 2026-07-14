@@ -1203,6 +1203,7 @@ html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
   background: #050506;
   opacity: 1;
   transition: opacity .6s ease;
+  pointer-events: none;
 }
 .fil-boot.is-leaving { opacity: 0; pointer-events: none; }
 
