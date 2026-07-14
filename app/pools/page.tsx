@@ -99,6 +99,13 @@ export default function Pools() {
 
     return (
         <div className="container py-12">
+            <div className="f-eyebrow mb-2">Liquidity · LightChain AI</div>
+            <h1 className="f-display text-3xl sm:text-4xl mb-1">Pools</h1>
+            <p className="f-body text-sm mb-6" style={{ maxWidth: "540px" }}>
+                Provide liquidity to earn a share of every swap fee — like staking, but you
+                stay in control of your tokens.{" "}
+                <a href="/pools/guide" className="forge-guide-link">New here? How pools work →</a>
+            </p>
             <div className="w-full max-w-3xl mx-auto mb-4">
                 <SwapPoolsTabs />
             </div>

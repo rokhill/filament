@@ -242,6 +242,38 @@ export default function ForgeGuidePage() {
         )}
       </section>
 
+      {/* ---- Owning your coin ---- */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          You own your coin — build something with it
+        </h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          The Forge is just the launch mechanism. Once your coin graduates, the token
+          contract is yours — Filament takes no ongoing control. What you build around
+          it is entirely up to you.
+        </p>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          After graduation your token is a standard, freely-tradeable ERC-20 with
+          permanent, rug-proof liquidity on Filament. That&apos;s a real foundation to build
+          on. Creators can turn a memecoin into a project with actual utility:
+        </p>
+        <ul className="space-y-2 text-sm text-[var(--clr-body)] list-disc list-inside mb-3">
+          <li><strong className="text-[var(--clr-heading)]">Governance / DAO</strong> — use the token for community votes and decisions</li>
+          <li><strong className="text-[var(--clr-heading)]">Staking or rewards</strong> — build a contract that pays holders</li>
+          <li><strong className="text-[var(--clr-heading)]">Access / membership</strong> — gate a game, app, NFT mint, or Discord behind holding it</li>
+          <li><strong className="text-[var(--clr-heading)]">In-app currency</strong> — power a game or platform with it</li>
+          <li><strong className="text-[var(--clr-heading)]">Charity / cause</strong> — route a treasury or proceeds transparently on-chain</li>
+        </ul>
+        <div className="mt-4 p-3 rounded-lg text-xs text-[var(--clr-body)]" style={{ background: "rgba(227,179,65,0.08)", border: "1px solid rgba(227,179,65,0.2)" }}>
+          <strong className="text-[var(--ae-aurum)]">The edge Filament gives builders:</strong>{" "}
+          most launchpads leave graduated coins with no guaranteed liquidity. Yours have a
+          permanent, burned-LP pool from day one — so your community can always buy and sell,
+          forever. That&apos;s the difference between a coin that dies and one you can actually
+          build on. What you make of it is your call — and your responsibility.
+        </div>
+      </section>
+
+
       {/* ---- Honest risks ---- */}
       <section className="mb-10">
         <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
@@ -262,7 +294,7 @@ export default function ForgeGuidePage() {
           The numbers
         </h2>
         <div className="rounded-xl p-4 text-sm font-mono space-y-1.5" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
-          <div><span style={{ color: "var(--ae-aurum)" }}>Forge contract</span> — 0x17b48A0070DC048E81f7104a1bA65F937BbD8D94</div>
+          <div><span style={{ color: "var(--ae-aurum)" }}>Forge contract</span> — 0xB4Ba841e14943184840A939134ffc5c8Ab9403E1</div>
           <div><span style={{ color: "var(--ae-aurum)" }}>Supply per coin</span> — 1,000,000,000 (fixed, no minting)</div>
           <div><span style={{ color: "var(--ae-aurum)" }}>Curve / LP split</span> — 800M on curve / 200M to Filament pool</div>
           <div><span style={{ color: "var(--ae-aurum)" }}>Creation fee</span> — 300 LCAI (~$1)</div>
