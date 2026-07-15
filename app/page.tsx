@@ -1,9 +1,13 @@
+"use client";
+
+import BootSplash from "@/components/boot-splash";
 import SwapForm from "@/components/swap-form";
 import SwapPoolsTabs from "@/components/swap-pools-tabs";
 
 export default function Home() {
   return (
     <div className="ex-canvas">
+      <BootSplash />
       <div className="container max-w-lg mx-auto py-12">
         {/* Masthead — same structure as Markets: eyebrow, serif title, rule */}
         <div className="f-eyebrow mb-2">Non-custodial AMM · LightChain AI</div>
