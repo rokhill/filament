@@ -16,8 +16,8 @@ async function fetchBitMartCandles(step: number, limit: number): Promise<Candle[
     );
     const j = await r.json();
     if (j.code !== 1000 || !j.data) return [];
-    // API returns newest first — reverse to oldest first
-    return [...j.data].reverse();
+    // BitMart returns oldest-first for klines — use as-is
+    return j.data;
   } catch { return []; }
 }
 

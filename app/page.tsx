@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import BootSplash from "@/components/boot-splash";
 import useMarkets from "@/hooks/useMarkets";
 import { useEffect, useState } from "react";
@@ -55,6 +57,13 @@ export default function Home() {
         <div className="mt-2 space-y-4">
           <SwapPoolsTabs />
           <SwapForm />
+          <Link href="/forge" className="flex items-center justify-center gap-3 mt-4 opacity-75 hover:opacity-100 transition-opacity group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/forge-badge.png" alt="Filament Forge" className="w-10 h-10 rounded-full" style={{ filter: "drop-shadow(0 0 8px rgba(227,179,65,0.4))" }} />
+            <span className="f-body text-sm group-hover:text-[var(--ft-gold)] transition-colors">
+              Launch a memecoin on <strong style={{ color: "var(--ft-gold)" }}>Filament Forge</strong> →
+            </span>
+          </Link>
         </div>
       </div>
     </div>
