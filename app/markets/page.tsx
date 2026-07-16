@@ -5,40 +5,63 @@ import Link from "next/link";
 import useMarkets, { MarketStats, Venue, ForgeMarket, fmtUsd } from "@/hooks/useMarkets";
 import { fmtLcai } from "@/hooks/useForge";
 
+// BitMart candle: [timestamp_s, open, high, low, close, volume, quoteVolume]
+type Candle = [number, string, string, string, string, string, string];
+
+async function fetchBitMartCandles(step: number, limit: number): Promise<Candle[]> {
+  try {
+    const r = await fetch(
+      `https://api-cloud.bitmart.com/spot/quotation/v3/klines?symbol=LCAI_USDT&step=${step}&limit=${limit}`,
+      { cache: "no-store" }
+    );
+    const j = await r.json();
+    if (j.code !== 1000 || !j.data) return [];
+    // API returns newest first — reverse to oldest first
+    return [...j.data].reverse();
+  } catch { return []; }
+}
+
 /* ------------------------------------------------------------------ */
-/*  Chart — gold, glowing, touch + mouse interactive                   */
+/*  Candle chart — gold SVG, interactive, line/candle toggle           */
 /* ------------------------------------------------------------------ */
 
-function PriceChart({ data }: { data: [number, number][] }) {
-  const [hover, setHover] = useState<{ i: number; x: number; y: number } | null>(null);
-  const points = useMemo(() => data.map((d) => d[1]), [data]);
-  const times = useMemo(() => data.map((d) => d[0]), [data]);
+function CandleChart({ candles, mode }: { candles: Candle[]; mode: "line" | "candle" }) {
+  const [hover, setHover] = useState<{ i: number; x: number } | null>(null);
 
-  if (points.length < 2) {
+  if (candles.length < 2) {
     return (
       <div className="f-card f-card--inset h-56 flex items-center justify-center f-meta">
-        Loading price history…
+        Loading chart…
       </div>
     );
   }
 
-  const W = 800, H = 220;
-  const min = Math.min(...points), max = Math.max(...points);
+  const W = 800, H = 220, PAD = 12;
+  const closes = candles.map(c => parseFloat(c[4]));
+  const highs  = candles.map(c => parseFloat(c[2]));
+  const lows   = candles.map(c => parseFloat(c[3]));
+  const opens  = candles.map(c => parseFloat(c[1]));
+  const allVals = mode === "candle" ? [...highs, ...lows] : closes;
+  const min = Math.min(...allVals), max = Math.max(...allVals);
   const span = max - min || max || 1;
-  const x = (i: number) => (i / (points.length - 1)) * W;
-  const y = (p: number) => H - 18 - ((p - min) / span) * (H - 36);
-  const path = points.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p).toFixed(1)}`).join(" ");
-  const area = `${path} L${W},${H} L0,${H} Z`;
+  const n = candles.length;
+  const x = (i: number) => PAD + (i / (n - 1)) * (W - PAD * 2);
+  const y = (v: number) => H - PAD - ((v - min) / span) * (H - PAD * 2);
+
+  const linePath = closes.map((c, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(c).toFixed(1)}`).join(" ");
+  const areaPath = `${linePath} L${W - PAD},${H} L${PAD},${H} Z`;
+
+  const hp = hover ? closes[hover.i] : null;
+  const ht = hover ? new Date(candles[hover.i][0] * 1000) : null;
 
   const setFromClientX = (clientX: number, el: SVGSVGElement) => {
     const rect = el.getBoundingClientRect();
     const px = ((clientX - rect.left) / rect.width) * W;
-    const i = Math.max(0, Math.min(points.length - 1, Math.round((px / W) * (points.length - 1))));
-    setHover({ i, x: x(i), y: y(points[i]) });
+    const i = Math.max(0, Math.min(n - 1, Math.round(((px - PAD) / (W - PAD * 2)) * (n - 1))));
+    setHover({ i, x: x(i) });
   };
 
-  const hp = hover ? points[hover.i] : null;
-  const ht = hover ? new Date(times[hover.i]) : null;
+  const candleW = Math.max(2, Math.min(10, (W - PAD * 2) / n - 1));
 
   return (
     <div className="f-card f-card--inset p-3 relative">
@@ -46,7 +69,7 @@ function PriceChart({ data }: { data: [number, number][] }) {
         <div className="absolute top-3 left-3 z-10 rounded-lg px-3 py-1.5 pointer-events-none"
           style={{ background: "var(--fs-1)", border: "1px solid var(--fs-line-strong)" }}>
           <span className="f-num text-sm" style={{ color: "var(--ft-gold)" }}>
-            ${hp < 0.01 ? hp.toPrecision(3) : hp.toFixed(5)}
+            ${hp < 0.001 ? hp.toPrecision(4) : hp.toFixed(5)}
           </span>
           <span className="f-meta ml-2">
             {ht.toLocaleDateString(undefined, { month: "short", day: "numeric" })}{" "}
@@ -56,31 +79,57 @@ function PriceChart({ data }: { data: [number, number][] }) {
       )}
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full cursor-crosshair" preserveAspectRatio="none"
         style={{ height: 220, touchAction: "pan-y" }}
-        onMouseMove={(e) => setFromClientX(e.clientX, e.currentTarget)}
+        onMouseMove={e => setFromClientX(e.clientX, e.currentTarget)}
         onMouseLeave={() => setHover(null)}
-        onTouchStart={(e) => e.touches[0] && setFromClientX(e.touches[0].clientX, e.currentTarget)}
-        onTouchMove={(e) => e.touches[0] && setFromClientX(e.touches[0].clientX, e.currentTarget)}
+        onTouchStart={e => e.touches[0] && setFromClientX(e.touches[0].clientX, e.currentTarget)}
+        onTouchMove={e => e.touches[0] && setFromClientX(e.touches[0].clientX, e.currentTarget)}
         onTouchEnd={() => setHover(null)}>
         <defs>
           <linearGradient id="mktArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#e3b341" stopOpacity="0.26" />
+            <stop offset="0%" stopColor="#e3b341" stopOpacity="0.22" />
             <stop offset="100%" stopColor="#e3b341" stopOpacity="0" />
           </linearGradient>
           <filter id="mktGlow" x="-5%" y="-25%" width="110%" height="150%">
-            <feGaussianBlur stdDeviation="3" result="b" />
+            <feGaussianBlur stdDeviation="2.5" result="b" />
             <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
-        <path d={area} fill="url(#mktArea)" />
-        <path d={path} fill="none" stroke="#f5d680" strokeWidth="2" strokeLinejoin="round" filter="url(#mktGlow)" />
+
+        {mode === "line" ? (
+          <>
+            <path d={areaPath} fill="url(#mktArea)" />
+            <path d={linePath} fill="none" stroke="#f5d680" strokeWidth="2" strokeLinejoin="round" filter="url(#mktGlow)" />
+          </>
+        ) : (
+          candles.map((c, i) => {
+            const o = parseFloat(c[1]), h2 = parseFloat(c[2]);
+            const l2 = parseFloat(c[3]), cl = parseFloat(c[4]);
+            const up = cl >= o;
+            const col = up ? "#5ee6a8" : "#ff7a7a";
+            const cx = x(i);
+            return (
+              <g key={i}>
+                <line x1={cx} y1={y(h2)} x2={cx} y2={y(l2)} stroke={col} strokeWidth="1" strokeOpacity="0.7" />
+                <rect
+                  x={cx - candleW / 2} y={Math.min(y(o), y(cl))}
+                  width={candleW} height={Math.max(1, Math.abs(y(o) - y(cl)))}
+                  fill={col} fillOpacity="0.85"
+                />
+              </g>
+            );
+          })
+        )}
+
         {hover && (
           <>
-            <line x1={hover.x} y1="0" x2={hover.x} y2={H} stroke="#e3b341" strokeWidth="1" strokeOpacity="0.45" strokeDasharray="3 3" />
-            <circle cx={hover.x} cy={hover.y} r="4.5" fill="#fff6da" stroke="#f5d680" strokeWidth="2" filter="url(#mktGlow)" />
+            <line x1={hover.x} y1="0" x2={hover.x} y2={H} stroke="#e3b341" strokeWidth="1" strokeOpacity="0.4" strokeDasharray="3 3" />
+            {mode === "line" && (
+              <circle cx={hover.x} cy={y(closes[hover.i])} r="4.5" fill="#fff6da" stroke="#f5d680" strokeWidth="2" filter="url(#mktGlow)" />
+            )}
           </>
         )}
       </svg>
-      <p className="f-meta text-center mt-1 sm:hidden">Drag across the chart to read prices</p>
+      <p className="f-meta text-center mt-1 sm:hidden">Drag to read prices</p>
     </div>
   );
 }
@@ -90,12 +139,15 @@ function PriceChart({ data }: { data: [number, number][] }) {
 /* ------------------------------------------------------------------ */
 
 export default function MarketsPage() {
-  const { fetchStats, fetchVenues, fetchChart, fetchForgeMarket } = useMarkets();
+  const { fetchStats, fetchVenues, fetchForgeMarket } = useMarkets();
   const [stats, setStats] = useState<MarketStats | null>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [chart, setChart] = useState<[number, number][]>([]);
+  const [candles, setCandles] = useState<Candle[]>([]);
   const [forge, setForge] = useState<ForgeMarket | null>(null);
-  const [days, setDays] = useState(7);
+  const [chartMode, setChartMode] = useState<"line" | "candle">("candle");
+  const [timeframe, setTimeframe] = useState<{ step: number; limit: number; label: string }>(
+    { step: 60, limit: 200, label: "1H" }
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -111,10 +163,10 @@ export default function MarketsPage() {
 
   useEffect(() => {
     let alive = true;
-    fetchChart(days).then((c) => { if (alive) setChart(c); });
+    fetchBitMartCandles(timeframe.step, timeframe.limit).then(c => { if (alive) setCandles(c); });
     return () => { alive = false; };
     // eslint-disable-next-line
-  }, [days]);
+  }, [timeframe]);
 
   const up = (stats?.change24h ?? 0) >= 0;
 
@@ -144,15 +196,22 @@ export default function MarketsPage() {
       </div>
 
       {/* Chart */}
-      <div className="f-section"><h2>LCAI / USD</h2></div>
-      <div className="flex justify-end gap-1.5 mb-3 -mt-2">
-        {[1, 7, 30, 90].map((d) => (
-          <button key={d} onClick={() => setDays(d)} className={`f-pill ${days === d ? "f-pill--on" : ""}`}>
-            {d === 1 ? "24H" : `${d}D`}
-          </button>
-        ))}
+      <div className="f-section"><h2>LCAI / USDT · BitMart</h2></div>
+      <div className="flex justify-between items-center mb-3 -mt-2 gap-2 flex-wrap">
+        <div className="flex gap-1.5">
+          {([{ step: 15, limit: 200, label: "15M" }, { step: 60, limit: 200, label: "1H" }, { step: 240, limit: 200, label: "4H" }, { step: 1440, limit: 90, label: "1D" }] as const).map((tf) => (
+            <button key={tf.label} onClick={() => setTimeframe(tf)}
+              className={`f-pill ${timeframe.label === tf.label ? "f-pill--on" : ""}`}>
+              {tf.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1.5">
+          <button onClick={() => setChartMode("candle")} className={`f-pill ${chartMode === "candle" ? "f-pill--on" : ""}`}>Candles</button>
+          <button onClick={() => setChartMode("line")} className={`f-pill ${chartMode === "line" ? "f-pill--on" : ""}`}>Line</button>
+        </div>
       </div>
-      <PriceChart data={chart} />
+      <CandleChart candles={candles} mode={chartMode} />
 
       {/* Venues */}
       <div className="f-section"><h2>Where LCAI Trades</h2></div>
