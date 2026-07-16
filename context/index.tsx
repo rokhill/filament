@@ -6,6 +6,7 @@ import { createAppKit } from "@reown/appkit/react";
 import React, { type ReactNode } from "react";
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
 import config from "@/config";
+import { networks } from "@/config/wagmi";
 
 // Set up queryClient
 const queryClient = new QueryClient({
@@ -28,7 +29,7 @@ const metadata = {
 createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: config.chains,
+  networks,
   defaultNetwork: config.chains[0],
   metadata: metadata,
   features: {

@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BRIDGE_ENABLED } from "@/config/bridge";
 
 const tabs = [
   { href: "/", label: "Swap" },
   { href: "/pools", label: "Pools" },
-  ...(BRIDGE_ENABLED ? [{ href: "/bridge", label: "Bridge" }] : []),
 ];
 
 export default function SwapPoolsTabs() {

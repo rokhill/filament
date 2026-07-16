@@ -9,7 +9,9 @@ import {
   pad,
   parseEther,
 } from "viem";
-import { useAccount, useSwitchChain, useWalletClient } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
+import { getWalletClient } from "@wagmi/core";
+import { wagmiConfig } from "@/config/wagmi";
 import { useAppKit } from "@reown/appkit/react";
 import { ArrowDownUpIcon, Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
@@ -50,8 +52,6 @@ export default function BridgeForm() {
   const originClient = direction === "deposit" ? ethClient : lcaiClient;
   const destDomain = direction === "deposit" ? LCAI_DOMAIN : ETHEREUM_DOMAIN;
   const originBalance = direction === "deposit" ? ethBalance : lcaiBalance;
-
-  const { data: walletClient } = useWalletClient({ chainId: origin.id });
 
   const parsedAmount = useMemo(() => {
     try {
@@ -118,7 +118,7 @@ export default function BridgeForm() {
   };
 
   const bridge = async () => {
-    if (!address || !walletClient || parsedAmount <= 0n) return;
+    if (!address || parsedAmount <= 0n) return;
     if (gasQuote === undefined) {
       toast.error("Couldn't fetch the bridge gas quote. Try again.");
       return;
@@ -126,6 +126,9 @@ export default function BridgeForm() {
     if (!(await ensureChain())) return;
 
     try {
+      const walletClient = await getWalletClient(wagmiConfig, {
+        chainId: origin.id,
+      });
       const recipient = pad(address, { size: 32 });
 
       if (direction === "deposit") {

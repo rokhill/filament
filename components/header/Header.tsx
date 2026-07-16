@@ -7,9 +7,12 @@ import DarkSwitch from "./DarkSwitcher";
 import MobileMenu from "./MobileMenu";
 import WalletConnectButton from "../wallet-connect-button";
 
+import { BRIDGE_ENABLED } from "@/config/bridge";
+
 const NAV = [
   { href: "/", label: "Exchange" },
   { href: "/forge", label: "Forge" },
+  ...(BRIDGE_ENABLED ? [{ href: "/bridge", label: "Bridge" }] : []),
   { href: "/markets", label: "Markets" },
   { href: "/portfolio", label: "Portfolio" },
 ];
