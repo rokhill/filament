@@ -32,29 +32,7 @@ export default function Home() {
           signed by your wallet, and settled entirely on-chain.
         </p>
 
-        {forgeStats && (forgeStats.coins > 0 || forgeStats.graduated > 0) && (
-          <div className="flex items-center gap-5 mt-5 mb-1 flex-wrap">
-            {forgeStats.coins > 0 && (
-              <span className="f-meta text-xs">
-                <span style={{ color: "var(--ft-gold)", fontWeight: 600 }}>{forgeStats.coins}</span> coins forged
-              </span>
-            )}
-            {Number(formatEther(forgeStats.raised)) > 0 && (
-              <span className="f-meta text-xs">
-                <span style={{ color: "var(--ft-gold)", fontWeight: 600 }}>
-                  {Math.round(Number(formatEther(forgeStats.raised))).toLocaleString()}
-                </span> LCAI on curves
-              </span>
-            )}
-            {forgeStats.graduated > 0 && (
-              <span className="f-meta text-xs">
-                <span style={{ color: "var(--ft-up)", fontWeight: 600 }}>{forgeStats.graduated}</span> graduated
-              </span>
-            )}
-          </div>
-        )}
-
-        <div className="mt-2 space-y-4">
+        <div className="mt-7 space-y-4">
           <SwapPoolsTabs />
           <SwapForm />
           <Link href="/forge" className="flex items-center justify-center gap-3 mt-4 opacity-75 hover:opacity-100 transition-opacity group">
@@ -64,6 +42,27 @@ export default function Home() {
               Launch a memecoin on <strong style={{ color: "var(--ft-gold)" }}>Filament Forge</strong> →
             </span>
           </Link>
+          {forgeStats && (forgeStats.coins > 0 || forgeStats.graduated > 0) && (
+            <div className="flex items-center justify-center gap-5 mt-2 flex-wrap">
+              {forgeStats.coins > 0 && (
+                <span className="f-meta text-xs">
+                  <span style={{ color: "var(--ft-gold)", fontWeight: 600 }}>{forgeStats.coins}</span> coins forged
+                </span>
+              )}
+              {Number(formatEther(forgeStats.raised)) > 0 && (
+                <span className="f-meta text-xs">
+                  <span style={{ color: "var(--ft-gold)", fontWeight: 600 }}>
+                    {Math.round(Number(formatEther(forgeStats.raised))).toLocaleString()}
+                  </span> LCAI on curves
+                </span>
+              )}
+              {forgeStats.graduated > 0 && (
+                <span className="f-meta text-xs">
+                  <span style={{ color: "var(--ft-up)", fontWeight: 600 }}>{forgeStats.graduated}</span> graduated
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
