@@ -1,6 +1,7 @@
 import { cookieStorage, createStorage } from "@wagmi/core";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import config from ".";
+import { BRIDGE_ENABLED, ethereum } from "./bridge";
 
 // Get your projectId from https://cloud.reown.com and set it in .env.local
 export const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
@@ -11,7 +12,9 @@ if (!projectId) {
   );
 }
 
-export const networks = config.chains;
+export const networks = (
+  BRIDGE_ENABLED ? [...config.chains, ethereum] : config.chains
+) as typeof config.chains;
 
 //Set up the Wagmi Adapter (Config)
 export const wagmiAdapter = new WagmiAdapter({
