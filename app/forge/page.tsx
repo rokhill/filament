@@ -377,18 +377,42 @@ function CreateModal({
             <input className={field} style={fieldStyle} placeholder="Telegram (optional)" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
           </div>
           <input className={field} style={fieldStyle} placeholder="Website (optional)" value={website} onChange={(e) => setWebsite(e.target.value)} />
-          <div>
+          {/* CREATOR BUY — separated and highlighted */}
+          <div style={{
+            background: "rgba(227,179,65,0.07)",
+            border: "1px solid rgba(227,179,65,0.35)",
+            borderRadius: "14px",
+            padding: "14px",
+            marginTop: "4px",
+          }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span style={{
+                background: "var(--ae-aurum)",
+                color: "#14100a",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                padding: "2px 8px",
+                borderRadius: "999px",
+              }}>Creator Buy</span>
+              <span style={{ fontSize: "11px", color: "var(--ae-aurum)", fontWeight: 600 }}>
+                Highly recommended
+              </span>
+            </div>
             <input
               className={field}
-              style={fieldStyle}
-              placeholder="Buy tokens at launch (optional, in LCAI)"
+              style={{ ...fieldStyle, border: "1px solid rgba(227,179,65,0.30)", background: "var(--ae-night)" }}
+              placeholder="Amount in LCAI (e.g. 500)"
               inputMode="decimal"
               value={initialBuy}
               onChange={(e) => setInitialBuy(e.target.value.replace(/[^0-9.]/g, ""))}
             />
-            <p className="text-[11px] mt-1.5" style={{ color: "var(--ae-nebula)" }}>
-              Buying in the same transaction as creation means nobody can snipe
-              your launch. Creation fee: {fmtLcai(fee, 0)} LCAI.
+            <p className="text-[11px] mt-2" style={{ color: "var(--ae-nebula)", lineHeight: 1.5 }}>
+              Your buy happens in the <strong style={{ color: "var(--ae-starlight)" }}>same transaction as creation</strong> — 
+              so nobody can front-run you. Early buyers get the lowest price. 
+              As creator, this is your best (and only) guaranteed first entry.
+              Creation fee: {fmtLcai(fee, 0)} LCAI.
             </p>
           </div>
         </div>
