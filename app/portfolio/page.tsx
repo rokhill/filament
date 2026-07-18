@@ -146,7 +146,7 @@ export default function PortfolioPage() {
               <CoinIcon coin={h} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold truncate" style={{ color: "var(--clr-heading)" }}>{h.name}</span>
+                  <span className="font-semibold truncate" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>{h.name}</span>
                   <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>${h.symbol}</span>
                   {h.graduated && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(74,222,128,.12)", color: "var(--clr-success)" }}>GRADUATED</span>}
                 </div>

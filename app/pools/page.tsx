@@ -109,7 +109,7 @@ export default function Pools() {
             <div className="w-full max-w-3xl mx-auto mb-4">
                 <SwapPoolsTabs />
             </div>
-            <Card className="w-full max-w-3xl mx-auto border-2 border-[rgba(135,135,135,0.15)] dark:border-[#333f53] gap-0 shadow-[0_4px_20px_rgba(0,0,0,0.2)] bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)]">
+            <Card className="w-full max-w-3xl mx-auto border border-[rgba(227,179,65,0.45)] gap-0 shadow-[0_4px_20px_rgba(0,0,0,0.2)] bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)]">
                 <CardContent className="space-y-6">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <CardTitle className="text-[var(--clr-black)] dark:text-[var(--clr-heading)]">Your V2 Liquidity</CardTitle>

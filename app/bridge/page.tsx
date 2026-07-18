@@ -23,7 +23,7 @@ function AddressRow({
   href: string;
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 py-2 border-b border-[rgba(135,135,135,0.12)] dark:border-[#333f53] last:border-0">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 py-2 border-b border-[rgba(227,179,65,0.18)] last:border-0">
       <span className="f-body text-xs">{label}</span>
       <a
         href={href}
@@ -63,7 +63,7 @@ export default function BridgePage() {
           These are the same contracts used by LightChain&apos;s own bridge
           app. Verify them yourself before bridging:
         </p>
-        <div className="rounded-xl border border-[rgba(135,135,135,0.2)] dark:border-[#333f53] px-4 py-2">
+        <div className="rounded-xl border border-[rgba(227,179,65,0.45)] px-4 py-2">
           <AddressRow
             label="LCAI token · Ethereum (ERC-20)"
             address={LCAI_ERC20_ETHEREUM}

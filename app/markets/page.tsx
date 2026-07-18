@@ -226,11 +226,11 @@ export default function MarketsPage() {
               <div className="min-w-0">
                 {v.url ? (
                   <a href={v.url} target="_blank" rel="noopener noreferrer"
-                    className="font-semibold hover:underline" style={{ color: "var(--ft-hi)" }}>
+                    className="font-semibold hover:underline" style={{ color: "var(--ft-hi)", fontFamily: "var(--font-display), serif" }}>
                     {v.name}
                   </a>
                 ) : (
-                  <span className="font-semibold" style={{ color: "var(--ft-hi)" }}>{v.name}</span>
+                  <span className="font-semibold" style={{ color: "var(--ft-hi)", fontFamily: "var(--font-display), serif" }}>{v.name}</span>
                 )}
                 <span className="f-mono f-trunc mt-0.5">{v.pair}</span>
               </div>
