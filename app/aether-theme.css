@@ -1595,3 +1595,21 @@ html.dark .f-featured { box-shadow: 0 0 0 1px rgba(255,140,30,.25) !important; }
 /* flicker off — steady thin ember trim like markets */
 html.dark .f-card, html.dark .pf-card, html.dark .fil-drawer-link { animation: none !important; border-color: rgba(255,140,30,.4) !important; }
 
+
+/* drawer hover */
+html.dark .fil-drawer-link:hover {
+  background: #171b28 !important;
+  border-color: rgba(255,170,50,.8) !important;
+}
+
+/* forge: same navy cards as everywhere else */
+html.dark .forge-canvas { background: #06070c !important; background-image: none !important; }
+html.dark .forge-canvas [class*="rounded-2xl"],
+html.dark .forge-canvas .forge-breathe {
+  background: #10131d !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,140,30,.4) !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+html.dark .forge-canvas [class*="rounded-2xl"]:hover { border-color: rgba(255,170,50,.8) !important; }
