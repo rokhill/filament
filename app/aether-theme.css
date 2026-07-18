@@ -1548,3 +1548,40 @@ html.light .ex-canvas .swap-form:hover {
   71% { border-color: rgba(255,165,48,.56); }
 }
 @media (prefers-reduced-motion: reduce) { .f-card, .pf-card, .fil-drawer-link { animation: none; } }
+
+
+/* ============================================================
+   FINAL UNIFIER — one black, everywhere. This block wins.
+   Card surface: #0b0b0b. Trim: ember. No blue, no brown.
+   ============================================================ */
+html.dark .f-card, html.dark .pf-card, html.dark .f-featured,
+html.dark [data-slot="card"], html.dark .fil-drawer-link,
+html.dark .f-card--inset {
+  background: #0b0b0b !important;
+  background-image: none !important;
+}
+/* shadcn card header/content strips inside swap + add-liquidity */
+html.dark [data-slot="card"] > div,
+html.dark [data-slot="card"] [class*="bg-["] {
+  background-color: #0b0b0b !important;
+  background-image: none !important;
+}
+/* inner input wells slightly lifted so fields still read */
+html.dark [data-slot="card"] .rounded-lg[class*="bg-"] {
+  background-color: #131313 !important;
+}
+/* pool action buttons + any leftover primary pills: ember, not purple */
+html.dark button[class*="bg-[var(--clr-primary)]"],
+html.dark .btn-primary, html.dark [class*="bg-primary"] {
+  background: linear-gradient(180deg, #ffaa32, #e07a12) !important;
+  color: #140d05 !important;
+  border: none !important;
+}
+html.dark button[class*="dark:bg-[var(--clr-blackest)]"] {
+  background: #131313 !important;
+  color: #e8e8e8 !important;
+}
+/* page background: pure black, warm radial only at the very bottom */
+html.dark body {
+  background-color: #050505 !important;
+}
