@@ -1657,10 +1657,7 @@ html.dark .pf-hero {
   0%, 100% { box-shadow: 0 0 18px -6px rgba(255,140,30,.35); border-color: rgba(255,140,30,.5); }
   50% { box-shadow: 0 0 36px -4px rgba(255,170,50,.65); border-color: rgba(255,190,80,.9); }
 }
-    .forge-canvas .forge-breathe {
-  animation: koth-pulse 3.2s ease-in-out infinite !important;
-  box-shadow: 0 0 18px -6px rgba(255,140,30,.35) !important;
-}
+
 
 /* hover flicker */
 @keyframes fil-hover-flicker {
@@ -1701,3 +1698,33 @@ html.dark .pf-hero {
 @media (prefers-reduced-motion: reduce) {
   .forge-breathe, .forge-fil-bar, .forge-fil-bar::after { animation: none !important; }
 }
+
+
+/* ============ KOTH FIRE GLOW — forge-logo energy ============ */
+.forge-canvas .forge-breathe {
+  position: relative;
+  z-index: 0;
+  border-color: rgba(255,170,50,.7) !important;
+}
+.forge-canvas .forge-breathe::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  z-index: -1;
+  border-radius: 24px;
+  background:
+    radial-gradient(60% 80% at 30% 100%, rgba(255,110,10,.55), transparent 70%),
+    radial-gradient(50% 70% at 75% 100%, rgba(255,180,60,.45), transparent 70%),
+    radial-gradient(80% 60% at 50% 0%, rgba(255,140,30,.3), transparent 75%);
+  filter: blur(14px);
+  opacity: .55;
+  animation: koth-fire 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes koth-fire {
+  0%, 100% { opacity: .45; transform: scale(1); }
+  40% { opacity: .95; transform: scale(1.02); }
+  55% { opacity: .8; }
+  70% { opacity: 1; transform: scale(1.03); }
+}
+@media (prefers-reduced-motion: reduce) { .forge-canvas .forge-breathe::after { animation: none; } }
