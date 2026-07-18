@@ -14,7 +14,7 @@ export default function SwapPoolsTabs() {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="inline-flex items-center gap-2 rounded-full p-1 bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border border-[rgba(135,135,135,0.2)] dark:border-[#333f53]">
+      <div className="inline-flex items-center gap-2 rounded-full p-1 bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border border-[rgba(255,140,30,0.4)]">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
 
