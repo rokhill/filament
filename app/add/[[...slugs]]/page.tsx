@@ -201,7 +201,7 @@ export default function AddLiquidty() {
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-6 px-6 pt-6 pb-7.5 z-[1] bg-[#e1e3f6] dark:bg-[#070710]">
+            <CardContent className="grid gap-6 px-6 pt-6 pb-7.5 z-[1] bg-[#e1e3f6] dark:bg-[#080808]">
               <div className="p-4 rounded-xl bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] text-[var(--clr-body)] border-2 border-[rgba(from_var(--clr-primary)_r_g_b/.1)]">
                 <p className="text-sm font-medium leading-[1.71] text-[var(--clr-body)]">
                   <strong>Tip:</strong>{" "}

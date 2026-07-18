@@ -6,11 +6,11 @@
 
 :root {
   /* palette */
-  --ae-night: #070605;
-  --ae-haze: #0e0d0c;
-  --ae-veil: #1a1815;
+  --ae-night: #060606;
+  --ae-haze: #0e0e0e;
+  --ae-veil: #181818;
   --ae-starlight: #edf0f8;
-  --ae-nebula: #a99e8d;
+  --ae-nebula: #a3a3a3;
   --ae-aurum: #e3b341;
   --ae-ember: #ff8c1e;
   --ae-ember-bright: #ffaa32;
@@ -182,7 +182,7 @@ html.light .forge-title {
 
 /* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #101010, #070707) !important;
+  background: linear-gradient(135deg, #0d0d0d, #060606) !important;
   border-color: var(--ae-aurum) !important;
 }
 
@@ -370,7 +370,7 @@ html.light .forge-title {
 
 /* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #101010, #070707) !important;
+  background: linear-gradient(135deg, #0d0d0d, #060606) !important;
   border-color: var(--ae-aurum) !important;
 }
 
