@@ -29,8 +29,6 @@ const MobileMenu = () => {
           </button>
           <Link href="/" className="fil-brand fil-brand--mobile">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/bulb-mark.png" alt="" className="fil-brand-bulb" aria-hidden />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/filament-wire.png" alt="Filament" className="fil-brand-mark" />
           </Link>
           <DarkSwitch />
@@ -40,8 +38,6 @@ const MobileMenu = () => {
       <div className={cn("fil-drawer lg:hidden", { "is-open": isOpen })}>
         <div className="fil-drawer-head">
           <Link href="/" onClick={() => setIsOpen(false)} className="fil-brand">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/bulb-mark.png" alt="" className="fil-brand-bulb" aria-hidden />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/filament-wire.png" alt="Filament" className="fil-brand-mark" />
           </Link>
