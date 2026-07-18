@@ -1613,3 +1613,36 @@ html.dark .forge-canvas .forge-breathe {
   animation: none !important;
 }
 html.dark .forge-canvas [class*="rounded-2xl"]:hover { border-color: rgba(255,170,50,.8) !important; }
+
+/* KotH: the breathe returns — exempt from the flatten */
+html.dark .forge-canvas .forge-breathe {
+  animation: koth-pulse 3.2s ease-in-out infinite !important;
+  border: 1px solid rgba(255,140,30,.55) !important;
+}
+@keyframes koth-pulse {
+  0%, 100% { box-shadow: 0 0 18px -6px rgba(255,140,30,.35) !important; border-color: rgba(255,140,30,.5); }
+  50% { box-shadow: 0 0 34px -4px rgba(255,170,50,.6) !important; border-color: rgba(255,190,80,.9); }
+}
+html.dark .forge-canvas .forge-breathe { box-shadow: 0 0 18px -6px rgba(255,140,30,.35) !important; }
+
+/* curve bar: molten shimmer sweep */
+.forge-fil-bar {
+  overflow: hidden;
+}
+.forge-fil-bar::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: -40%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+  animation: molten-sweep 2.6s ease-in-out infinite;
+}
+@keyframes molten-sweep { to { left: 110%; } }
+@media (prefers-reduced-motion: reduce) { .forge-breathe, .forge-fil-bar::before { animation: none !important; } }
+
+/* portfolio hero: navy base, ember glow instead of brown gradient */
+html.dark .pf-hero {
+  background: radial-gradient(ellipse at 50% 120%, rgba(255,140,30,.12), transparent 60%), #10131d !important;
+  border: 1px solid rgba(255,140,30,.4) !important;
+  box-shadow: none !important;
+}
