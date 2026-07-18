@@ -1657,7 +1657,7 @@ html.dark .pf-hero {
   0%, 100% { box-shadow: 0 0 18px -6px rgba(255,140,30,.35); border-color: rgba(255,140,30,.5); }
   50% { box-shadow: 0 0 36px -4px rgba(255,170,50,.65); border-color: rgba(255,190,80,.9); }
 }
-html.dark .forge-canvas .forge-breathe {
+    .forge-canvas .forge-breathe {
   animation: koth-pulse 3.2s ease-in-out infinite !important;
   box-shadow: 0 0 18px -6px rgba(255,140,30,.35) !important;
 }
@@ -1670,8 +1670,8 @@ html.dark .forge-canvas .forge-breathe {
   34% { border-color: rgba(255,190,80,.95); }
   100% { border-color: rgba(255,180,70,.85); }
 }
-html.dark .forge-canvas [class*="rounded-2xl"]:not(.forge-breathe):hover,
-html.dark .f-card:hover, html.dark .pf-card:hover, html.dark .fil-drawer-link:hover {
+.forge-canvas [class*="rounded-2xl"]:not(.forge-breathe):hover,
+.f-card:hover, .pf-card:hover, .fil-drawer-link:hover {
   animation: fil-hover-flicker .5s steps(1, end) forwards !important;
 }
 
