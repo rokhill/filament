@@ -1493,8 +1493,7 @@ html.light .ex-canvas .swap-form:hover {
    GOLD TRIM — designer pass: every clickable card gets the
    f-featured treatment (hairline top filament + soft gold halo).
    ============================================================ */
-.f-card--link, .pf-card, .f-card--inset, .swap-card, [class*="swap__"] .card,
-a.f-card, .fil-drawer-link {
+.f-card, .pf-card, .swap-card-wrap, .fil-drawer-link {
   position: relative;
   border: 1px solid rgba(227,179,65,.45);
   box-shadow: none;
@@ -1504,7 +1503,7 @@ a.f-card, .fil-drawer-link {
   transform: translateY(-2px);
   border-color: rgba(245,214,128,.8);
 }
-.f-card--link::before, .pf-card::before, a.f-card::before {
+.f-card::before, .pf-card::before {
   content: "";
   position: absolute;
   top: 0; left: 12%; right: 12%;
