@@ -1557,18 +1557,19 @@ html.light .ex-canvas .swap-form:hover {
 html.dark .f-card, html.dark .pf-card, html.dark .f-featured,
 html.dark [data-slot="card"], html.dark .fil-drawer-link,
 html.dark .f-card--inset {
-  background: #0b0b0b !important;
+  background: #10131d !important;
   background-image: none !important;
+  box-shadow: none !important;
 }
 /* shadcn card header/content strips inside swap + add-liquidity */
 html.dark [data-slot="card"] > div,
 html.dark [data-slot="card"] [class*="bg-["] {
-  background-color: #0b0b0b !important;
+  background-color: #10131d !important;
   background-image: none !important;
 }
 /* inner input wells slightly lifted so fields still read */
 html.dark [data-slot="card"] .rounded-lg[class*="bg-"] {
-  background-color: #131313 !important;
+  background-color: #171b28 !important;
 }
 /* pool action buttons + any leftover primary pills: ember, not purple */
 html.dark button[class*="bg-[var(--clr-primary)]"],
@@ -1578,10 +1579,19 @@ html.dark .btn-primary, html.dark [class*="bg-primary"] {
   border: none !important;
 }
 html.dark button[class*="dark:bg-[var(--clr-blackest)]"] {
-  background: #131313 !important;
+  background: #171b28 !important;
   color: #e8e8e8 !important;
 }
 /* page background: pure black, warm radial only at the very bottom */
-html.dark body {
-  background-color: #050505 !important;
+html.dark body, html.dark main {
+  background-color: #06070c !important;
+  background-image: none !important;
 }
+/* kill every warm halo/glow shadow around cards */
+html.dark .f-card, html.dark .pf-card, html.dark .f-featured, html.dark [data-slot="card"] {
+  box-shadow: none !important;
+}
+html.dark .f-featured { box-shadow: 0 0 0 1px rgba(255,140,30,.25) !important; }
+/* flicker off — steady thin ember trim like markets */
+html.dark .f-card, html.dark .pf-card, html.dark .fil-drawer-link { animation: none !important; border-color: rgba(255,140,30,.4) !important; }
+
