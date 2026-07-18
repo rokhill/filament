@@ -13,7 +13,7 @@ export default function ProgressBar({ bps, tall = false }: { bps: number; tall?:
       style={{ height: tall ? 10 : 6, background: "var(--ae-veil)" }}
     >
       <div
-        className={pct > 0 ? "h-full rounded-full transition-all forge-shimmer" : "h-full"}
+        className={pct > 0 ? "h-full rounded-full transition-all forge-shimmer forge-fil-bar" : "h-full"}
         style={{
           width: `${pct}%`,
           background:

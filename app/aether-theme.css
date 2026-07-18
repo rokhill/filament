@@ -808,7 +808,7 @@ html.light .fil-header {
   transition: filter .3s, transform .3s;
 }
 .fil-brand-mark {
-  height: clamp(46px, 6vw, 76px);
+  height: clamp(52px, 6.6vw, 86px);
   width: auto;
   filter: drop-shadow(0 0 10px rgba(255, 140, 30, 0.30));
   transition: filter .3s;
@@ -1163,7 +1163,7 @@ html.light .fil-footer { border-top-color: rgba(120,95,20,0.14); }
   gap: 20px;
   flex-wrap: wrap;
 }
-.fil-brand--footer .fil-brand-bulb { height: 44px; width: 44px; }
+.fil-brand--footer .fil-brand-bulb { height: 54px; width: 54px; }
 
 .fil-footer-copy {
   flex: 1;
@@ -1496,14 +1496,13 @@ html.light .ex-canvas .swap-form:hover {
 .f-card--link, .pf-card, .f-card--inset, .swap-card, [class*="swap__"] .card,
 a.f-card, .fil-drawer-link {
   position: relative;
-  border: 1px solid rgba(227,179,65,.22);
-  box-shadow: 0 0 0 1px rgba(227,179,65,.05), 0 14px 34px -24px rgba(227,179,65,.30);
-  transition: border-color .2s, box-shadow .25s, transform .2s;
+  border: 1px solid rgba(227,179,65,.45);
+  box-shadow: none;
+  transition: border-color .2s, transform .2s;
 }
 .f-card--link:hover, .pf-card:hover, a.f-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(227,179,65,.5);
-  box-shadow: 0 0 0 1px rgba(227,179,65,.35), 0 0 26px -10px rgba(227,179,65,.4);
+  border-color: rgba(245,214,128,.8);
 }
 .f-card--link::before, .pf-card::before, a.f-card::before {
   content: "";
@@ -1513,4 +1512,25 @@ a.f-card, .fil-drawer-link {
   background: linear-gradient(90deg, transparent, var(--ft-gold-bright, #f5d680), transparent);
   opacity: .7;
   pointer-events: none;
+}
+
+
+/* ============================================================
+   FILAMENT BAR — graduation progress as a heating filament.
+   Raised gold bevel, white-hot tip at the leading edge.
+   ============================================================ */
+.forge-fil-bar {
+  position: relative;
+  background: linear-gradient(180deg, #f5d680 0%, #e3b341 45%, #9c7a1e 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 1px rgba(0,0,0,.35), 0 0 10px -2px rgba(245,214,128,.6);
+}
+.forge-fil-bar::after {
+  content: "";
+  position: absolute;
+  right: -1px; top: 50%;
+  width: 7px; height: 7px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffd98a 45%, transparent 75%);
+  filter: blur(0.4px);
 }
