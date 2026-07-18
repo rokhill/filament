@@ -166,7 +166,7 @@ export default function SwapForm() {
           Swap on <span className="theme-gradient ae-display">Filament</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 grid z-[1] bg-[#e1e3f6] dark:bg-[#070710]">
+      <CardContent className="p-4 grid z-[1] bg-[#e1e3f6] dark:bg-[#0c0906]">
         <div className="space-y-2 pt-4 px-4 pb-10 rounded-lg bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border-2 border-[rgba(from_var(--clr-primary)_r_g_b/.1)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="text-sm text-[var(--clr-body)] font-medium leading-[1.71]">

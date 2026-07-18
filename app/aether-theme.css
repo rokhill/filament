@@ -6,26 +6,28 @@
 
 :root {
   /* palette */
-  --ae-night: #0a0e1a;
-  --ae-haze: #121829;
-  --ae-veil: #1b2338;
+  --ae-night: #0b0806;
+  --ae-haze: #15100a;
+  --ae-veil: #251c11;
   --ae-starlight: #edf0f8;
-  --ae-nebula: #8b93ad;
+  --ae-nebula: #a99e8d;
   --ae-aurum: #e3b341;
+  --ae-ember: #ff8c1e;
+  --ae-ember-bright: #ffaa32;
   --ae-aurum-bright: #f5d680;
   --ae-aurum-deep: #9c7a1e;
   --ae-sky: #7fb4e8;
   --ae-ink: #14100a;
 
   /* remap template tokens */
-  --clr-primary: var(--ae-aurum);
-  --clr-primary-alt: #4a3d18;
+  --clr-primary: var(--ae-ember);
+  --clr-primary-alt: #4a2c10;
   --clr-secondary: var(--ae-aurum-deep);
   --clr-tertiary: var(--ae-sky);
   --bs-primary-rgb: 227, 179, 65;
 
-  --clr-primary-gradient-start: var(--ae-aurum);
-  --clr-primary-gradient-end: var(--ae-aurum-bright);
+  --clr-primary-gradient-start: var(--ae-ember);
+  --clr-primary-gradient-end: var(--ae-ember-bright);
   --clr-secondary-gradient-start: var(--ae-aurum-deep);
   --clr-secondary-gradient-end: var(--ae-aurum);
   --clr-tertiary-gradient-start: var(--ae-aurum);
@@ -180,7 +182,7 @@ html.light .forge-title {
 
 /* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #1a1635, #0f0d2a) !important;
+  background: linear-gradient(135deg, #191209, #0d0a06) !important;
   border-color: var(--ae-aurum) !important;
 }
 
@@ -368,7 +370,7 @@ html.light .forge-title {
 
 /* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #1a1635, #0f0d2a) !important;
+  background: linear-gradient(135deg, #191209, #0d0a06) !important;
   border-color: var(--ae-aurum) !important;
 }
 
@@ -771,7 +773,7 @@ html.light .f-pill--on { color: #fff; }
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(30, 26, 62, 0.60);
+  background: rgba(12, 9, 5, 0.42);
   backdrop-filter: saturate(160%) blur(18px);
   -webkit-backdrop-filter: saturate(160%) blur(18px);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
