@@ -159,14 +159,14 @@ export default function SwapForm() {
   }, [chain]);
 
   return (
-    <Card className="border border-[rgba(227,179,65,0.45)] p-0 gap-0 shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden">
+    <Card className="border border-[rgba(255,140,30,0.5)] p-0 gap-0 shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden">
       <div className="absolute left-1/2 top-1/2 -translate-1/2 w-[394px] rounded-full h-[394px] bg-[radial-gradient(circle,rgba(227,179,65,0.55)_0%,rgba(127,180,232,0.25)_60%,transparent_100%)] blur-[110px]"></div>
       <CardHeader className="bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] py-6 lg:text-2xl text-xl z-[1]">
         <CardTitle className="text-center font-bold text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
           Swap on <span className="theme-gradient ae-display">Filament</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 grid z-[1] bg-[#e1e3f6] dark:bg-[#0c0906]">
+      <CardContent className="p-4 grid z-[1] bg-[#e1e3f6] dark:bg-[#080808]">
         <div className="space-y-2 pt-4 px-4 pb-10 rounded-lg bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border-2 border-[rgba(from_var(--clr-primary)_r_g_b/.1)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="text-sm text-[var(--clr-body)] font-medium leading-[1.71]">

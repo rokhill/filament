@@ -6,9 +6,9 @@
 
 :root {
   /* palette */
-  --ae-night: #0b0806;
-  --ae-haze: #15100a;
-  --ae-veil: #251c11;
+  --ae-night: #070605;
+  --ae-haze: #0e0d0c;
+  --ae-veil: #1a1815;
   --ae-starlight: #edf0f8;
   --ae-nebula: #a99e8d;
   --ae-aurum: #e3b341;
@@ -182,7 +182,7 @@ html.light .forge-title {
 
 /* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #191209, #0d0a06) !important;
+  background: linear-gradient(135deg, #101010, #070707) !important;
   border-color: var(--ae-aurum) !important;
 }
 
@@ -370,7 +370,7 @@ html.light .forge-title {
 
 /* KOTH: keep the dark indigo card in light mode so gold text stays readable */
 html.light .forge-breathe {
-  background: linear-gradient(135deg, #191209, #0d0a06) !important;
+  background: linear-gradient(135deg, #101010, #070707) !important;
   border-color: var(--ae-aurum) !important;
 }
 
@@ -1497,21 +1497,22 @@ html.light .ex-canvas .swap-form:hover {
    ============================================================ */
 .f-card, .pf-card, .swap-card-wrap, .fil-drawer-link {
   position: relative;
-  border: 1px solid rgba(227,179,65,.45);
+  border: 1px solid rgba(255,140,30,.5);
+  animation: fil-flicker 4.5s ease-in-out infinite;
   box-shadow: none;
   transition: border-color .2s, transform .2s;
 }
 .f-card--link:hover, .pf-card:hover, a.f-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(245,214,128,.8);
+  border-color: rgba(255,170,50,.95); animation: none;
 }
 .f-card::before, .pf-card::before {
   content: "";
   position: absolute;
   top: 0; left: 12%; right: 12%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ft-gold-bright, #f5d680), transparent);
-  opacity: .7;
+  background: linear-gradient(90deg, transparent, #ffaa32, transparent);
+  opacity: .75;
   pointer-events: none;
 }
 
@@ -1535,3 +1536,15 @@ html.light .ex-canvas .swap-form:hover {
   background: radial-gradient(circle, #fff 0%, #ffd98a 45%, transparent 75%);
   filter: blur(0.4px);
 }
+
+
+/* filament flicker — barely-there mains hum, not a strobe */
+@keyframes fil-flicker {
+  0%, 100% { border-color: rgba(255,140,30,.5); }
+  7%  { border-color: rgba(255,140,30,.42); }
+  9%  { border-color: rgba(255,160,45,.58); }
+  48% { border-color: rgba(255,140,30,.5); }
+  52% { border-color: rgba(255,150,38,.44); }
+  71% { border-color: rgba(255,165,48,.56); }
+}
+@media (prefers-reduced-motion: reduce) { .f-card, .pf-card, .fil-drawer-link { animation: none; } }
