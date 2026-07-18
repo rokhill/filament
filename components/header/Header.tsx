@@ -29,8 +29,6 @@ const Header = () => {
           {/* Brand */}
           <Link href="/" className="fil-brand" aria-label="Filament — home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/bulb-mark.png" alt="" className="fil-brand-bulb" aria-hidden />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/filament-wire.png" alt="Filament" className="fil-brand-mark" />
           </Link>
 
