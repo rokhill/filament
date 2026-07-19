@@ -25,7 +25,7 @@ export default function SwapPoolsTabs() {
               className={cn(
                 "px-5 py-2 rounded-full text-sm font-semibold transition-colors",
                 isActive
-                  ? "text-[#140d05] bg-[linear-gradient(180deg,#ffaa32,#e07a12)] shadow-[0_0_10px_-2px_rgba(255,170,50,0.8)]"
+                  ? "text-[#ffaa32] bg-[#161616] border border-[rgba(255,140,30,0.6)] shadow-[0_0_12px_-2px_rgba(255,150,40,0.7)] [text-shadow:0_0_8px_rgba(255,140,30,0.7)]"
                   : "text-[var(--clr-black)] dark:text-[var(--clr-heading)] hover:text-[var(--clr-primary)]"
               )}
             >
