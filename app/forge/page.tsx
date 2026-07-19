@@ -655,8 +655,8 @@ export default function ForgePage() {
         {isAdmin && tab("hidden" as Filter, "🚫 Hidden")}
         <Link
           href="/forge/pulse"
-          className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all"
-          style={{ background: "var(--ae-veil)", color: "var(--ae-aurum)", border: "1px solid var(--ae-aurum)" }}
+          className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all hover:-translate-y-0.5"
+          style={{ background: "#0b0b0b", color: "#ffaa32", border: "1px solid rgba(255,140,30,.55)", boxShadow: "0 0 14px -4px rgba(255,140,30,.6)", textShadow: "0 0 8px rgba(255,140,30,.7)" }}
         >
           ⚡ Pulse
         </Link>
