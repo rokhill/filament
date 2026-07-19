@@ -245,6 +245,10 @@ export default function MarketsPage() {
 
       {/* Forge */}
       <div className="f-section"><h2>The Forge</h2></div>
+      <Link href="/forge/pulse" className="inline-block mb-4 text-sm font-semibold rounded-full px-4 py-1.5 transition-all hover:-translate-y-0.5"
+        style={{ color: "#ffaa32", border: "1px solid rgba(255,140,30,.55)", boxShadow: "0 0 14px -4px rgba(255,140,30,.6)", textShadow: "0 0 8px rgba(255,140,30,.7)" }}>
+        ⚡ Forge Pulse — live rankings
+      </Link>
       <div className="grid grid-cols-3 gap-3 mb-4">
         <Stat label="Coins Forged" value={forge ? String(forge.coinCount) : "—"} />
         <Stat label="LCAI Raised" value={forge ? fmtLcai(forge.totalRaised, 0) : "—"} color="var(--ft-gold)" />

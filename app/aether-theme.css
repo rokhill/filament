@@ -211,7 +211,7 @@ a.btn-default:hover, button.btn-default:hover, div.btn-default:hover, .btn-defau
 
 .theme-gradient {
   /* background shorthand resets background-clip, so clip must also be !important */
-  background: linear-gradient(92deg, var(--ae-aurum) 0%, var(--ae-aurum-bright) 60%, var(--ae-sky) 140%) !important;
+  background: linear-gradient(92deg, #ff8c1e 0%, #ffc86a 55%, #fff3d0 100%) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;

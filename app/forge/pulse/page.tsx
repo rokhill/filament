@@ -192,14 +192,14 @@ export default function ForgePulse() {
           .sort((a, b) => Number(b.vol24 - b.volPrev24 > a.vol24 - a.volPrev24 ? 1 : -1))
       ).map((s) => ({
         s,
-        metric: s.volPrev24 === 0n ? "NEW ⚡" : `+${fmtLcai(s.vol24 - s.volPrev24, 0)} LCAI`,
+        metric: s.volPrev24 === 0n ? "NEW ⚡" : `+${((Number(s.vol24 - s.volPrev24) / Number(s.volPrev24)) * 100).toFixed(0)}%`,
       })),
       crowd: top([...stats].filter((s) => s.buyers24 > 0).sort((a, b) => b.buyers24 - a.buyers24))
-        .map((s) => ({ s, metric: `${s.buyers24} buyer${s.buyers24 === 1 ? "" : "s"}` })),
+        .map((s) => ({ s, metric: `${s.buyers24} buyers · ${s.buys24}▲` })),
       near: top([...stats].sort((a, b) => b.coin.progressBps - a.coin.progressBps))
         .map((s) => ({ s, metric: `${(s.coin.progressBps / 100).toFixed(1)}%` })),
       whale: top([...stats].sort((a, b) => a.creatorPct - b.creatorPct))
-        .map((s) => ({ s, metric: `creator ${s.creatorPct.toFixed(1)}%` })),
+        .map((s) => ({ s, metric: `creator holds ${s.creatorPct.toFixed(1)}%` })),
       cold: top(
         [...stats].sort((a, b) => (a.lastTradeBlock < b.lastTradeBlock ? -1 : 1))
       ).map((s) => ({ s, metric: s.lastTradeBlock === 0n ? "no trades 48h" : "quiet" })),
@@ -207,7 +207,7 @@ export default function ForgePulse() {
         [...stats]
           .filter((s) => s.buys24 + s.sells24 >= 2)
           .sort((a, b) => (b.buys24 / (b.sells24 + 1)) - (a.buys24 / (a.sells24 + 1)))
-      ).map((s) => ({ s, metric: `${s.buys24}▲ / ${s.sells24}▼` })),
+      ).map((s) => ({ s, metric: `${((s.buys24/(s.buys24+s.sells24))*100).toFixed(0)}% buys · ${s.buys24}▲/${s.sells24}▼` })),
       whalebuy: top([...stats].filter((s) => s.maxBuy24 > 0n).sort((a, b) => (b.maxBuy24 > a.maxBuy24 ? 1 : -1)))
         .map((s) => ({ s, metric: `${fmtLcai(s.maxBuy24, 0)} LCAI buy` })),
       battle: top([...stats].filter((s) => s.buys24 + s.sells24 > 0).sort((a, b) => (b.buys24 + b.sells24) - (a.buys24 + a.sells24)))
@@ -215,7 +215,7 @@ export default function ForgePulse() {
       raised: top([...stats].sort((a, b) => b.coin.progressBps - a.coin.progressBps))
         .map((s) => ({ s, metric: `${fmtLcai(s.vol24 + s.volPrev24, 0)} LCAI 48h` })),
       active: top([...stats].filter((s) => s.lastTradeBlock > 0n).sort((a, b) => (b.lastTradeBlock > a.lastTradeBlock ? 1 : -1)))
-        .map((s) => ({ s, metric: "just traded" })),
+        .map((s) => ({ s, metric: `${(s.coin.progressBps / 100).toFixed(1)}% · active` })),
     };
   }, [stats]);
 
