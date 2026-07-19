@@ -29,6 +29,7 @@ type CoinStats = {
   sells24: number;
   lastTradeBlock: bigint;
   creatorPct: number; // 0-100
+  maxBuy24: bigint;
 };
 
 const SUPPLY = 1_000_000_000n * 10n ** 18n;
@@ -81,18 +82,30 @@ function Row({ s, metric, rank }: { s: CoinStats; metric: string; rank: number }
   );
 }
 
-function Section({ icon, title, sub, rows }: {
+function Board({ icon, title, sub, rows }: {
   icon: string; title: string; sub: string;
   rows: { s: CoinStats; metric: string }[];
 }) {
+  const [open, setOpen] = useState(false);
   if (rows.length === 0) return null;
+  const shown = open ? rows : rows.slice(0, 3);
   return (
-    <section className="mb-8">
-      <div className="f-section mb-1"><h2>{icon} {title}</h2></div>
+    <section className="f-card rounded-2xl p-4">
+      <h2 className="text-lg font-semibold mb-0.5"
+        style={{ fontFamily: "var(--font-display), serif", color: "var(--clr-heading)" }}>
+        {icon} {title}
+      </h2>
       <p className="f-meta text-xs mb-3">{sub}</p>
       <div className="space-y-2">
-        {rows.map((r, i) => <Row key={r.s.coin.address} s={r.s} metric={r.metric} rank={i + 1} />)}
+        {shown.map((r, i) => <Row key={r.s.coin.address} s={r.s} metric={r.metric} rank={i + 1} />)}
       </div>
+      {rows.length > 3 && (
+        <button onClick={() => setOpen(!open)}
+          className="mt-3 text-xs font-semibold hover:underline"
+          style={{ color: "var(--ae-aurum)" }}>
+          {open ? "Show less ↑" : `Show all ${rows.length} ↓`}
+        </button>
+      )}
     </section>
   );
 }
@@ -101,13 +114,16 @@ export default function ForgePulse() {
   const { fetchCoins, fetchCreatorBalance } = useForge();
   const { publicClient } = useWeb3Clients();
   const [stats, setStats] = useState<CoinStats[]>([]);
+  const [grads, setGrads] = useState<ForgeCoin[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const coins = (await fetchCoins()).filter((c) => !c.graduated);
+        const all = await fetchCoins();
+        const coins = all.filter((c) => !c.graduated);
+        const grads = all.filter((c) => c.graduated);
         if (coins.length === 0) { if (alive) { setStats([]); setLoading(false); } return; }
 
         // dynamic 24h window: measure real block time from the chain
@@ -143,6 +159,7 @@ export default function ForgePulse() {
           const cur = mine.filter((t) => t.block > cut24);
           const prev = mine.filter((t) => t.block <= cut24);
           const buyerSet = new Set(cur.filter((t) => t.isBuy).map((t) => t.trader.toLowerCase()));
+          const maxBuy = cur.filter((t) => t.isBuy).reduce((m, t) => (t.lcai > m ? t.lcai : m), 0n);
           return {
             coin,
             vol24: cur.reduce((a, t) => a + t.lcai, 0n),
@@ -152,9 +169,10 @@ export default function ForgePulse() {
             sells24: cur.filter((t) => !t.isBuy).length,
             lastTradeBlock: mine.length ? mine[mine.length - 1].block : 0n,
             creatorPct: Number((creatorBals[i] * 10_000n) / SUPPLY) / 100,
+            maxBuy24: maxBuy,
           };
         });
-        if (alive) { setStats(out); setLoading(false); }
+        if (alive) { setStats(out); setGrads(grads); setLoading(false); }
       } catch {
         if (alive) setLoading(false);
       }
@@ -163,7 +181,7 @@ export default function ForgePulse() {
   }, [fetchCoins, fetchCreatorBalance, publicClient]);
 
   const views = useMemo(() => {
-    const top = (arr: CoinStats[], n = 3) => arr.slice(0, n);
+    const top = (arr: CoinStats[], n = 10) => arr.slice(0, n);
     const withVol = stats.filter((s) => s.vol24 > 0n);
     return {
       hot: top([...withVol].sort((a, b) => (b.vol24 > a.vol24 ? 1 : -1)))
@@ -190,11 +208,19 @@ export default function ForgePulse() {
           .filter((s) => s.buys24 + s.sells24 >= 2)
           .sort((a, b) => (b.buys24 / (b.sells24 + 1)) - (a.buys24 / (a.sells24 + 1)))
       ).map((s) => ({ s, metric: `${s.buys24}▲ / ${s.sells24}▼` })),
+      whalebuy: top([...stats].filter((s) => s.maxBuy24 > 0n).sort((a, b) => (b.maxBuy24 > a.maxBuy24 ? 1 : -1)))
+        .map((s) => ({ s, metric: `${fmtLcai(s.maxBuy24, 0)} LCAI buy` })),
+      battle: top([...stats].filter((s) => s.buys24 + s.sells24 > 0).sort((a, b) => (b.buys24 + b.sells24) - (a.buys24 + a.sells24)))
+        .map((s) => ({ s, metric: `${s.buys24 + s.sells24} trades` })),
+      raised: top([...stats].sort((a, b) => b.coin.progressBps - a.coin.progressBps))
+        .map((s) => ({ s, metric: `${fmtLcai(s.vol24 + s.volPrev24, 0)} LCAI 48h` })),
+      active: top([...stats].filter((s) => s.lastTradeBlock > 0n).sort((a, b) => (b.lastTradeBlock > a.lastTradeBlock ? 1 : -1)))
+        .map((s) => ({ s, metric: "just traded" })),
     };
   }, [stats]);
 
   return (
-    <main className="forge-canvas mx-auto max-w-3xl px-4 py-10 min-h-[70vh]">
+    <main className="forge-canvas mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
       <Link href="/forge" className="f-meta text-sm hover:underline">← Back to the Forge</Link>
       <div className="f-eyebrow mt-4 mb-2">Live on-chain data · rolling 24h</div>
       <h1 className="f-display text-4xl sm:text-5xl mb-2">Forge Pulse</h1>
@@ -206,13 +232,34 @@ export default function ForgePulse() {
         <div className="f-card py-14 text-center f-meta rounded-2xl">No live coins on the curve yet.</div>
       ) : (
         <>
-          <Section icon="🔥" title="Hot" sub="Highest LCAI volume in the last 24h" rows={views.hot} />
-          <Section icon="📈" title="Momentum" sub="Biggest volume growth vs the prior 24h" rows={views.momentum} />
-          <Section icon="👥" title="Crowd" sub="Most unique buyers in the last 24h" rows={views.crowd} />
-          <Section icon="🎯" title="Nearly There" sub="Closest to graduation and permanent liquidity" rows={views.near} />
-          <Section icon="🐋" title="Whale Check" sub="Lowest creator holdings — least concentrated supply" rows={views.whale} />
-          <Section icon="💎" title="Conviction" sub="Best buy/sell ratio (min 2 trades)" rows={views.conviction} />
-          <Section icon="🧊" title="Cold" sub="Longest without a trade — contrarian corner" rows={views.cold} />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Board icon="🔥" title="Hot" sub="Highest LCAI volume · 24h" rows={views.hot} />
+            <Board icon="📈" title="Momentum" sub="Volume growth vs prior 24h" rows={views.momentum} />
+            <Board icon="🐋" title="Whale Buys" sub="Largest single buy · 24h" rows={views.whalebuy} />
+            <Board icon="👥" title="Crowd" sub="Most unique buyers · 24h" rows={views.crowd} />
+            <Board icon="⚔️" title="Battle" sub="Most total trades · 24h" rows={views.battle} />
+            <Board icon="💎" title="Conviction" sub="Best buy/sell ratio (min 2)" rows={views.conviction} />
+            <Board icon="🎯" title="Nearly There" sub="Closest to graduation" rows={views.near} />
+            <Board icon="⚡" title="Just Traded" sub="Most recent on-chain action" rows={views.active} />
+            <Board icon="🛡️" title="Skin Check" sub="Lowest creator holdings" rows={views.whale} />
+            <Board icon="💰" title="Raise Rate" sub="Most LCAI moved · 48h" rows={views.raised} />
+            <Board icon="🧊" title="Cold" sub="Contrarian corner — quiet curves" rows={views.cold} />
+          </div>
+          {grads.length > 0 && (
+            <section className="f-card rounded-2xl p-4 mt-4">
+              <h2 className="text-lg font-semibold mb-3" style={{ fontFamily: "var(--font-display), serif", color: "var(--clr-heading)" }}>🎓 Graduated Hall</h2>
+              <div className="space-y-2">
+                {grads.map((c) => (
+                  <Link key={c.address} href={`/forge/${c.address}`} className="f-card flex items-center gap-3 rounded-2xl p-3 hover:-translate-y-0.5 transition-all">
+                    <Avatar coin={c} />
+                    <span className="font-semibold" style={{ fontFamily: "var(--font-display), serif", color: "var(--clr-heading)" }}>{c.name}</span>
+                    <span className="f-meta text-xs">${'{'}c.symbol{'}'}</span>
+                    <span className="ml-auto text-xs font-bold" style={{ color: "var(--clr-success)" }}>ON FILAMENT</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
           <p className="f-meta text-xs text-center mt-10">
             Rankings refresh on page load · window measured from real block times · graduated coins live on the Exchange
           </p>
