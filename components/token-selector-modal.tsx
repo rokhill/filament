@@ -97,7 +97,7 @@ const TokenSelectorModal = ({ open, setOpen, selectedToken }: Props) => {
         <div className="relative mx-6">
           <Input
             type="text"
-            className="w-full h-12 pl-12"
+            className="w-full h-12 pl-12 !bg-[#131313] !text-white placeholder:!text-[#8a8a8a] !border-[rgba(255,140,30,0.4)]"
             placeholder="Search name or paste address"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
