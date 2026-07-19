@@ -1758,3 +1758,13 @@ html.dark .pf-hero {
   70% { opacity: 1; transform: scale(1.03); }
 }
 @media (prefers-reduced-motion: reduce) { .forge-canvas .forge-breathe::after { animation: none; } }
+
+/* search inputs are never gold buttons */
+input.btn-default, .btn-default input, input[class*="btn-default"],
+[role="dialog"] input[type="text"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #111111 !important;
+  border: 1px solid rgba(255,140,30,0.45) !important;
+}
+[role="dialog"] input[type="text"]::placeholder { color: #9a9a9a !important; }
