@@ -1,4 +1,5 @@
 "use client";
+import { useAccount } from "wagmi";
 import { useChainGuard } from "@/hooks/useChainGuard";
 
 import { use, useEffect, useMemo, useState } from "react";
@@ -200,6 +201,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
 
 export default function CoinPage({ params }: { params: Promise<{ address: string }> }) {
   useChainGuard();
+  const { address: walletAddress } = useAccount();
   const { address } = use(params);
   const token = address as `0x${string}`;
   const { fetchCoin, fetchTrades, fetchCreatorBalance } = useForge();
@@ -340,6 +342,42 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
             </div>
           )}
 
+          {!coin.graduated && (() => {
+            const raised = coin.lcaiRaised / BigInt(1e18);
+            const remaining = raised < 300000n ? 300000n - raised : 0n;
+            return <div className="text-xs mt-2" style={{ color: "var(--ae-aurum)" }}>~{fmtLcai(remaining * BigInt(1e18), 0)} LCAI until graduation</div>;
+          })()}
+          {walletAddress?.toLowerCase() === coin.creator.toLowerCase() && (
+            <div className="mt-6 rounded-2xl p-5 forge-breathe" style={{ background: "var(--ae-haze)", border: "1px solid rgba(255,140,30,.45)" }}>
+              <div className="flex items-center gap-2 mb-4">
+                <span style={{ color: "var(--ae-aurum)" }}>✦</span>
+                <h3 className="text-sm font-semibold" style={{ color: "var(--ae-aurum)" }}>Your Coin</h3>
+                <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,.15)", color: "var(--ae-aurum)" }}>Creator</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
+                  <div style={{ color: "var(--ae-nebula)" }}>Your holdings</div>
+                  <div className="font-semibold mt-0.5" style={{ color: "var(--clr-heading)" }}>{fmtTokens(creatorBal)} {coin.symbol}</div>
+                  <div style={{ color: creatorPct > 10 ? "var(--clr-warning)" : "var(--clr-success)" }}>{creatorPct.toFixed(1)}% of supply</div>
+                </div>
+                <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
+                  <div style={{ color: "var(--ae-nebula)" }}>LCAI raised</div>
+                  <div className="font-semibold mt-0.5" style={{ color: "var(--clr-heading)" }}>{fmtLcai(coin.lcaiRaised, 0)} LCAI</div>
+                  <div style={{ color: "var(--ae-nebula)" }}>{(coin.progressBps / 100).toFixed(1)}% to graduation</div>
+                </div>
+                <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
+                  <div style={{ color: "var(--ae-nebula)" }}>Est. fees earned</div>
+                  <div className="font-semibold mt-0.5" style={{ color: "var(--clr-heading)" }}>{fmtLcai(coin.lcaiRaised / 100n, 2)} LCAI</div>
+                  <div style={{ color: "var(--ae-nebula)" }}>1% of all trades</div>
+                </div>
+                <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
+                  <div style={{ color: "var(--ae-nebula)" }}>Contract</div>
+                  <a href={`https://mainnet.lightscan.app/address/${coin.address}`} target="_blank" rel="noopener noreferrer" className="font-semibold mt-0.5 underline block truncate" style={{ color: "var(--ae-aurum)" }}>{coin.address.slice(0,6)}…{coin.address.slice(-4)} ↗</a>
+                  <div style={{ color: "var(--ae-nebula)" }}>View on Lightscan</div>
+                </div>
+              </div>
+            </div>
+          )}
           <h3 className="text-sm font-semibold mt-8 mb-3" style={{ color: "var(--clr-heading)" }}>
             Recent trades
           </h3>
