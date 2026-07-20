@@ -1,3 +1,4 @@
+import { useChainGuard } from "@/hooks/useChainGuard";
 'use client'
 
 import BackButton from "@/components/back-button";
@@ -26,6 +27,7 @@ import { formatEther } from "viem";
 import { useAccount, useBalance } from "wagmi";
 
 export default function AddLiquidty() {
+  useChainGuard();
     const params = useParams<{ slugs: string[] }>();
     const { isConnected, address } = useAccount();
     const { open } = useAppKit();

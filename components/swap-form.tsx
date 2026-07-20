@@ -1,3 +1,4 @@
+import { useChainGuard } from "@/hooks/useChainGuard";
 "use client";
 import { Loader2Icon, PencilLineIcon } from "lucide-react";
 import { Button } from "./ui/button";
@@ -23,6 +24,7 @@ import config from "@/config";
 import useWeb3Clients from "@/hooks/useWeb3Clients";
 
 export default function SwapForm() {
+  useChainGuard();
   const chain = useCurrentChain();
   const { publicClient } = useWeb3Clients();
   const { address, isConnected } = useAccount();

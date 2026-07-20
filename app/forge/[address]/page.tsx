@@ -1,3 +1,4 @@
+import { useChainGuard } from "@/hooks/useChainGuard";
 "use client";
 
 import { use, useEffect, useMemo, useState } from "react";
@@ -198,6 +199,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
 /* ------------------------------------------------------------------ */
 
 export default function CoinPage({ params }: { params: Promise<{ address: string }> }) {
+  useChainGuard();
   const { address } = use(params);
   const token = address as `0x${string}`;
   const { fetchCoin, fetchTrades, fetchCreatorBalance } = useForge();
