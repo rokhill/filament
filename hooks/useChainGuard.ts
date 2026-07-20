@@ -1,22 +1,24 @@
-import { useEffect } from "react";
+"use client";
+import { useEffect, useRef } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { lcai } from "@/config/chains";
 
-/**
- * Drop this in any page/component that writes to LCAI.
- * If the wallet is connected on the wrong chain, silently
- * prompts a switch. No UI needed — wallet handles the modal.
- */
 export function useChainGuard() {
-  const { isConnected } = useAccount();
+  const { isConnected, status } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
+  const triggered = useRef(false);
 
   useEffect(() => {
-    if (isConnected && chainId !== lcai.id) {
-      switchChain({ chainId: lcai.id });
-    }
-  }, [isConnected, chainId, switchChain]);
+    // wait until wagmi is fully hydrated and wallet confirmed connected
+    if (status !== "connected") { triggered.current = false; return; }
+    if (chainId === lcai.id) { triggered.current = false; return; }
+    if (triggered.current) return;
+    triggered.current = true;
+    // small delay so AppKit modal doesn't fight the switch prompt
+    const t = setTimeout(() => switchChain({ chainId: lcai.id }), 800);
+    return () => clearTimeout(t);
+  }, [status, chainId, switchChain]);
 
   return chainId === lcai.id;
 }
