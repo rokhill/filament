@@ -115,7 +115,7 @@ const useWeb3Functions = () => {
             account: address,
             value: amount,
           });
-          hash = await walletClient.writeContract({ ...request, chain: lightchain });
+          hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...request, chain: lightchain }));
         } else {
           const { request } = await publicClient.simulateContract({
             abi: wethAbi,
@@ -124,7 +124,7 @@ const useWeb3Functions = () => {
             args: [amount],
             account: address,
           });
-          hash = await walletClient.writeContract({ ...request, chain: lightchain });
+          hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...request, chain: lightchain }));
         }
 
         return hash;
@@ -208,7 +208,7 @@ const useWeb3Functions = () => {
         functionName: swapMethod,
       });
 
-      const hash = await walletClient.writeContract({ ...simulate.request, chain: lightchain });
+      const hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...simulate.request, chain: lightchain }));
 
       // api.post("/exchange-transactions", {
       //   wallet_address: address,
@@ -245,9 +245,9 @@ const useWeb3Functions = () => {
           account: address,
         });
 
-        hash = await walletClient.writeContract({ ...request, chain: lightchain });
+        hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...request, chain: lightchain }));
       } else {
-        hash = await walletClient.sendTransaction({ to, value, chain: lightchain });
+        hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.sendTransaction({ to, value, chain: lightchain }));
       }
 
       // api.post("/transfer-transactions", {
@@ -339,7 +339,7 @@ const useWeb3Functions = () => {
 
       if (!simulate?.request) return;
       // TODO: fix this type error
-      const hash = await walletClient.writeContract({ ...(simulate.request as any), chain: lightchain });
+      const hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...(simulate.request as any), chain: lightchain }));
 
       publicClient.waitForTransactionReceipt({ hash });
 
@@ -409,7 +409,7 @@ const useWeb3Functions = () => {
 
       if (!simulate?.request) return;
 
-      const hash = await walletClient.writeContract({ ...(simulate.request as any), chain: lightchain });
+      const hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...(simulate.request as any), chain: lightchain }));
 
       publicClient.waitForTransactionReceipt({ hash });
 

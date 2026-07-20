@@ -216,7 +216,7 @@ export default function useForge() {
         args: [name, symbol, metadataURI, minOut],
         value: fee + buyVal,
       });
-      const hash = await walletClient!.writeContract({ ...request, chain: lightchain });
+      const hash = await walletClient!.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient!.writeContract({ ...request, chain: lightchain }));
       toast.loading("Deploying your coin…", { id: hash });
       await publicClient.waitForTransactionReceipt({ hash });
       toast.success(`${symbol} is live!`, { id: hash });
@@ -241,7 +241,7 @@ export default function useForge() {
         args: [token, minOut],
         value,
       });
-      const hash = await walletClient!.writeContract({ ...request, chain: lightchain });
+      const hash = await walletClient!.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient!.writeContract({ ...request, chain: lightchain }));
       toast.loading("Buying…", { id: hash });
       await publicClient.waitForTransactionReceipt({ hash });
       toast.success("Buy confirmed", { id: hash });
@@ -276,7 +276,7 @@ export default function useForge() {
         functionName: "sell",
         args: [token, amount, minOut],
       });
-      const hash = await walletClient!.writeContract({ ...request, chain: lightchain });
+      const hash = await walletClient!.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient!.writeContract({ ...request, chain: lightchain }));
       toast.loading("Selling…", { id: hash });
       await publicClient.waitForTransactionReceipt({ hash });
       toast.success("Sell confirmed", { id: hash });

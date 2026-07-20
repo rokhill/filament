@@ -16,6 +16,7 @@ const useApprove = ({ token, amount, spender, ...props }: UseApproveProps) => {
   return useMutation({
     mutationFn: async () => {
       if (!token?.address || !amount || !walletClient || !spender) return;
+      await walletClient.switchChain({ id: lightchain.id }).catch(() => {});
       const hash = await walletClient.writeContract({
         chain: lightchain,
         abi: erc20Abi,

@@ -83,7 +83,7 @@ export default function LegacyRecoveryPage() {
     setPositions(p => p.map(x => x.address === pos.address ? { ...x, approving: true } : x));
     try {
       const approveAbi = [{ type: "function", name: "approve", stateMutability: "nonpayable", inputs: [{ name: "spender", type: "address" }, { name: "amount", type: "uint256" }], outputs: [{ type: "bool" }] }] as const;
-      const hash = await walletClient.writeContract({ chain: lightchain, account: address, address: pos.address, abi: approveAbi, functionName: "approve", args: [OLD_FORGE, pos.balance] });
+      const hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ chain: lightchain, account: address, address: pos.address, abi: approveAbi, functionName: "approve", args: [OLD_FORGE, pos.balance] }));
       toast.loading("Approving…", { id: hash });
       await publicClient.waitForTransactionReceipt({ hash });
       toast.success("Approved", { id: hash });
@@ -99,7 +99,7 @@ export default function LegacyRecoveryPage() {
     setPositions(p => p.map(x => x.address === pos.address ? { ...x, selling: true } : x));
     try {
       const sellAbi = [{ type: "function", name: "sell", stateMutability: "nonpayable", inputs: [{ name: "token", type: "address" }, { name: "tokenAmount", type: "uint256" }, { name: "minLcaiOut", type: "uint256" }], outputs: [] }] as const;
-      const hash = await walletClient.writeContract({ chain: lightchain, account: address, address: OLD_FORGE, abi: sellAbi, functionName: "sell", args: [pos.address, pos.balance, 0n] });
+      const hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ chain: lightchain, account: address, address: OLD_FORGE, abi: sellAbi, functionName: "sell", args: [pos.address, pos.balance, 0n] }));
       toast.loading("Selling back…", { id: hash });
       await publicClient.waitForTransactionReceipt({ hash });
       toast.success(`Recovered LCAI from ${pos.symbol}`, { id: hash });
