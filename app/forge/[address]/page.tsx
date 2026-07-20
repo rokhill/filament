@@ -118,8 +118,8 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
       className="flex-1 rounded-xl py-2 text-sm font-semibold transition-all"
       style={
         side === s
-          ? { background: color, color: "var(--ae-ink)" }
-          : { background: "var(--ae-veil)", color: "var(--ae-nebula)" }
+          ? { background: color, color: "var(--ae-ink)", boxShadow: "0 0 12px -3px " + color }
+          : { background: "transparent", color: "var(--ae-nebula)", border: "1px dashed var(--clr-border)", opacity: 0.65 }
       }
     >
       {label}
@@ -181,7 +181,9 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
         onClick={doTrade}
         disabled={busy || !amount || Number(amount) <= 0}
       >
-        {busy ? "Confirming…" : side === "buy" ? `Buy ${coin.symbol}` : `Sell ${coin.symbol}`}
+        {busy ? "Confirming…"
+          : !amount || Number(amount) <= 0 ? "Enter an amount"
+          : side === "buy" ? `Buy ${coin.symbol}` : `Sell ${coin.symbol}`}
       </button>
 
       <p className="text-[11px] mt-3 text-center" style={{ color: "var(--ae-nebula)" }}>

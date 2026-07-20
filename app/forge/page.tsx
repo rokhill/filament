@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import Link from "next/link";
 import { toast } from "sonner";
-import { formatEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import useForge, { ForgeCoin, ForgeTrade, fmtLcai, fmtTokens } from "@/hooks/useForge";
 import { encodeMetadata, ipfsToHttp, shortAddr, FORGE_ADDRESS, BLOCKED_COINS } from "@/config/forge";
 import ProgressBar, { heatStyle } from "@/components/forge/progress-bar";
@@ -412,8 +412,15 @@ function CreateModal({
               Your buy happens in the <strong style={{ color: "var(--ae-starlight)" }}>same transaction as creation</strong> — 
               so nobody can front-run you. Early buyers get the lowest price. 
               As creator, this is your best (and only) guaranteed first entry.
-              Creation fee: {fmtLcai(fee, 0)} LCAI.
             </p>
+            <div className="mt-3 rounded-lg px-3 py-2 text-xs font-semibold"
+              style={{ background: "var(--ae-night)", border: "1px solid rgba(255,140,30,0.4)", color: "var(--clr-heading)" }}>
+              Creation fee {fmtLcai(fee, 0)} LCAI
+              {Number(initialBuy) > 0 ? ` + your buy ${initialBuy} LCAI = ` : " · total "}
+              <span style={{ color: "var(--ae-aurum-bright)" }}>
+                {fmtLcai(fee + (Number(initialBuy) > 0 ? parseEther(initialBuy) : 0n), 0)} LCAI total
+              </span>
+            </div>
           </div>
         </div>
 
@@ -432,7 +439,7 @@ function CreateModal({
             onClick={submit}
             disabled={busy}
           >
-            {busy ? "Forging…" : "Forge it"}
+            {busy ? "Forging…" : `Forge it · ${fmtLcai(fee + (Number(initialBuy) > 0 ? parseEther(initialBuy) : 0n), 0)} LCAI`}
           </button>
         </div>
       </div>
