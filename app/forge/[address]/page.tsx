@@ -114,7 +114,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
 
   const sideBtn = (s: "buy" | "sell", label: string, color: string) => (
     <button
-      onClick={() => { setSide(s); setAmount(""); setQuote(0n); }}
+      onClick={() => { if (side !== s) { setSide(s); setAmount(""); setQuote(0n); } }}
       className="flex-1 rounded-xl py-2 text-sm font-semibold transition-all"
       style={
         side === s
