@@ -1,3 +1,4 @@
+import { lcai as lightchain } from "@/config/chains";
 import useCurrentChain from "./useCurrentChain";
 import { Token } from "../types/Token";
 import { useAccount } from "wagmi";
@@ -114,7 +115,7 @@ const useWeb3Functions = () => {
             account: address,
             value: amount,
           });
-          hash = await walletClient.writeContract(request);
+          hash = await walletClient.writeContract({ ...request, chain: lightchain });
         } else {
           const { request } = await publicClient.simulateContract({
             abi: wethAbi,
@@ -123,7 +124,7 @@ const useWeb3Functions = () => {
             args: [amount],
             account: address,
           });
-          hash = await walletClient.writeContract(request);
+          hash = await walletClient.writeContract({ ...request, chain: lightchain });
         }
 
         return hash;
@@ -207,7 +208,7 @@ const useWeb3Functions = () => {
         functionName: swapMethod,
       });
 
-      const hash = await walletClient.writeContract(simulate.request);
+      const hash = await walletClient.writeContract({ ...simulate.request, chain: lightchain });
 
       // api.post("/exchange-transactions", {
       //   wallet_address: address,
@@ -244,9 +245,9 @@ const useWeb3Functions = () => {
           account: address,
         });
 
-        hash = await walletClient.writeContract(request);
+        hash = await walletClient.writeContract({ ...request, chain: lightchain });
       } else {
-        hash = await walletClient.sendTransaction({ to, value });
+        hash = await walletClient.sendTransaction({ to, value, chain: lightchain });
       }
 
       // api.post("/transfer-transactions", {
@@ -338,7 +339,7 @@ const useWeb3Functions = () => {
 
       if (!simulate?.request) return;
       // TODO: fix this type error
-      const hash = await walletClient.writeContract(simulate.request as any);
+      const hash = await walletClient.writeContract({ ...(simulate.request as any), chain: lightchain });
 
       publicClient.waitForTransactionReceipt({ hash });
 
@@ -408,7 +409,7 @@ const useWeb3Functions = () => {
 
       if (!simulate?.request) return;
 
-      const hash = await walletClient.writeContract(simulate.request as any);
+      const hash = await walletClient.writeContract({ ...(simulate.request as any), chain: lightchain });
 
       publicClient.waitForTransactionReceipt({ hash });
 

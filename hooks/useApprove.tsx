@@ -1,3 +1,4 @@
+import { lcai as lightchain } from "@/config/chains";
 import { Token } from "@/types/Token";
 import useWeb3Clients from "./useWeb3Clients";
 import { MutationOptions, useMutation } from "@tanstack/react-query";
@@ -16,6 +17,7 @@ const useApprove = ({ token, amount, spender, ...props }: UseApproveProps) => {
     mutationFn: async () => {
       if (!token?.address || !amount || !walletClient || !spender) return;
       const hash = await walletClient.writeContract({
+        chain: lightchain,
         abi: erc20Abi,
         address: token.address,
         functionName: "approve",
