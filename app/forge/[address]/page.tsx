@@ -1,5 +1,5 @@
-import { useChainGuard } from "@/hooks/useChainGuard";
 "use client";
+import { useChainGuard } from "@/hooks/useChainGuard";
 
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";

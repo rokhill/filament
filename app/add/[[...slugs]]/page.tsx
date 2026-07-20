@@ -1,5 +1,5 @@
-import { useChainGuard } from "@/hooks/useChainGuard";
 'use client'
+import { useChainGuard } from "@/hooks/useChainGuard";
 
 import BackButton from "@/components/back-button";
 import { SettingModal } from "@/components/setting-modal";
