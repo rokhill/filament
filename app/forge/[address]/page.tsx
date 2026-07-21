@@ -366,9 +366,9 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                   <div style={{ color: "var(--ae-nebula)" }}>{(coin.progressBps / 100).toFixed(1)}% to graduation</div>
                 </div>
                 <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
-                  <div style={{ color: "var(--ae-nebula)" }}>Est. fees earned</div>
-                  <div className="font-semibold mt-0.5" style={{ color: "var(--clr-heading)" }}>{fmtLcai(coin.lcaiRaised / 100n, 2)} LCAI</div>
-                  <div style={{ color: "var(--ae-nebula)" }}>1% of all trades</div>
+                  <div style={{ color: "var(--ae-nebula)" }}>Your bag value</div>
+                  <div className="font-semibold mt-0.5" style={{ color: "var(--clr-heading)" }}>{fmtLcai(creatorBal * coin.priceWei / BigInt(1e18), 2)} LCAI</div>
+                  <div style={{ color: "var(--ae-nebula)" }}>at current price</div>
                 </div>
                 <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
                   <div style={{ color: "var(--ae-nebula)" }}>Contract</div>
