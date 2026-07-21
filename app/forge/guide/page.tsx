@@ -311,6 +311,25 @@ export default function ForgeGuidePage() {
         </p>
       </section>
 
+      {/* ---- Verify your coin ---- */}
+      <section>
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          Verifying your coin on Lightscan
+        </h2>
+        <p className="text-sm mb-4" style={{ color: "var(--ae-nebula)" }}>
+          Every coin launched on Filament Forge uses identical, auditable source code. You can verify your token on Lightscan so anyone can read its source and confirm there are no hidden mint functions, no owner privileges, and no way to rug.
+        </p>
+        <div className="rounded-xl p-4 text-sm space-y-3" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
+          <div><span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>1.</span> Go to your coin&apos;s address on <a href="https://mainnet.lightscan.app" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--ae-aurum)" }}>Lightscan</a> → Contract tab → Verify &amp; Publish</div>
+          <div><span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>2.</span> Select <strong style={{ color: "var(--clr-heading)" }}>Solidity (Single file)</strong></div>
+          <div><span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>3.</span> Compiler: <code className="px-1 rounded" style={{ background: "var(--ae-night)" }}>v0.8.24+commit.e11b9ed9</code> · EVM: default · Optimization: ✓ 200 runs · License: MIT</div>
+          <div><span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>4.</span> Paste the LaunchToken source code — available in the <a href="https://github.com/rokhill/filament-contracts" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--ae-aurum)" }}>filament-contracts repo</a></div>
+          <div><span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>5.</span> Hit Verify &amp; Publish — Lightscan auto-detects constructor args</div>
+        </div>
+        <p className="text-xs mt-3" style={{ color: "var(--ae-nebula)" }}>
+          Need help? Ask in the <a href="https://discord.gg/lightchain" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--ae-aurum)" }}>LightChain Discord</a> — tag @Llihkor.
+        </p>
+      </section>
     </div>
   );
 }
