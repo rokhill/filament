@@ -69,15 +69,12 @@ function Row({ s, metric, rank }: { s: CoinStats; metric: string; rank: number }
       </span>
       <Avatar coin={s.coin} />
       <div className="min-w-0 flex-1">
-        <span className="font-semibold truncate block"
+        <span className="font-semibold block"
           style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
           {s.coin.name}
         </span>
-        <span className="f-meta text-xs">${s.coin.symbol}</span>
+        <span className="f-meta text-xs">${s.coin.symbol} · <span style={{ color: "var(--ae-aurum)" }}>{metric}</span></span>
       </div>
-      <span className="text-sm font-semibold text-right flex-shrink-0" style={{ color: "var(--ae-aurum)" }}>
-        {metric}
-      </span>
     </Link>
   );
 }
