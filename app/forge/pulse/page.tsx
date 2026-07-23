@@ -30,6 +30,11 @@ type CoinStats = {
   lastTradeBlock: bigint;
   creatorPct: number; // 0-100
   maxBuy24: bigint;
+  vol7d: bigint;
+  buyers7d: number;
+  buys7d: number;
+  sells7d: number;
+  maxBuy7d: bigint;
 };
 
 const SUPPLY = 1_000_000_000n * 10n ** 18n;
@@ -85,25 +90,47 @@ function Board({ icon, title, sub, rows }: {
 }) {
   const [open, setOpen] = useState(false);
   if (rows.length === 0) return null;
-  const shown = open ? rows : rows.slice(0, 3);
   return (
-    <section className="f-card rounded-2xl p-4">
-      <h2 className="text-lg font-semibold mb-0.5"
-        style={{ fontFamily: "var(--font-display), serif", color: "var(--clr-heading)" }}>
-        {icon} {title}
-      </h2>
-      <p className="f-meta text-xs mb-3">{sub}</p>
-      <div className="space-y-2">
-        {shown.map((r, i) => <Row key={r.s.coin.address} s={r.s} metric={r.metric} rank={i + 1} />)}
-      </div>
-      {rows.length > 3 && (
-        <button onClick={() => setOpen(!open)}
-          className="mt-3 text-xs font-semibold hover:underline"
-          style={{ color: "var(--ae-aurum)" }}>
-          {open ? "Show less ↑" : `Show all ${rows.length} ↓`}
-        </button>
+    <>
+      <section className="f-card rounded-2xl p-4 cursor-pointer hover:border-[rgba(255,140,30,.7)] transition-all"
+        onClick={() => setOpen(true)}>
+        <h2 className="text-lg font-semibold mb-0.5"
+          style={{ fontFamily: "var(--font-display), serif", color: "var(--clr-heading)" }}>
+          {icon} {title}
+        </h2>
+        <p className="f-meta text-xs mb-3">{sub}</p>
+        <div className="space-y-2">
+          {rows.slice(0, 3).map((r, i) => <Row key={r.s.coin.address} s={r.s} metric={r.metric} rank={i + 1} />)}
+        </div>
+        {rows.length > 3 && (
+          <p className="mt-3 text-xs" style={{ color: "var(--ae-aurum)" }}>
+            +{rows.length - 3} more — tap to expand
+          </p>
+        )}
+      </section>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.75)" }}
+          onClick={() => setOpen(false)}>
+          <div className="f-card rounded-2xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto"
+            style={{ background: "var(--ae-haze)" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold"
+                style={{ fontFamily: "var(--font-display), serif", color: "var(--clr-heading)" }}>
+                {icon} {title}
+              </h2>
+              <button onClick={() => setOpen(false)}
+                className="text-lg font-bold" style={{ color: "var(--ae-nebula)" }}>✕</button>
+            </div>
+            <p className="f-meta text-xs mb-4">{sub}</p>
+            <div className="space-y-2">
+              {rows.map((r, i) => <Row key={r.s.coin.address} s={r.s} metric={r.metric} rank={i + 1} />)}
+            </div>
+          </div>
+        </div>
       )}
-    </section>
+    </>
   );
 }
 
@@ -132,12 +159,14 @@ export default function ForgePulse() {
             ? Number(latest.timestamp - probe.timestamp) / Number(latest.number - probeNum)
             : 2;
         const blocks24h = BigInt(Math.max(1, Math.round(86_400 / Math.max(0.25, secsPerBlock))));
-        const from48 = latest.number > blocks24h * 2n ? latest.number - blocks24h * 2n : 0n;
+        const blocks7d = blocks24h * 7n;
+        const from7d = latest.number > blocks7d ? latest.number - blocks7d : 0n;
         const cut24 = latest.number > blocks24h ? latest.number - blocks24h : 0n;
+        const cut48 = latest.number > blocks24h * 2n ? latest.number - blocks24h * 2n : 0n;
 
         const logs = await publicClient.getContractEvents({
           address: FORGE_ADDRESS, abi: forgeAbi, eventName: "Trade",
-          fromBlock: from48, toBlock: "latest",
+          fromBlock: from7d, toBlock: "latest",
         });
         const trades: PulseTrade[] = logs.map((l) => ({
           token: (l.args.token as `0x${string}`),
@@ -157,6 +186,9 @@ export default function ForgePulse() {
           const prev = mine.filter((t) => t.block <= cut24);
           const buyerSet = new Set(cur.filter((t) => t.isBuy).map((t) => t.trader.toLowerCase()));
           const maxBuy = cur.filter((t) => t.isBuy).reduce((m, t) => (t.lcai > m ? t.lcai : m), 0n);
+          const all7d = mine;
+          const buyers7dSet = new Set(all7d.filter((t) => t.isBuy).map((t) => t.trader.toLowerCase()));
+          const maxBuy7d = all7d.filter((t) => t.isBuy).reduce((m, t) => (t.lcai > m ? t.lcai : m), 0n);
           return {
             coin,
             vol24: cur.reduce((a, t) => a + t.lcai, 0n),
@@ -167,6 +199,11 @@ export default function ForgePulse() {
             lastTradeBlock: mine.length ? mine[mine.length - 1].block : 0n,
             creatorPct: Number((creatorBals[i] * 10_000n) / SUPPLY) / 100,
             maxBuy24: maxBuy,
+            vol7d: all7d.reduce((a, t) => a + t.lcai, 0n),
+            buyers7d: buyers7dSet.size,
+            buys7d: all7d.filter((t) => t.isBuy).length,
+            sells7d: all7d.filter((t) => !t.isBuy).length,
+            maxBuy7d,
           };
         });
         if (alive) { setStats(out); setGrads(grads); setLoading(false); }
@@ -213,15 +250,25 @@ export default function ForgePulse() {
         .map((s) => ({ s, metric: `${fmtLcai(s.vol24 + s.volPrev24, 0)} LCAI 48h` })),
       active: top([...stats].filter((s) => s.lastTradeBlock > 0n).sort((a, b) => (b.lastTradeBlock > a.lastTradeBlock ? 1 : -1)))
         .map((s) => ({ s, metric: `${(s.coin.progressBps / 100).toFixed(1)}% · active` })),
+      hot7d: top([...stats].filter((s) => s.vol7d > 0n).sort((a, b) => (b.vol7d > a.vol7d ? 1 : -1)))
+        .map((s) => ({ s, metric: `${fmtLcai(s.vol7d, 0)} LCAI` })),
+      crowd7d: top([...stats].filter((s) => s.buyers7d > 0).sort((a, b) => b.buyers7d - a.buyers7d))
+        .map((s) => ({ s, metric: `${s.buyers7d} buyers · ${s.buys7d}▲` })),
+      whalebuy7d: top([...stats].filter((s) => s.maxBuy7d > 0n).sort((a, b) => (b.maxBuy7d > a.maxBuy7d ? 1 : -1)))
+        .map((s) => ({ s, metric: `${fmtLcai(s.maxBuy7d, 0)} LCAI buy` })),
+      battle7d: top([...stats].filter((s) => s.buys7d + s.sells7d > 0).sort((a, b) => (b.buys7d + b.sells7d) - (a.buys7d + a.sells7d)))
+        .map((s) => ({ s, metric: `${s.buys7d + s.sells7d} trades` })),
+      conviction7d: top([...stats].filter((s) => s.buys7d + s.sells7d >= 2).sort((a, b) => (b.buys7d / (b.sells7d + 1)) - (a.buys7d / (a.sells7d + 1))))
+        .map((s) => ({ s, metric: `${((s.buys7d/(s.buys7d+s.sells7d))*100).toFixed(0)}% buys · ${s.buys7d}▲/${s.sells7d}▼` })),
     };
   }, [stats]);
 
   return (
     <main className="forge-canvas mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
       <Link href="/forge" className="f-meta text-sm hover:underline">← Back to the Forge</Link>
-      <div className="f-eyebrow mt-4 mb-2">Live on-chain data · rolling 24h</div>
+      <div className="f-eyebrow mt-4 mb-2">Live on-chain data · 24h &amp; 7d</div>
       <h1 className="f-display text-4xl sm:text-5xl mb-2">Forge Pulse</h1>
-      <p className="f-meta mb-8">Every ranking below is computed from Trade events on the Forge contract — nothing curated, nothing hidden.</p>
+      <p className="f-meta mb-4">Every ranking below is computed from Trade events on the Forge contract — nothing curated, nothing hidden.</p>
 
       {loading ? (
         <div className="f-card py-14 text-center f-meta rounded-2xl">Reading the chain…</div>
@@ -257,6 +304,26 @@ export default function ForgePulse() {
               </div>
             </section>
           )}
+          <div className="mt-10">
+            <div className="f-eyebrow mb-4">7-day view</div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <Board icon="🔥" title="Hot 7d" sub="Highest LCAI volume · 7 days" rows={views.hot7d} />
+              <Board icon="👥" title="Crowd 7d" sub="Most unique buyers · 7 days" rows={views.crowd7d} />
+              <Board icon="🐋" title="Whale Buys 7d" sub="Largest single buy · 7 days" rows={views.whalebuy7d} />
+              <Board icon="⚔️" title="Battle 7d" sub="Most total trades · 7 days" rows={views.battle7d} />
+              <Board icon="💎" title="Conviction 7d" sub="Best buy/sell ratio · 7 days" rows={views.conviction7d} />
+            </div>
+          </div>
+          <div className="mt-10">
+            <div className="f-eyebrow mb-4">7-day view</div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <Board icon="🔥" title="Hot 7d" sub="Highest LCAI volume · 7 days" rows={views.hot7d} />
+              <Board icon="👥" title="Crowd 7d" sub="Most unique buyers · 7 days" rows={views.crowd7d} />
+              <Board icon="🐋" title="Whale Buys 7d" sub="Largest single buy · 7 days" rows={views.whalebuy7d} />
+              <Board icon="⚔️" title="Battle 7d" sub="Most total trades · 7 days" rows={views.battle7d} />
+              <Board icon="💎" title="Conviction 7d" sub="Best buy/sell ratio · 7 days" rows={views.conviction7d} />
+            </div>
+          </div>
           <p className="f-meta text-xs text-center mt-10">
             Rankings refresh on page load · window measured from real block times · graduated coins live on the Exchange
           </p>
