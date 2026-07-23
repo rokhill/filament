@@ -232,7 +232,7 @@ export default function ForgePulse() {
         <div className="f-card py-14 text-center f-meta rounded-2xl">No live coins on the curve yet.</div>
       ) : (
         <>
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-3 gap-4">
             <Board icon="🔥" title="Hot" sub="Highest LCAI volume · 24h" rows={views.hot} />
             <Board icon="📈" title="Momentum" sub="Volume growth vs prior 24h" rows={views.momentum} />
             <Board icon="🐋" title="Whale Buys" sub="Largest single buy · 24h" rows={views.whalebuy} />
