@@ -204,6 +204,28 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
 export default function CoinPage({ params }: { params: Promise<{ address: string }> }) {
   useChainGuard();
   const { address: walletAddress } = useAccount();
+  const addToWallet = async () => {
+    if (!window.ethereum) return;
+    try {
+      const img = coin?.metadata?.image
+        ? coin.metadata.image.startsWith("ipfs://")
+          ? "https://ipfs.io/ipfs/" + coin.metadata.image.slice(7)
+          : coin.metadata.image
+        : undefined;
+      await (window.ethereum as any).request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: token,
+            symbol: coin?.symbol ?? "",
+            decimals: 18,
+            ...(img ? { image: img } : {}),
+          },
+        },
+      });
+    } catch {}
+  };
   const { address } = use(params);
   const token = address as `0x${string}`;
   const { fetchCoin, fetchTrades, fetchCreatorBalance } = useForge();
@@ -282,6 +304,9 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                 {creatorPct.toFixed(1)}%
               </b>
             </span>
+            <button onClick={addToWallet} className="text-xs underline hover:opacity-80 transition-opacity" style={{ color: "var(--ae-aurum)" }}>
+                + Add to wallet
+              </button>
             {socials.filter(([, u]) => u).map(([label, u]) => (
               <a key={label} href={u} target="_blank" rel="noopener noreferrer" className="underline">
                 {label}
