@@ -4,6 +4,7 @@ import { createPublicClient, http, erc20Abi, formatEther } from "viem";
 import { lcai } from "@/config/chains";
 import Link from "next/link";
 import useForge from "@/hooks/useForge";
+import useMarkets from "@/hooks/useMarkets";
 import PriceSparkline from "@/components/PriceSparkline";
 
 const client = createPublicClient({ chain: lcai, transport: http("https://rpc.mainnet.lightchain.ai") });
@@ -65,10 +66,13 @@ export default function ExplorePage() {
   const [forgeOnly, setForgeOnly] = useState<ForgeOnly[]>([]);
   const [loading, setLoading] = useState(true);
   const { fetchCoins } = useForge();
+  const { fetchStats } = useMarkets();
+  const [lcaiUsd, setLcaiUsd] = useState(0);
 
   useEffect(() => {
     (async () => {
-      const forgeCoins = await fetchCoins().catch(()=>[]);
+      const [forgeCoins, stats] = await Promise.all([fetchCoins().catch(()=>[]), fetchStats().catch(()=>null)]);
+      if (stats) setLcaiUsd(stats.priceUsd);
       const logoMap: Record<string,string> = {};
       const progressMap: Record<string,number> = {};
       const raisedMap: Record<string,bigint> = {};
@@ -185,7 +189,7 @@ export default function ExplorePage() {
           <div className="grid grid-cols-3 gap-3 mb-8">
             {[
               {label:"Live pairs", value:pairs.length.toString()},
-              {label:"LCAI locked", value:fmtLCAI(totalLCAI)+" LCAI"},
+              {label:"LCAI locked", value:lcaiUsd>0?"$"+(Number(formatEther(totalLCAI))*lcaiUsd).toLocaleString(undefined,{maximumFractionDigits:0}):fmtLCAI(totalLCAI)+" LCAI"},
               {label:"LP burned", value:pairs.filter(p=>p.lpBurned).length+" pairs"},
             ].map(s=>(
               <div key={s.label} className="f-card rounded-2xl p-4 text-center">
@@ -232,8 +236,8 @@ export default function ExplorePage() {
                     <div className="text-xs f-meta">${p.symbol} · {shortAddr(p.token)}</div>
                   </div>
                   <div className="text-right flex-shrink-0 hidden sm:block" style={{minWidth:80}}>
-                    <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{fmtPrice(p.pricePerToken)}</div>
-                    <div className="text-xs f-meta">LCAI</div>
+                    <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{lcaiUsd>0?"$"+(p.pricePerToken*lcaiUsd).toFixed(6):fmtPrice(p.pricePerToken)+" LCAI"}</div>
+                    <div className="text-xs f-meta">{lcaiUsd>0?"USD":"LCAI"}</div>
                   </div>
                   <div className="text-right flex-shrink-0 hidden sm:block" style={{minWidth:80}}>
                     {p.change !== 0 ? (
@@ -249,7 +253,7 @@ export default function ExplorePage() {
                   </div>
                   <div className="text-right flex-shrink-0 hidden sm:block" style={{minWidth:90}}>
                     <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>
-                      {mcap>0?fmtLCAI(BigInt(Math.floor(mcap)))+" LCAI":"—"}
+                      {mcap>0?lcaiUsd>0?"$"+(mcap*lcaiUsd).toLocaleString(undefined,{maximumFractionDigits:0}):fmtLCAI(BigInt(Math.floor(mcap)))+" LCAI":"—"}
                     </div>
                     <div className="text-xs f-meta">mkt cap</div>
                   </div>
