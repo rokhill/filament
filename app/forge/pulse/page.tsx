@@ -297,7 +297,7 @@ export default function ForgePulse() {
                   <Link key={c.address} href={`/forge/${c.address}`} className="f-card flex items-center gap-3 rounded-2xl p-3 hover:-translate-y-0.5 transition-all">
                     <Avatar coin={c} />
                     <span className="font-semibold" style={{ fontFamily: "var(--font-display), serif", color: "var(--clr-heading)" }}>{c.name}</span>
-                    <span className="f-meta text-xs">${'{'}c.symbol{'}'}</span>
+                    <span className="f-meta text-xs">${c.symbol}</span>
                     <span className="ml-auto text-xs font-bold" style={{ color: "var(--clr-success)" }}>ON FILAMENT</span>
                   </Link>
                 ))}
