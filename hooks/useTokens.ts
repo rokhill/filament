@@ -17,13 +17,17 @@ const useTokens = () => {
   // auto-add graduated forge coins to token list
   useEffect(() => {
     fetchCoins().then((coins) => {
-      coins.filter((c) => c.graduated).forEach((c) => {
+      coins.forEach((c) => {
+        const img = c.metadata?.image ? (c.metadata.image.startsWith("ipfs://")
+          ? "https://ipfs.io/ipfs/" + c.metadata.image.slice(7)
+          : c.metadata.image) : undefined;
         addToken({
           address: c.address as `0x${string}`,
           chainId: chain.id,
           name: c.name,
           symbol: c.symbol,
           decimals: 18,
+          ...(img ? { logoURI: img } : {}),
         });
       });
     }).catch(() => {});
