@@ -118,6 +118,7 @@ export default function Pools() {
                         <div className="flex flex-wrap items-center gap-2">
                             <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Create Pair</Link>
                             <Link href="/find" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Import Pool</Link>
+                            <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{background:"linear-gradient(180deg,#ffaa32,#e07a12)",color:"#140d05"}}>+ Add V2 Liquidity</Link>
                         </div>
                     </div>
                     {loadingPage ? (
@@ -242,9 +243,14 @@ export default function Pools() {
                                     </AccordionItem>
                                 ))
                             ) : (
-                                <p className="py-6 text-lg text-center dark:text-[var(--clr-heading)]">
-                                    No liquidity found
-                                </p>
+                                <div className="py-10 text-center">
+                                  <div style={{fontSize:32,marginBottom:12}}>{"💧"}</div>
+                                  <div className="font-semibold mb-2" style={{color:"var(--clr-heading)",fontFamily:"var(--font-display),serif"}}>No LP positions found</div>
+                                  <div className="text-sm" style={{color:"var(--ae-nebula)",maxWidth:400,margin:"0 auto 8px",lineHeight:1.6}}>
+                                    Liquidity pools are created when a Forge coin graduates, or you can create one manually with any two tokens.<br/><br/>
+                                    Looking for your token balances? Those live in <a href="/portfolio" style={{color:"var(--ae-aurum)"}}>Portfolio</a>.
+                                  </div>
+                                </div>
                             )}
                         </Accordion>
                         </>
