@@ -1,5 +1,5 @@
-import SparkButton from "@/components/SparkButton";
 "use client";
+import SparkButton from "@/components/SparkButton";
 import { useAccount } from "wagmi";
 import { useChainGuard } from "@/hooks/useChainGuard";
 

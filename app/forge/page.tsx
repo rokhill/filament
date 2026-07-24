@@ -1,5 +1,5 @@
-import SparkButton from "@/components/SparkButton";
 "use client";
+import SparkButton from "@/components/SparkButton";
 
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
