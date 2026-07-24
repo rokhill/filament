@@ -21,6 +21,7 @@ import { Pair } from "@/types/Pair";
 import { useEffect, useState } from "react";
 import { formatEther, formatUnits, getContract, zeroAddress } from "viem";
 import { useAccount } from "wagmi";
+import { useAppKit } from "@reown/appkit/react";
 import Link from "next/link";
 import SwapPoolsTabs from "@/components/swap-pools-tabs";
 
@@ -28,6 +29,7 @@ export default function Pools() {
     const [loadingPage, setLoadingPage] = useState(true);
     const chain = useCurrentChain();
     const { address } = useAccount();
+    const { open } = useAppKit();
     const { publicClient } = useWeb3Clients();
     const { pairs: pairTokens } = useUserStore();
     const { factoryV2Contract } = useContracts();
@@ -132,6 +134,14 @@ export default function Pools() {
                     {loadingPage ? (
                         <LoadingBlock />
                     ) : (
+                        {!address && (
+                          <div className="py-10 text-center">
+                            <div className="text-4xl mb-3">🔥</div>
+                            <div className="font-semibold mb-1" style={{ color: "var(--ae-aurum)", fontFamily: "var(--font-display), serif" }}>No wallet connected</div>
+                            <div className="text-sm mb-4" style={{ color: "var(--ae-nebula)" }}>Connect your wallet to see your liquidity positions.</div>
+                            <button onClick={() => open()} className="rounded-xl px-5 py-2.5 text-sm font-bold transition-all hover:-translate-y-0.5" style={{ background: "linear-gradient(180deg,#ffaa32,#e07a12)", color: "#140d05" }}>Connect Wallet</button>
+                          </div>
+                        )}
                         <Accordion type="single" collapsible className="grid w-full gap-6">
                             {pairs.length > 0 ? (
                                 pairs.map((pair, index) => (
