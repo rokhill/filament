@@ -303,41 +303,10 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
         </p>
       )}
 
-      {coin.graduated && (
+      {coin?.graduated && (
         <GraduationBanner name={coin.name} symbol={coin.symbol} address={coin.address} />
       )}
-      {false && coin.graduated && (
-        <div className="rounded-2xl mb-6 overflow-hidden forge-breathe"
-          style={{ border: "1px solid rgba(255,140,30,.6)", background: "linear-gradient(135deg, #0d0a06, #1a0f04)" }}>
-          <div className="px-6 py-5">
-            <div className="flex items-center gap-3 mb-2">
-              <span style={{ fontSize: 28 }}>🎓</span>
-              <div>
-                <div className="text-xl font-bold" style={{ fontFamily: "var(--font-display), serif", color: "#ffaa32" }}>
-                  {coin.name} has graduated
-                </div>
-                <div className="text-xs mt-0.5" style={{ color: "var(--ae-nebula)" }}>
-                  The curve sold out — liquidity is live on Filament and the LP is burned forever.
-                  Nobody can pull it. Not even the Forge.
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 mt-4 flex-wrap">
-              <Link href="/"
-                className="rounded-xl px-5 py-2.5 text-sm font-bold transition-all hover:-translate-y-0.5"
-                style={{ background: "linear-gradient(180deg,#ffaa32,#e07a12)", color: "#140d05" }}>
-                Trade ${coin.symbol} on Filament →
-              </Link>
-              <a href={`https://mainnet.lightscan.app/address/${coin.address}`}
-                target="_blank" rel="noopener noreferrer"
-                className="rounded-xl px-5 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5"
-                style={{ border: "1px solid rgba(255,140,30,.4)", color: "#ffaa32" }}>
-                Verify LP burn on Lightscan ↗
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
         <div>

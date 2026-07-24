@@ -1,16 +1,34 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import useTokenStore from "@/store/token-store";
 import { Token } from "@/types/Token";
 import { erc20Abi, isAddress } from "viem";
 import useWeb3Clients from "./useWeb3Clients";
 import useUserStore from "@/store/user-store";
 import useCurrentChain from "./useCurrentChain";
+import useForge from "./useForge";
 
 const useTokens = () => {
   const chain = useCurrentChain();
+  const { fetchCoins } = useForge();
   const { publicClient } = useWeb3Clients();
   const userTokens = useUserStore();
   const listedTokens = useTokenStore();
+
+  // auto-add graduated forge coins to token list
+  useEffect(() => {
+    fetchCoins().then((coins) => {
+      coins.filter((c) => c.graduated).forEach((c) => {
+        addToken({
+          address: c.address as `0x${string}`,
+          chainId: chain.id,
+          name: c.name,
+          symbol: c.symbol,
+          decimals: 18,
+        });
+      });
+    }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain.id]);
 
   const listedTokensByChain = useMemo(() => {
     return listedTokens.tokens
