@@ -149,10 +149,10 @@ export default function Explore(){
             <span className="w-6">#</span>
             <span className="w-10"/>
             <span className="flex-1">Token</span>
-            <span className="w-24 text-right">Price</span>
-            <span className="w-20 text-right">Change</span>
-            <span className="w-24 text-right">Liquidity</span>
-            <span className="w-20 text-right">Mkt Cap</span>
+            <span className="w-28 text-right">Price</span>
+            <span className="w-24 text-right">Change</span>
+            <span className="w-28 text-right">Liquidity</span>
+            <span className="w-24 text-right">Mkt Cap</span>
             <span className="w-20 text-center">Chart</span>
             <span className="w-16 text-center">LP</span>
           </div>
@@ -163,31 +163,33 @@ export default function Explore(){
               const up=p.change>=0;
               return(
                 <Link key={p.pair} href={`/?outputToken=${p.token}`}
-                  className="f-card rounded-2xl p-4 hover:-translate-y-0.5 transition-all block">
+                  className="f-card rounded-2xl px-4 py-3.5 hover:-translate-y-0.5 transition-all block">
                   {/* desktop row */}
                   <div className="hidden sm:flex items-center gap-3">
                     <span className="w-6 text-xs text-center flex-shrink-0" style={{color:"var(--ae-nebula)"}}>{i+1}</span>
                     <Logo url={p.logoURI} sym={p.symbol}/>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold flex items-center gap-2" style={{color:"var(--clr-heading)",fontFamily:"var(--font-display),serif"}}>
+                    <div className="flex-1 min-w-0 pr-4">
+                      <div className="font-semibold truncate" style={{color:"var(--clr-heading)",fontFamily:"var(--font-display),serif"}}>
                         {p.name}
-                        {p.factory==="Filament"&&<span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{background:"rgba(255,140,30,.2)",color:"var(--ae-aurum)"}}>✦ Filament Exclusive</span>}
                       </div>
-                      <div className="text-xs f-meta">${p.symbol}</div>
+                      <div className="text-xs f-meta flex items-center gap-2 mt-0.5">
+                        <span>${p.symbol}</span>
+                        {p.factory==="Filament"&&<span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap" style={{background:"rgba(255,140,30,.2)",color:"var(--ae-aurum)"}}>✦ Exclusive</span>}
+                      </div>
                     </div>
-                    <div className="w-24 text-right flex-shrink-0">
+                    <div className="w-28 text-right flex-shrink-0">
                       <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{p.priceUsd>0?"$"+p.priceUsd.toFixed(6):p.pricePerToken.toFixed(6)+" LCAI"}</div>
                       <div className="text-xs f-meta">{p.priceUsd>0?"USD":"LCAI"}</div>
                     </div>
-                    <div className="w-20 text-right flex-shrink-0">
+                    <div className="w-24 text-right flex-shrink-0">
                       <div className="text-sm font-semibold" style={{color:up?"var(--clr-success)":"var(--clr-danger)"}}>{p.change!==0?(up?"+":"")+p.change.toFixed(1)+"%":"—"}</div>
                       <div className="text-xs f-meta">all time</div>
                     </div>
-                    <div className="w-24 text-right flex-shrink-0">
+                    <div className="w-28 text-right flex-shrink-0">
                       <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{fmt(Number(formatEther(p.reserveLCAI)),0)}</div>
                       <div className="text-xs f-meta">LCAI</div>
                     </div>
-                    <div className="w-20 text-right flex-shrink-0">
+                    <div className="w-24 text-right flex-shrink-0">
                       <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{p.mcapUsd>0?compact(p.mcapUsd):"—"}</div>
                       <div className="text-xs f-meta">mkt cap</div>
                     </div>
@@ -203,9 +205,10 @@ export default function Explore(){
                   {/* mobile row */}
                   <div className="flex sm:hidden items-center gap-3">
                     <Logo url={p.logoURI} sym={p.symbol}/>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold" style={{color:"var(--clr-heading)",fontFamily:"var(--font-display),serif"}}>{p.name}</div>
-                      <div className="text-xs f-meta">${p.symbol} · {fmt(Number(formatEther(p.reserveLCAI)),0)} LCAI liq.</div>
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="font-semibold truncate" style={{color:"var(--clr-heading)",fontFamily:"var(--font-display),serif"}}>{p.name}</div>
+                      <div className="text-xs f-meta truncate">${p.symbol} · {fmt(Number(formatEther(p.reserveLCAI)),0)} LCAI</div>
+                      {p.factory==="Filament"&&<div className="mt-1"><span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap" style={{background:"rgba(255,140,30,.2)",color:"var(--ae-aurum)"}}>✦ Exclusive</span></div>}
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{p.priceUsd>0?"$"+p.priceUsd.toFixed(6):p.pricePerToken.toFixed(6)}</div>
