@@ -218,7 +218,7 @@ export default function ExplorePage() {
 
           <div className="space-y-2 mb-10">
             {pairs.map((p,i) => {
-              const mcap = p.pricePerToken > 0 ? p.pricePerToken * Number(formatEther(p.totalSupply)) : 0;
+              const mcap = p.pricePerToken > 0 && lcaiUsd > 0 ? p.pricePerToken * lcaiUsd * Number(formatEther(p.totalSupply)) : 0;
               const isFilamentOnly = p.factory === "Filament";
               const changePos = p.change >= 0;
               return (
@@ -264,7 +264,7 @@ export default function ExplorePage() {
                   </div>
                   <div className="text-right flex-shrink-0 hidden sm:block" style={{minWidth:90}}>
                     <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>
-                      {mcap>0?lcaiUsd>0?fmtCompact(mcap*lcaiUsd):fmtLCAI(BigInt(Math.floor(mcap)))+" LCAI":"—"}
+                      {mcap>0?lcaiUsd>0?mcap>0?fmtCompact(mcap):"—":fmtLCAI(BigInt(Math.floor(mcap)))+" LCAI":"—"}
                     </div>
                     <div className="text-xs f-meta">mkt cap</div>
                   </div>
