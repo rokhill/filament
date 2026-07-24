@@ -116,8 +116,8 @@ export default function ExplorePage() {
             ]);
             const isToken0WLCAI = (token0addr as string).toLowerCase() === WLCAI;
             const r = reserves as [bigint,bigint,number];
-            const reserveLCAI = isToken0WLCAI ? r[1] : r[0];
-            const reserveToken = isToken0WLCAI ? r[0] : r[1];
+            const reserveLCAI = isToken0WLCAI ? r[0] : r[1];
+            const reserveToken = isToken0WLCAI ? r[1] : r[0];
             const ts = totalSupply as bigint;
             const bl = burnedLP as bigint;
             const lpBurned = ts > 0n && bl >= ts * 99n / 100n;
@@ -131,8 +131,8 @@ export default function ExplorePage() {
             const priceHistory = syncs.map(sl => {
               const sr0 = BigInt("0x"+sl.data.slice(2,66));
               const sr1 = BigInt("0x"+sl.data.slice(66,130));
-              const lcaiR = isToken0WLCAI ? sr1 : sr0;
-              const tokR = isToken0WLCAI ? sr0 : sr1;
+              const lcaiR = isToken0WLCAI ? sr0 : sr1;
+              const tokR = isToken0WLCAI ? sr1 : sr0;
               return tokR > 0n ? Number(formatEther(lcaiR)) / Number(formatEther(tokR)) : 0;
             }).filter(p => p > 0);
 
