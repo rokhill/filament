@@ -1,3 +1,4 @@
+import SparkButton from "@/components/SparkButton";
 "use client";
 import { useAccount } from "wagmi";
 import { useChainGuard } from "@/hooks/useChainGuard";
@@ -174,7 +175,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
         </span>
       </div>
 
-      <button
+      <SparkButton
         className="w-full rounded-xl py-3 mt-4 text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-40"
         style={{
           background: side === "buy" ? "var(--clr-success)" : "var(--clr-danger)",
@@ -186,7 +187,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
         {busy ? "Confirming…"
           : !amount || Number(amount) <= 0 ? "Enter an amount"
           : side === "buy" ? `Buy ${coin.symbol}` : `Sell ${coin.symbol}`}
-      </button>
+      </SparkButton>
 
       <p className="text-[11px] mt-3 text-center" style={{ color: "var(--ae-nebula)" }}>
         1% fee on curve trades · 2% slippage guard applied
