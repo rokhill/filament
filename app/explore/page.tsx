@@ -223,7 +223,7 @@ export default function ExplorePage() {
               const changePos = p.change >= 0;
               return (
                 <Link key={p.pair} href={`/?outputToken=${p.token}`}
-                  className="f-card rounded-2xl p-4 flex items-center gap-3 hover:-translate-y-0.5 transition-all">
+                  className="f-card rounded-2xl p-4 hover:-translate-y-0.5 transition-all block">
                   <span className="text-xs font-bold w-6 text-center flex-shrink-0"
                     style={{color:"var(--ae-nebula)"}}>{i+1}</span>
                   <TokenLogo logo={p.logoURI} symbol={p.symbol} />
@@ -240,6 +240,7 @@ export default function ExplorePage() {
                     </div>
                     <div className="text-xs f-meta">${p.symbol} · {shortAddr(p.token)}</div>
                   </div>
+                  <div className="flex items-center gap-3">
                   {/* mobile: price + change stacked */}
                   <div className="text-right flex-shrink-0 sm:hidden">
                     <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{lcaiUsd>0?"$"+(p.pricePerToken*lcaiUsd).toFixed(4):fmtPrice(p.pricePerToken)}</div>
@@ -270,6 +271,12 @@ export default function ExplorePage() {
                   </div>
                   <div className="flex-shrink-0 hidden sm:block">
                     <PriceSparkline points={p.priceHistory} width={80} height={36} />
+                  </div>
+                  </div>
+                  {/* mobile extra row */}
+                  <div className="flex items-center justify-between mt-2 sm:hidden text-xs" style={{color:"var(--ae-nebula)"}}>
+                    <span>{fmtLCAI(p.reserveLCAI)} LCAI liq.</span>
+                    <span>{p.lpBurned?"🔥 LP Burned":"Active"}</span>
                   </div>
                   {p.lpBurned ? (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
