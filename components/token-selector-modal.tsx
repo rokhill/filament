@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import React from "react";
+import useForge from "@/hooks/useForge";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Token } from "../types/Token";
 import {
@@ -24,6 +26,9 @@ type Props = {
 
 const TokenSelectorModal = ({ open, setOpen, selectedToken }: Props) => {
   const { tokens, findToken } = useTokens();
+  const { fetchCoins } = useForge();
+  const [graduatedAddrs, setGraduatedAddrs] = React.useState<Set<string>>(new Set());
+  React.useEffect(() => { fetchCoins().then(coins => setGraduatedAddrs(new Set(coins.filter(c=>c.graduated).map(c=>c.address.toLowerCase())))).catch(()=>{}); }, []);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -115,27 +120,31 @@ const TokenSelectorModal = ({ open, setOpen, selectedToken }: Props) => {
               <Loader2Icon className="animate-spin" size={28} />
             </div>
           ) : filteredTokens.length > 0 ? (
-            filteredTokens.map((token, index) => (
-              <button
-                key={index}
-                className="flex items-center w-full px-6 py-3 gap-x-4 hover:bg-[rgba(from_var(--clr-primary)_r_g_b/.08)] transition-all duration-300 disabled:pointer-events-none disabled:opacity-50"
-                onClick={() => selectedToken(token)}
-              >
-                <TokenAvatar token={token} size={50} />
-                <p className="flex flex-col items-start font-medium">
-                  <span className="text-[var(--clr-darker-two)] dark:text-[var(--clr-heading)] font-semibold">
-                    {token.name}
-                  </span>
-                  <span className="text-[rgba(from_var(--clr-body)_r_g_b/0.8)] text-sm font-semibold">
-                    {token.symbol}{" "}
-                    {token.address && (
-                      <span>
-                        {token.address.slice(0, 6)}...{token.address.slice(-4)}
+            filteredTokens.map((token, index) => {
+
+              const isWlcai = token.symbol === "WLCAI";
+              const isForge = !!token.address && !graduatedAddrs.has(token.address.toLowerCase()) && token.symbol !== "LCAI" && !isWlcai;
+              return (<button
+                    key={index}
+                    className="flex items-center w-full px-6 py-3 gap-x-4 hover:bg-[rgba(from_var(--clr-primary)_r_g_b/.08)] transition-all duration-300 disabled:pointer-events-none disabled:opacity-50"
+                    onClick={() => !disabled && selectedToken(token)}
+                    disabled={disabled}
+                  >
+                    <TokenAvatar token={token} size={50} />
+                    <p className="flex flex-col items-start font-medium flex-1">
+                      <span className="text-[var(--clr-darker-two)] dark:text-[var(--clr-heading)] font-semibold">
+                        {token.name}
+                        {isWlcai && <span className="ml-2 text-xs font-normal" style={{color:"var(--ae-nebula)"}}>· same as LCAI, wrapped</span>}
                       </span>
+                      <span className="text-[rgba(from_var(--clr-body)_r_g_b/0.8)] text-sm font-semibold">
+                        {token.symbol}{" "}
+                        {token.address && <span>{token.address.slice(0,6)}...{token.address.slice(-4)}</span>}
+                      </span>
+                    </p>
+                    {isForge && (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{background:"rgba(255,140,30,.15)",color:"var(--ae-aurum)"}}>🔥 Trade on Forge</span>
                     )}
-                  </span>
-                </p>
-              </button>
+              </button>);
             ))
           ) : (
             <div className="flex items-center justify-center w-full h-16 px-6">
