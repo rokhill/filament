@@ -38,6 +38,11 @@ type ForgeOnly = {
 
 function shortAddr(a: string) { return a.slice(0,6)+"…"+a.slice(-4); }
 function fmtLCAI(v: bigint, d=0) { return Number(formatEther(v)).toLocaleString(undefined,{maximumFractionDigits:d}); }
+function fmtCompact(n: number) {
+  if (n >= 1_000_000) return "$"+(n/1_000_000).toFixed(2)+"M";
+  if (n >= 1_000) return "$"+(n/1_000).toFixed(1)+"K";
+  return "$"+n.toFixed(2);
+}
 function fmtPrice(p: number) {
   if (p === 0) return "—";
   if (p < 0.000001) return p.toExponential(4);
@@ -189,7 +194,7 @@ export default function ExplorePage() {
           <div className="grid grid-cols-3 gap-3 mb-8">
             {[
               {label:"Live pairs", value:pairs.length.toString()},
-              {label:"LCAI locked", value:lcaiUsd>0?"$"+(Number(formatEther(totalLCAI))*lcaiUsd).toLocaleString(undefined,{maximumFractionDigits:0}):fmtLCAI(totalLCAI)+" LCAI"},
+              {label:"LCAI locked", value:lcaiUsd>0?fmtCompact(Number(formatEther(totalLCAI))*lcaiUsd):fmtLCAI(totalLCAI)+" LCAI"},
               {label:"LP burned", value:pairs.filter(p=>p.lpBurned).length+" pairs"},
             ].map(s=>(
               <div key={s.label} className="f-card rounded-2xl p-4 text-center">
@@ -259,7 +264,7 @@ export default function ExplorePage() {
                   </div>
                   <div className="text-right flex-shrink-0 hidden sm:block" style={{minWidth:90}}>
                     <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>
-                      {mcap>0?lcaiUsd>0?"$"+(mcap*lcaiUsd).toLocaleString(undefined,{maximumFractionDigits:0}):fmtLCAI(BigInt(Math.floor(mcap)))+" LCAI":"—"}
+                      {mcap>0?lcaiUsd>0?fmtCompact(mcap*lcaiUsd):fmtLCAI(BigInt(Math.floor(mcap)))+" LCAI":"—"}
                     </div>
                     <div className="text-xs f-meta">mkt cap</div>
                   </div>
