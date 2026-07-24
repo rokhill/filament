@@ -121,13 +121,13 @@ export default function Pools() {
                                 className="border-0 lg:py-6 text-[var(--clr-black)] dark:text-[var(--clr-heading)] bg-[#EFEFFF] dark:bg-[var(--clr-blackest)] hover:bg-[#EFEFFF] dark:hover:bg-[var(--clr-blackest)] hover:text-[var(--clr-primary)] dark:hover:text-[var(--clr-primary)]"
                                 asChild
                             >
-                                <Link href="/add">Create Pair</Link>
+                                <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Create Pair</Link>
                             </Button>
                             <Button className="border-0 lg:py-6 text-[var(--clr-heading)] bg-[var(--clr-primary)] hover:bg-[var(--clr-primary)] hover:filter hover:brightness-[1.2]" asChild>
-                                <Link href="/find">Import Pool</Link>
+                                <Link href="/find" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Import Pool</Link>
                             </Button>
                             <Button className="border-0 lg:py-6 text-[var(--clr-heading)] bg-[var(--clr-primary)] hover:bg-[var(--clr-primary)] hover:filter hover:brightness-[1.2]" asChild>
-                                <Link href="/add">Add V2 Liquidity</Link>
+                                <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{background:"linear-gradient(180deg,#ffaa32,#e07a12)",color:"#140d05"}}>Add V2 Liquidity</Link>
                             </Button>
                         </div>
                     </div>
