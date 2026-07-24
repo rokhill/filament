@@ -116,19 +116,9 @@ export default function Pools() {
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <CardTitle className="text-[var(--clr-black)] dark:text-[var(--clr-heading)]">Your V2 Liquidity</CardTitle>
                         <div className="flex flex-wrap items-center gap-2">
-                            <Button
-                                variant={"outline"}
-                                className="border-0 lg:py-6 text-[var(--clr-black)] dark:text-[var(--clr-heading)] bg-[#EFEFFF] dark:bg-[var(--clr-blackest)] hover:bg-[#EFEFFF] dark:hover:bg-[var(--clr-blackest)] hover:text-[var(--clr-primary)] dark:hover:text-[var(--clr-primary)]"
-                                asChild
-                            >
-                                <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Create Pair</Link>
-                            </Button>
-                            <Button className="border-0 lg:py-6 text-[var(--clr-heading)] bg-[var(--clr-primary)] hover:bg-[var(--clr-primary)] hover:filter hover:brightness-[1.2]" asChild>
-                                <Link href="/find" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Import Pool</Link>
-                            </Button>
-                            <Button className="border-0 lg:py-6 text-[var(--clr-heading)] bg-[var(--clr-primary)] hover:bg-[var(--clr-primary)] hover:filter hover:brightness-[1.2]" asChild>
-                                <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{background:"linear-gradient(180deg,#ffaa32,#e07a12)",color:"#140d05"}}>Add V2 Liquidity</Link>
-                            </Button>
+                            <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Create Pair</Link>
+                            <Link href="/find" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Import Pool</Link>
+                            <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{background:"linear-gradient(180deg,#ffaa32,#e07a12)",color:"#140d05"}}>+ Add V2 Liquidity</Link>
                         </div>
                     </div>
                     {loadingPage ? (
