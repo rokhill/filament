@@ -1,4 +1,5 @@
 "use client";
+import GraduationBanner from "@/components/GraduationBanner";
 import SparkButton from "@/components/SparkButton";
 import { useAccount } from "wagmi";
 import { useChainGuard } from "@/hooks/useChainGuard";
@@ -303,6 +304,9 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
       )}
 
       {coin.graduated && (
+        <GraduationBanner name={coin.name} symbol={coin.symbol} address={coin.address} />
+      )}
+      {false && coin.graduated && (
         <div className="rounded-2xl mb-6 overflow-hidden forge-breathe"
           style={{ border: "1px solid rgba(255,140,30,.6)", background: "linear-gradient(135deg, #0d0a06, #1a0f04)" }}>
           <div className="px-6 py-5">
