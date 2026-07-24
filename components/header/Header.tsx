@@ -13,6 +13,7 @@ const NAV = [
   { href: "/", label: "Exchange" },
   { href: "/forge", label: "Forge" },
   ...(BRIDGE_ENABLED ? [{ href: "/bridge", label: "Bridge" }] : []),
+  { href: "/explore", label: "Explore" },
   { href: "/markets", label: "Markets" },
   { href: "/portfolio", label: "Portfolio" },
 ];
