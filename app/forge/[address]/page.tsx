@@ -300,7 +300,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                 {creatorPct.toFixed(1)}%
               </b>
             </span>
-            <button onClick={addToWallet} className="text-xs underline hover:opacity-80 transition-opacity" style={{ color: "var(--ae-aurum)" }}>
+            <button onClick={addToWallet} className="text-xs underline hover:opacity-80 transition-opacity relative z-10" style={{ color: "var(--ae-aurum)" }}>
                 + Add to wallet
               </button>
             {socials.filter(([, u]) => u).map(([label, u]) => (
