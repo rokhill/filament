@@ -315,14 +315,7 @@ export default function ForgePulse() {
             </div>
           </div>
           <div className="mt-10">
-            <div className="f-eyebrow mb-4">7-day view</div>
-            <div className="grid sm:grid-cols-3 gap-4">
-              <Board icon="🔥" title="Hot 7d" sub="Highest LCAI volume · 7 days" rows={views.hot7d} />
-              <Board icon="👥" title="Crowd 7d" sub="Most unique buyers · 7 days" rows={views.crowd7d} />
-              <Board icon="🐋" title="Whale Buys 7d" sub="Largest single buy · 7 days" rows={views.whalebuy7d} />
-              <Board icon="⚔️" title="Battle 7d" sub="Most total trades · 7 days" rows={views.battle7d} />
-              <Board icon="💎" title="Conviction 7d" sub="Best buy/sell ratio · 7 days" rows={views.conviction7d} />
-            </div>
+
           </div>
           <p className="f-meta text-xs text-center mt-10">
             Rankings refresh on page load · window measured from real block times · graduated coins live on the Exchange

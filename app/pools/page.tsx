@@ -34,7 +34,7 @@ export default function Pools() {
     const [pairs, setPairs] = useState<Pair[]>([]);
 
     const loadMyPools = async () => {
-        if (!address) return;
+        if (!address) { setLoadingPage(false); return; }
 
         setLoadingPage(true);
 
