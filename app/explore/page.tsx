@@ -156,7 +156,7 @@ export default function ExplorePage() {
 
       // forge-only: on curve, not yet graduated to any DEX
       const forgeOnlyList: ForgeOnly[] = forgeCoins
-        .filter(c => !c.graduated && !seenTokens.has(c.address.toLowerCase()) && c.progressBps > 0)
+        .filter(c => !c.graduated && !seenTokens.has(c.address.toLowerCase()))
         .map(c => ({
           token: c.address,
           name: c.name,
@@ -235,6 +235,12 @@ export default function ExplorePage() {
                     </div>
                     <div className="text-xs f-meta">${p.symbol} · {shortAddr(p.token)}</div>
                   </div>
+                  {/* mobile: price + change stacked */}
+                  <div className="text-right flex-shrink-0 sm:hidden">
+                    <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{lcaiUsd>0?"$"+(p.pricePerToken*lcaiUsd).toFixed(4):fmtPrice(p.pricePerToken)}</div>
+                    {p.change!==0&&<div className="text-xs font-semibold" style={{color:changePos?"var(--clr-success)":"var(--clr-danger)"}}>{changePos?"+":""}{p.change.toFixed(1)}%</div>}
+                  </div>
+                  {/* desktop columns */}
                   <div className="text-right flex-shrink-0 hidden sm:block" style={{minWidth:80}}>
                     <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{lcaiUsd>0?"$"+(p.pricePerToken*lcaiUsd).toFixed(6):fmtPrice(p.pricePerToken)+" LCAI"}</div>
                     <div className="text-xs f-meta">{lcaiUsd>0?"USD":"LCAI"}</div>
