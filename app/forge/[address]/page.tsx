@@ -211,7 +211,9 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           ? "https://ipfs.io/ipfs/" + coin.metadata.image.slice(7)
           : coin.metadata.image
         : undefined;
-      await (window as any).ethereum.request({
+      const eth = (window as any).ethereum;
+      if (!eth) return;
+      await eth.request({
         method: "wallet_watchAsset",
         params: [
           "ERC20",
