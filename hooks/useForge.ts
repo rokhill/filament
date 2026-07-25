@@ -35,7 +35,7 @@ export type ForgeTrade = {
 const SLIPPAGE_BPS = 200n; // 2% default guard on curve trades
 
 export default function useForge() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { publicClient, walletClient } = useWeb3Clients();
 
   const forgeRead = getContract({
