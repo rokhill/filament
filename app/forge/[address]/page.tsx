@@ -304,9 +304,6 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                 {creatorPct.toFixed(1)}%
               </b>
             </span>
-            <button onClick={addToWallet} className="text-xs underline hover:opacity-80 transition-opacity relative z-10" style={{ color: "var(--ae-aurum)" }}>
-                + Add to wallet
-              </button>
             {socials.filter(([, u]) => u).map(([label, u]) => (
               <a key={label} href={u} target="_blank" rel="noopener noreferrer" className="underline">
                 {label}
@@ -323,10 +320,13 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
       </div>
 
       {coin.metadata.description && (
-        <p className="text-sm mb-6 max-w-2xl" style={{ color: "var(--ae-nebula)" }}>
+        <p className="text-sm mb-4 max-w-2xl" style={{ color: "var(--ae-nebula)" }}>
           {coin.metadata.description}
         </p>
       )}
+      <button onClick={addToWallet} className="mb-6 rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>
+        + Add {coin.symbol} to Wallet
+      </button>
 
       {coin?.graduated && (
         <GraduationBanner name={coin.name} symbol={coin.symbol} address={coin.address} />
