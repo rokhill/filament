@@ -231,10 +231,12 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   const { address } = use(params);
   const token = address as `0x${string}`;
   const { fetchCoin, fetchTrades, fetchCreatorBalance } = useForge();
+  const { publicClient } = useWeb3Clients();
 
   const [coin, setCoin] = useState<ForgeCoin | null | undefined>(undefined);
   const [trades, setTrades] = useState<ForgeTrade[]>([]);
   const [creatorBal, setCreatorBal] = useState<bigint>(0n);
+  const [dexPrice, setDexPrice] = useState<number | null>(null);
 
   const load = async () => {
     const c = await fetchCoin(token);
@@ -242,6 +244,20 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
     if (c) {
       fetchTrades(token).then(setTrades);
       fetchCreatorBalance(token, c.creator).then(setCreatorBal);
+      if (c.graduated && c.pair && c.pair !== "0x0000000000000000000000000000000000000000") {
+        const PAIR_ABI = [{type:"function",name:"getReserves",inputs:[],outputs:[{type:"uint112"},{type:"uint112"},{type:"uint32"}],stateMutability:"view"},{type:"function",name:"token0",inputs:[],outputs:[{type:"address"}],stateMutability:"view"}] as const;
+        const WLCAI = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
+        Promise.all([
+          publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"getReserves"}),
+          publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"token0"}),
+        ]).then(([res,t0])=>{
+          const r = res as [bigint,bigint,number];
+          const wlcaiIsT0 = (t0 as string).toLowerCase()===WLCAI;
+          const resLCAI = wlcaiIsT0?r[0]:r[1];
+          const resTok = wlcaiIsT0?r[1]:r[0];
+          if(resTok>0n) setDexPrice(Number(resLCAI)/Number(resTok));
+        }).catch(()=>{});
+      }
     }
   };
 
@@ -321,9 +337,11 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           </div>
         </div>
         <div className="ml-auto text-right">
-          <div className="text-xs" style={{ color: "var(--ae-nebula)" }}>Price</div>
+          <div className="text-xs" style={{ color: "var(--ae-nebula)" }}>{coin.graduated ? "DEX Price" : "Price"}</div>
           <div className="text-lg font-semibold" style={{ color: "var(--clr-heading)" }}>
-            {Number(formatEther(coin.priceWei)).toPrecision(4)} <span className="text-xs">LCAI</span>
+            {coin.graduated && dexPrice !== null
+              ? <>{dexPrice.toFixed(6)} <span className="text-xs">LCAI</span></>
+              : <>{Number(formatEther(coin.priceWei)).toPrecision(4)} <span className="text-xs">LCAI</span></>}
           </div>
         </div>
       </div>

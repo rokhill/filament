@@ -19,6 +19,7 @@ export type ForgeCoin = {
   progressBps: number;
   lcaiRaised: bigint;
   graduated: boolean;
+  pair?: `0x${string}`;
   isLegacy?: boolean;
 };
 
@@ -93,11 +94,12 @@ export default function useForge() {
     if (!isConnected) return null;
       const t = getContract({ abi: launchTokenAbi, address: a, client: { public: publicClient } });
       try {
-        const [curve, stats, name, symbol] = await Promise.all([
+        const [curve, stats, name, symbol, pair] = await Promise.all([
           forgeRead.read.curves([a]),
           forgeRead.read.curveStats([a]),
           t.read.name(),
           t.read.symbol(),
+          forgeRead.read.pairOf([a]),
         ]);
         if (curve[0] === "0x0000000000000000000000000000000000000000") return null;
         return {
@@ -110,6 +112,7 @@ export default function useForge() {
           progressBps: Number(stats[1]),
           lcaiRaised: stats[2],
           graduated: curve[5],
+          pair: pair as `0x${string}`,
         };
       } catch {
         return null;

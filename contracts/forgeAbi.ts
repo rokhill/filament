@@ -57,6 +57,7 @@ export const forgeAbi = [
   },
   { type: "function", name: "tokenCount", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   { type: "function", name: "allTokens", stateMutability: "view", inputs: [{ type: "uint256" }], outputs: [{ type: "address" }] },
+  { type: "function", name: "pairOf", stateMutability: "view", inputs: [{ type: "address" }], outputs: [{ type: "address" }] },
   { type: "function", name: "creationFee", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   { type: "function", name: "tradeFeeBps", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   { type: "function", name: "CURVE_SUPPLY", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
