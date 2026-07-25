@@ -205,6 +205,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   useChainGuard();
   const { address: walletAddress } = useAccount();
   const addToWallet = async () => {
+    if (!walletAddress) return;
     try {
       const img = coin?.metadata?.image
         ? coin.metadata.image.startsWith("ipfs://")

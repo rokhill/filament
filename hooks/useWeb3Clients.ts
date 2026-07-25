@@ -1,11 +1,12 @@
-import { useWalletClient } from "wagmi";
+import { useWalletClient, useAccount } from "wagmi";
 import useCurrentChain from "./useCurrentChain";
 import { useMemo } from "react";
 import { createPublicClient, http } from "viem";
 
 const useWeb3Clients = () => {
   const chain = useCurrentChain();
-  const { data: walletClient } = useWalletClient();
+  const { address } = useAccount();
+  const { data: walletClient } = useWalletClient({ query: { enabled: !!address } });
 
   const publicClient = useMemo(
     () =>

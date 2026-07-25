@@ -43,7 +43,7 @@ export default function SwapForm() {
   const setToken0 = (token?: Token) => useStore.setState({ token0: token });
   const setToken1 = (token?: Token) => useStore.setState({ token1: token });
   const [showDetails, setShowDetails] = useState(false);
-  const gasPrice = useGasPrice();
+  const gasPrice = useGasPrice({ query: { enabled: !!address } });
   const pair = usePair({ token0, token1 });
   const wethAddress = config.WETH[chain.id]?.toLowerCase();
 
