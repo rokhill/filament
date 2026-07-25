@@ -35,9 +35,9 @@ export default function SwapForm() {
   const { open } = useAppKit();
   const { tokens } = useTokens();
   const { loading, token0, token1 } = useStore();
-  const balance0 = useBalance({ address, token: token0?.address });
-  const balance1 = useBalance({ address, token: token1?.address });
-  const nativeBalance = useBalance({ address });
+  const balance0 = useBalance({ address, token: token0?.address, query: { enabled: !!address } });
+  const balance1 = useBalance({ address, token: token1?.address, query: { enabled: !!address } });
+  const nativeBalance = useBalance({ address, query: { enabled: !!address } });
   const { getAmountFromTo, swap } = useWeb3Functions();
   const { slippageTolerance } = useUserStore();
   const setToken0 = (token?: Token) => useStore.setState({ token0: token });
