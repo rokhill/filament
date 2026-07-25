@@ -18,10 +18,6 @@ const config = {
   routerV2Address: { [lcai.id]: routerAddress } as Record<number, `0x${string}`>,
   factoryV2Address: { [lcai.id]: factoryAddress } as Record<number, `0x${string}`>,
   WETH: { [lcai.id]: wlcaiAddress } as Record<number, `0x${string}`>,
-  // Team's official DAO-controlled contracts — indexed for best-price routing
-  altRouterV2Address: { [lcai.id]: "0x1f94c0A6Cf48D3075f9713A79f87FA4eEdAF7021" as `0x${string}` } as Record<number, `0x${string}`>,
-  altFactoryV2Address: { [lcai.id]: "0xBA502917c3F7233F9100f9430f4048a224A7D8DE" as `0x${string}` } as Record<number, `0x${string}`>,
-  altWETH: { [lcai.id]: "0xeBf97f16d843bFD9d9E6B1857B4C00d94ca7e2B2" as `0x${string}` } as Record<number, `0x${string}`>,
 };
 
 export default config;

@@ -53,20 +53,14 @@ const useWeb3Functions = () => {
     if (isNativeWrappedPair(tokenFrom, tokenTo)) return amount;
 
     try {
-      const amountIn = parseUnits(amount, tokenFrom.decimals);
-      const path: [`0x${string}`, `0x${string}`] = [tokenFrom.address || weth, tokenTo.address || weth];
-      // quote our router
-      const q1 = await routerV2Contract.read.getAmountsOut([amountIn, path]).catch(() => [0n, 0n]);
-      const out1 = (q1 as bigint[])[q1.length - 1] ?? 0n;
-      // quote team router
-      const altWeth = config.altWETH[chain.id];
-      const altPath: [`0x${string}`, `0x${string}`] = [tokenFrom.address || altWeth, tokenTo.address || altWeth];
-      const altRouter = getContract({ address: config.altRouterV2Address[chain.id], abi: routerV2Contract.abi, client: { public: publicClient } });
-      const q2 = await (altRouter as any).read.getAmountsOut([amountIn, altPath]).catch(() => [0n, 0n]);
-      const out2 = (q2 as bigint[])[q2.length - 1] ?? 0n;
-      // return best price
-      const best = out2 > out1 ? out2 : out1;
-      return formatUnits(best, tokenTo.decimals);
+      const tokenAmount = await routerV2Contract.read
+        .getAmountsOut([
+          parseUnits(amount, tokenFrom.decimals),
+          [tokenFrom.address || weth, tokenTo.address || weth],
+        ])
+        .catch(() => [0n, 0n]);
+
+      return formatUnits(tokenAmount[tokenAmount.length - 1], tokenTo.decimals);
     } catch (e) {
       console.log(e);
     }
@@ -156,27 +150,6 @@ const useWeb3Functions = () => {
         await checkAllowance(tokenFrom, amount);
       }
 
-      // pick best router by comparing quotes
-      const altWeth = config.altWETH[chain.id];
-      const altRouterAddr = config.altRouterV2Address[chain.id];
-      let activeRouter: any = routerV2Contract;
-      let activeWeth = weth;
-      try {
-        const testFrom = fromAddress === zeroAddress ? weth : fromAddress;
-        const testTo = toAddress === zeroAddress ? weth : toAddress;
-        const altTestFrom = fromAddress === zeroAddress ? altWeth : fromAddress;
-        const altTestTo = toAddress === zeroAddress ? altWeth : toAddress;
-        const altRouterContract = getContract({address:altRouterAddr,abi:routerV2Contract.abi,client:{public:publicClient,wallet:walletClient!}});
-        const withTimeout = (p: Promise<any>, ms: number) => Promise.race([p, new Promise(r => setTimeout(()=>r([0n,0n]),ms))]);
-        const [q1,q2] = await Promise.all([
-          withTimeout(routerV2Contract.read.getAmountsOut([amount,[testFrom,testTo]]).catch(()=>[0n,0n]), 3000),
-          withTimeout((altRouterContract as any).read.getAmountsOut([amount,[altTestFrom,altTestTo]]).catch(()=>[0n,0n]), 3000),
-        ]);
-        const out1=(q1 as bigint[])[q1.length-1]??0n;
-        const out2=(q2 as bigint[])[q2.length-1]??0n;
-        if(out2>out1){activeRouter=altRouterContract;activeWeth=altWeth;}
-      } catch {}
-
       let methods: ContractFunctionName<
         typeof routerV2Contract.abi,
         "payable" | "nonpayable"
@@ -184,13 +157,13 @@ const useWeb3Functions = () => {
       let path: `0x${string}`[] = [];
 
       if (fromAddress === zeroAddress) {
-        path = [activeWeth, toAddress];
+        path = [weth, toAddress];
         methods = [
           "swapETHForExactTokens",
           "swapExactETHForTokensSupportingFeeOnTransferTokens",
         ];
       } else if (toAddress === zeroAddress) {
-        path = [fromAddress, activeWeth];
+        path = [fromAddress, weth];
         methods = [
           "swapExactTokensForETH",
           "swapExactTokensForETHSupportingFeeOnTransferTokens",
@@ -208,8 +181,8 @@ const useWeb3Functions = () => {
       const ethParams = [amountOutMin, path, address, deadline] as const;
 
       const options = {
-        abi: activeRouter.abi,
-        address: activeRouter.address,
+        abi: routerV2Contract.abi,
+        address: routerV2Contract.address,
         account: address,
         value: path[0] === weth ? amount : (undefined as any),
         args: path[0] === weth ? ethParams : (params as any),
