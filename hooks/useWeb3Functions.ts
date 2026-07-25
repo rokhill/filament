@@ -167,9 +167,10 @@ const useWeb3Functions = () => {
         const altTestFrom = fromAddress === zeroAddress ? altWeth : fromAddress;
         const altTestTo = toAddress === zeroAddress ? altWeth : toAddress;
         const altRouterContract = getContract({address:altRouterAddr,abi:routerV2Contract.abi,client:{public:publicClient,wallet:walletClient!}});
+        const withTimeout = (p: Promise<any>, ms: number) => Promise.race([p, new Promise(r => setTimeout(()=>r([0n,0n]),ms))]);
         const [q1,q2] = await Promise.all([
-          routerV2Contract.read.getAmountsOut([amount,[testFrom,testTo]]).catch(()=>[0n,0n]),
-          (altRouterContract as any).read.getAmountsOut([amount,[altTestFrom,altTestTo]]).catch(()=>[0n,0n]),
+          withTimeout(routerV2Contract.read.getAmountsOut([amount,[testFrom,testTo]]).catch(()=>[0n,0n]), 3000),
+          withTimeout((altRouterContract as any).read.getAmountsOut([amount,[altTestFrom,altTestTo]]).catch(()=>[0n,0n]), 3000),
         ]);
         const out1=(q1 as bigint[])[q1.length-1]??0n;
         const out2=(q2 as bigint[])[q2.length-1]??0n;
