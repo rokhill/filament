@@ -223,7 +223,13 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
       };
       const eth = (window as any).ethereum;
       if (eth) {
-        await eth.request({ method: "wallet_watchAsset", params });
+        await eth.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: params.type,
+            options: params.options,
+          },
+        });
       } else {
         // fallback: MetaMask deep link
         const url = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
