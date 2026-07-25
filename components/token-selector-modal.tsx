@@ -27,9 +27,9 @@ type Props = {
 const TokenSelectorModal = ({ open, setOpen, selectedToken }: Props) => {
   const { tokens, findToken } = useTokens();
   const { fetchCoins } = useForge();
-  const [graduatedAddrs, setGraduatedAddrs] = React.useState<Set<string>>(new Set());
+  const [graduatedAddrs, setGraduatedAddrs] = React.useState<Set<string> | null>(null);
   React.useEffect(() => {
-    fetchCoins().then(coins => setGraduatedAddrs(new Set(coins.filter(c => c.graduated).map(c => c.address.toLowerCase())))).catch(() => {});
+    fetchCoins().then(coins => setGraduatedAddrs(new Set(coins.filter(c => c.graduated).map(c => c.address.toLowerCase())))).catch(() => setGraduatedAddrs(new Set()));
   }, []);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -124,7 +124,7 @@ const TokenSelectorModal = ({ open, setOpen, selectedToken }: Props) => {
           ) : filteredTokens.length > 0 ? (
             filteredTokens.map((token, index) => {
               const isWlcai = token.symbol === "WLCAI";
-              const isForge = !!token.address && token.symbol !== "LCAI" && !isWlcai && !graduatedAddrs.has(token.address.toLowerCase());
+              const isForge = graduatedAddrs !== null && !!token.address && token.symbol !== "LCAI" && !isWlcai && !graduatedAddrs.has(token.address.toLowerCase());
               return (
                 <button
                   key={index}
