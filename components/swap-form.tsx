@@ -169,7 +169,7 @@ export default function SwapForm() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 grid z-[1] bg-[#e1e3f6] dark:bg-[#080808]">
-        <div className="space-y-2 pt-4 px-4 pb-10 rounded-lg bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border-2 border-[rgba(from_var(--clr-primary)_r_g_b/.1)]">
+        <div className="space-y-2 pt-4 px-4 pb-10 rounded-lg bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border border-[rgba(255,140,30,0.25)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="text-sm text-[var(--clr-body)] font-medium leading-[1.71]">
               You Pay
@@ -192,7 +192,7 @@ export default function SwapForm() {
             onChange={(e) => setAmount0(e.currentTarget.value)}
             readOnly={!isConnected || !token0}
             className={cn(
-              "w-full px-0.5 py-3 text-2xl font-semibold leading-[1.16] outline-none text-[var(--clr-heading)] placeholder:text-[var(--clr-heading)] border-b border-[rgba(112,100,233,0.16)]",
+              "w-full px-0.5 py-3 text-2xl font-semibold leading-[1.16] outline-none text-[var(--clr-heading)] placeholder:text-[var(--clr-heading)] border-b border-[rgba(255,140,30,0.2)]",
               {
                 "text-destructive !border-destructive": insufficientBalance,
               }
@@ -222,7 +222,7 @@ export default function SwapForm() {
             </button>
           </div>
         </div>
-        <div className="space-y-2 pt-4 px-4 pb-4 rounded-lg bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border-2 border-[rgba(from_var(--clr-primary)_r_g_b/.1)]">
+        <div className="space-y-2 pt-4 px-4 pb-4 rounded-lg bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] border border-[rgba(255,140,30,0.25)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="text-sm text-[var(--clr-body)] font-medium leading-[1.71]">
               You Get
@@ -243,7 +243,7 @@ export default function SwapForm() {
             placeholder="0.0"
             readOnly={true}
             className={cn(
-              "w-full px-0.5 py-3 text-2xl font-semibold leading-[1.16] outline-none text-[var(--clr-heading)] placeholder:text-[var(--clr-heading)] border-b border-[rgba(112,100,233,0.16)]",
+              "w-full px-0.5 py-3 text-2xl font-semibold leading-[1.16] outline-none text-[var(--clr-heading)] placeholder:text-[var(--clr-heading)] border-b border-[rgba(255,140,30,0.2)]",
               {
                 // "text-destructive !border-destructive": insufficientBalance,
               }
