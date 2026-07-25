@@ -36,7 +36,7 @@ export type ForgeTrade = {
 const SLIPPAGE_BPS = 200n; // 2% default guard on curve trades
 
 export default function useForge() {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { publicClient, walletClient } = useWeb3Clients();
 
   const forgeRead = getContract({
@@ -82,7 +82,6 @@ export default function useForge() {
   }, [publicClient]);
 
   const fetchCoins = useCallback(async (): Promise<ForgeCoin[]> => {
-    if (!isConnected) return [];
     return fetchFromForge(FORGE_ADDRESS, false);
   }, [fetchFromForge]);
 
@@ -91,7 +90,6 @@ export default function useForge() {
   // ------------------------------------------------------------ detail
   const fetchCoin = useCallback(
     async (a: `0x${string}`): Promise<ForgeCoin | null> => {
-    if (!isConnected) return null;
       const t = getContract({ abi: launchTokenAbi, address: a, client: { public: publicClient } });
       try {
         const [curve, stats, name, symbol, pair] = await Promise.all([
@@ -123,7 +121,6 @@ export default function useForge() {
 
   const fetchTrades = useCallback(
     async (a: `0x${string}`): Promise<ForgeTrade[]> => {
-    if (!isConnected) return [];
       try {
         const logs = await publicClient.getContractEvents({
           address: FORGE_ADDRESS,
@@ -296,7 +293,6 @@ export default function useForge() {
   // convenience read wrappers for live quoting in the UI
   const quoteBuy = useCallback(
     async (token: `0x${string}`, lcaiIn: string) => {
-    if (!isConnected) return 0n;
       try {
         return await forgeRead.read.quoteBuy([token, parseEther(lcaiIn)]);
       } catch {
@@ -308,7 +304,6 @@ export default function useForge() {
 
   const quoteSell = useCallback(
     async (token: `0x${string}`, amount: bigint) => {
-    if (!isConnected) return 0n;
       try {
         return await forgeRead.read.quoteSell([token, amount]);
       } catch {
