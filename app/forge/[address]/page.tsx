@@ -212,21 +212,24 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           ? "https://ipfs.io/ipfs/" + coin.metadata.image.slice(7)
           : coin.metadata.image
         : undefined;
-      const eth = (window as any).ethereum;
-      if (!eth) return;
-      await eth.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: token,
-            symbol: coin?.symbol ?? "",
-            decimals: 18,
-            ...(img ? { image: img } : {}),
-          },
+      const params = {
+        type: "ERC20",
+        options: {
+          address: token,
+          symbol: coin?.symbol ?? "",
+          decimals: 18,
+          ...(img ? { image: img } : {}),
         },
-      });
-    } catch {}
+      };
+      const eth = (window as any).ethereum;
+      if (eth) {
+        await eth.request({ method: "wallet_watchAsset", params });
+      } else {
+        // fallback: MetaMask deep link
+        const url = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
+        window.open(url, "_blank");
+      }
+    } catch(e) { console.error("watchAsset error:", e); }
   };
   const { address } = use(params);
   const token = address as `0x${string}`;
