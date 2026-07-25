@@ -50,7 +50,6 @@ const useWeb3Functions = () => {
     tokenTo: Token
   ) => {
     if (!tokenFrom || !tokenTo) return 0;
-    if (!address) return 0;
     if (isNativeWrappedPair(tokenFrom, tokenTo)) return amount;
 
     try {

@@ -190,7 +190,7 @@ export default function SwapForm() {
             value={amount0}
             placeholder="0.0"
             onChange={(e) => setAmount0(e.currentTarget.value)}
-            readOnly={!isConnected || !token0}
+            readOnly={!token0}
             className={cn(
               "w-full px-0.5 py-3 text-2xl font-semibold leading-[1.16] outline-none text-[var(--clr-heading)] placeholder:text-[var(--clr-heading)] border-b border-[rgba(255,140,30,0.2)]",
               {
