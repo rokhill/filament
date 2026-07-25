@@ -37,61 +37,75 @@ export default function Pools() {
 
     const loadMyPools = async () => {
         if (!address) { setLoadingPage(false); return; }
-
         setLoadingPage(true);
-
-        const WETH = config.WETH[chain.id];
-        const pairAddresses = await Promise.all(
-            Object.values(pairTokens[chain.id] || {}).map(([token0, token1]) =>
-                factoryV2Contract.read.getPair([
-                    token0.address || WETH,
-                    token1.address || WETH,
-                ])
-            )
-        );
-
-        const pairs = await Promise.all(
-            pairAddresses.map((pairAddress, index) => {
-                if (pairAddress === zeroAddress) return Promise.resolve(undefined);
-                const pair = getContract({
-                    address: pairAddress,
-                    abi: pairAbi,
-                    client: publicClient,
-                });
-                const tokens = Object.values(pairTokens[chain.id] || {})[index];
-                return Promise.all([
-                    pairAddress,
-                    tokens[0],
-                    tokens[1],
-                    pair.read.getReserves(),
-                    pair.read.balanceOf([address]),
-                    pair.read.totalSupply(),
-                ]);
-            })
-        );
-
-        setPairs(
-            pairs
-                .filter((pair) => pair && pair[4] > 0n)
-                .map(
-                    (
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        [pairAddress, token0, token1, reserves, liquidity, totalSupply]
-                    ) => ({
-                        address: pairAddress,
-                        token0,
-                        token1,
-                        liquidity,
-                        reserve0: reserves[0],
-                        reserve1: reserves[1],
-                        amount0: BigInt((liquidity * reserves[0]) / totalSupply),
-                        amount1: BigInt((liquidity * reserves[1]) / totalSupply),
+        try {
+            const FACTORIES = [
+                "0x5Cf3b069dDB232d1adc5139a9eFb30C48F629389",
+                "0xBA502917c3F7233F9100f9430f4048a224A7D8DE",
+            ] as const;
+            const erc20Mini = [
+                {type:"function",name:"symbol",inputs:[],outputs:[{type:"string"}],stateMutability:"view"},
+                {type:"function",name:"name",inputs:[],outputs:[{type:"string"}],stateMutability:"view"},
+            ] as const;
+            const allPairs: Pair[] = [];
+            for (const factory of FACTORIES) {
+                const logs = await publicClient.getLogs({address:factory,fromBlock:0n,toBlock:"latest"});
+                for (const l of logs) {
+                    if (!l.topics[1]||!l.topics[2]) continue;
+                    const pairAddress = ("0x"+l.data.slice(26,66)) as `0x${string}`;
+                    const t0addr = ("0x"+l.topics[1].slice(26)) as `0x${string}`;
+                    const t1addr = ("0x"+l.topics[2].slice(26)) as `0x${string}`;
+                    const pair = getContract({address:pairAddress,abi:pairAbi,client:publicClient});
+                    const lpBalance = await pair.read.balanceOf([address]);
+                    if (lpBalance === 0n) continue;
+                    const [reserves, totalSupply] = await Promise.all([
+                        pair.read.getReserves(),
+                        pair.read.totalSupply(),
+                    ]);
+                    const [sym0,sym1,name0,name1] = await Promise.all([
+                        publicClient.readContract({address:t0addr,abi:erc20Mini,functionName:"symbol"}).catch(()=>"LCAI"),
+                        publicClient.readContract({address:t1addr,abi:erc20Mini,functionName:"symbol"}).catch(()=>"LCAI"),
+                        publicClient.readContract({address:t0addr,abi:erc20Mini,functionName:"name"}).catch(()=>"LightChainAI"),
+                        publicClient.readContract({address:t1addr,abi:erc20Mini,functionName:"name"}).catch(()=>"LightChainAI"),
+                    ]);
+                    const token0 = {address:t0addr,symbol:sym0,name:name0,decimals:18,chainId:chain.id};
+                    const token1 = {address:t1addr,symbol:sym1,name:name1,decimals:18,chainId:chain.id};
+                    allPairs.push({
+                        address:pairAddress, token0, token1,
+                        liquidity:lpBalance,
+                        reserve0:reserves[0], reserve1:reserves[1],
+                        amount0:totalSupply>0n?lpBalance*reserves[0]/totalSupply:0n,
+                        amount1:totalSupply>0n?lpBalance*reserves[1]/totalSupply:0n,
                         totalSupply,
-                    })
-                ) as Pair[]
-        );
-
+                    } as Pair);
+                }
+            }
+            // also include manually imported pairs
+            const WETH = config.WETH[chain.id];
+            const importedAddresses = await Promise.all(
+                Object.values(pairTokens[chain.id]||{}).map(([t0,t1]) =>
+                    factoryV2Contract.read.getPair([t0.address||WETH, t1.address||WETH])
+                )
+            );
+            for (const [idx, pairAddress] of importedAddresses.entries()) {
+                if (pairAddress===zeroAddress) continue;
+                if (allPairs.find(p=>p.address.toLowerCase()===pairAddress.toLowerCase())) continue;
+                const pair = getContract({address:pairAddress,abi:pairAbi,client:publicClient});
+                const lpBalance = await pair.read.balanceOf([address]);
+                if (lpBalance===0n) continue;
+                const [reserves,totalSupply] = await Promise.all([pair.read.getReserves(),pair.read.totalSupply()]);
+                const tokens = Object.values(pairTokens[chain.id]||{})[idx];
+                allPairs.push({
+                    address:pairAddress, token0:tokens[0], token1:tokens[1],
+                    liquidity:lpBalance,
+                    reserve0:reserves[0], reserve1:reserves[1],
+                    amount0:totalSupply>0n?lpBalance*reserves[0]/totalSupply:0n,
+                    amount1:totalSupply>0n?lpBalance*reserves[1]/totalSupply:0n,
+                    totalSupply,
+                } as Pair);
+            }
+            setPairs(allPairs);
+        } catch(e) { console.error(e); }
         setLoadingPage(false);
     };
 

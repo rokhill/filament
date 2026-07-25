@@ -1,7 +1,7 @@
 "use client";
 import GraduationBanner from "@/components/GraduationBanner";
 import SparkButton from "@/components/SparkButton";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { useChainGuard } from "@/hooks/useChainGuard";
 
 import { use, useEffect, useMemo, useState } from "react";
@@ -204,6 +204,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
 export default function CoinPage({ params }: { params: Promise<{ address: string }> }) {
   useChainGuard();
   const { address: walletAddress } = useAccount();
+  const { data: walletClient } = useWalletClient();
   const addToWallet = async () => {
     try {
       const img = coin?.metadata?.image
