@@ -184,8 +184,8 @@ export default function SwapForm() {
             />
           </div>
           <input
-            type="number"
-            min={0}
+            type="text"
+            inputMode="decimal"
             id="token0"
             value={amount0}
             placeholder="0.0"
