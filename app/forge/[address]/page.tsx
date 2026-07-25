@@ -298,6 +298,13 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
             <a href={`https://mainnet.lightscan.app/address/${coin.address}`} target="_blank" className="underline">
               {shortAddr(coin.address)}
             </a>
+            <button
+              onClick={() => navigator.clipboard.writeText(coin.address).then(() => alert("Address copied! In MetaMask tap Import Tokens, paste address and tap Next."))}
+              className="text-xs font-semibold hover:opacity-80 transition-opacity"
+              style={{ color: "var(--ae-aurum)" }}
+            >
+              📋 Copy to add to wallet
+            </button>
             <span>
               creator {shortAddr(coin.creator)} holds{" "}
               <b style={{ color: creatorPct > 10 ? "var(--clr-warning)" : "var(--clr-success)" }}>
