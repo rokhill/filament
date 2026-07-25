@@ -145,20 +145,11 @@ export default function SwapForm() {
   };
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout | undefined;
-    if (chain) {
-      timeout = setTimeout(() => {
-        useStore.setState({
-          token0: tokens[0],
-          token1: tokens.find((token) => token.symbol === "USDT"),
-        });
-      }, 100);
+    if (!token0 && tokens.length > 0) {
+      useStore.setState({ token0: tokens[0] });
     }
-
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [chain]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokens.length, token0]);
 
   return (
     <Card className="border border-[rgba(255,140,30,0.5)] p-0 gap-0 shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden">
