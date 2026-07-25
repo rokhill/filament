@@ -59,8 +59,19 @@ const useWeb3Functions = () => {
           [tokenFrom.address || weth, tokenTo.address || weth],
         ])
         .catch(() => [0n, 0n]);
-
-      return formatUnits(tokenAmount[tokenAmount.length - 1], tokenTo.decimals);
+      const out1 = tokenAmount[tokenAmount.length - 1] as bigint ?? 0n;
+      // sequentially check alt router — only if ours returns 0
+      let best = out1;
+      if (out1 === 0n) {
+        const altWeth = config.altWETH[chain.id];
+        const altRouter = getContract({ address: config.altRouterV2Address[chain.id], abi: routerV2Contract.abi, client: { public: publicClient } });
+        const q2 = await (altRouter as any).read.getAmountsOut([
+          parseUnits(amount, tokenFrom.decimals),
+          [tokenFrom.address || altWeth, tokenTo.address || altWeth],
+        ]).catch(() => [0n, 0n]);
+        best = (q2 as bigint[])[q2.length - 1] ?? 0n;
+      }
+      return formatUnits(best, tokenTo.decimals);
     } catch (e) {
       console.log(e);
     }
