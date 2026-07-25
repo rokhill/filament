@@ -3,6 +3,7 @@ import GraduationBanner from "@/components/GraduationBanner";
 import SparkButton from "@/components/SparkButton";
 import { useAccount } from "wagmi";
 import { useChainGuard } from "@/hooks/useChainGuard";
+import useWeb3Clients from "@/hooks/useWeb3Clients";
 
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
