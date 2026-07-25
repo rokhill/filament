@@ -306,9 +306,13 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                 {creatorPct.toFixed(1)}%
               </b>
             </span>
-            <button onClick={addToWallet} className="text-xs underline hover:opacity-80 transition-opacity relative z-10" style={{ color: "var(--ae-aurum)" }}>
+            {typeof window !== "undefined" && (window as any).ethereum ? (
+              <button onClick={addToWallet} className="text-xs underline hover:opacity-80 transition-opacity relative z-10" style={{ color: "var(--ae-aurum)" }}>
                 + Add to wallet
               </button>
+            ) : (
+              <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>Open in MetaMask browser to add token</span>
+            )}
             {socials.filter(([, u]) => u).map(([label, u]) => (
               <a key={label} href={u} target="_blank" rel="noopener noreferrer" className="underline">
                 {label}
