@@ -386,6 +386,10 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                   <div style={{ color: "var(--ae-nebula)" }}>Contract</div>
                   <a href={`https://mainnet.lightscan.app/address/${coin.address}`} target="_blank" rel="noopener noreferrer" className="font-semibold mt-0.5 underline block truncate" style={{ color: "var(--ae-aurum)" }}>{coin.address.slice(0,6)}…{coin.address.slice(-4)} ↗</a>
                   <div style={{ color: "var(--ae-nebula)" }}>View on Lightscan</div>
+                  <a href={`https://mainnet.lightscan.app/address/${coin.address}?tab=contract`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="text-xs underline mt-1 block"
+                    style={{ color: "var(--ae-nebula)" }}>Verify contract →</a>
                 </div>
               </div>
             </div>
