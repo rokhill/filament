@@ -4,6 +4,7 @@ import SparkButton from "@/components/SparkButton";
 import { useAccount } from "wagmi";
 import { useChainGuard } from "@/hooks/useChainGuard";
 import useWeb3Clients from "@/hooks/useWeb3Clients";
+import useMarkets from "@/hooks/useMarkets";
 
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -238,6 +239,8 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   const [trades, setTrades] = useState<ForgeTrade[]>([]);
   const [creatorBal, setCreatorBal] = useState<bigint>(0n);
   const [dexPrice, setDexPrice] = useState<number | null>(null);
+  const [lcaiUsd, setLcaiUsd] = useState(0);
+  const { fetchStats } = useMarkets();
 
   const load = async () => {
     const c = await fetchCoin(token);
@@ -245,6 +248,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
     if (c) {
       fetchTrades(token).then(setTrades);
       fetchCreatorBalance(token, c.creator).then(setCreatorBal);
+      fetchStats().then(s => { if (s) setLcaiUsd(s.priceUsd); }).catch(()=>{});
       if (c.graduated && c.pair && c.pair !== "0x0000000000000000000000000000000000000000") {
         const PAIR_ABI = [{type:"function",name:"getReserves",inputs:[],outputs:[{type:"uint112"},{type:"uint112"},{type:"uint32"}],stateMutability:"view"},{type:"function",name:"token0",inputs:[],outputs:[{type:"address"}],stateMutability:"view"}] as const;
         const WLCAI = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
@@ -341,9 +345,14 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           <div className="text-xs" style={{ color: "var(--ae-nebula)" }}>{coin.graduated ? "DEX Price" : "Price"}</div>
           <div className="text-lg font-semibold" style={{ color: "var(--clr-heading)" }}>
             {coin.graduated && dexPrice !== null
-              ? <>{dexPrice.toFixed(6)} <span className="text-xs">LCAI</span></>
+              ? lcaiUsd > 0
+                ? <>${(dexPrice * lcaiUsd).toFixed(8)}</>
+                : <>{dexPrice.toFixed(6)} <span className="text-xs">LCAI</span></>
               : <>{Number(formatEther(coin.priceWei)).toPrecision(4)} <span className="text-xs">LCAI</span></>}
           </div>
+          {coin.graduated && dexPrice !== null && lcaiUsd > 0 && (
+            <div className="text-xs" style={{ color: "var(--ae-nebula)" }}>{dexPrice.toFixed(6)} LCAI</div>
+          )}
         </div>
       </div>
 

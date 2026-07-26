@@ -12,6 +12,7 @@ const Footer = () => {
           <div className="swap__footer-right flex justify-center order-1 sm:order-2 pb-3 sm:pb-0">
             <ul className="swap__footer-list flex items-center">
               <li>
+                <Link href="https://discord.gg/bbqvSB8wtM" target="_blank" rel="noopener noreferrer" style={{color:"var(--ae-aurum)",fontWeight:600}}>💬 Filament Discord</Link>
                 <Link href="https://x.com/LightchainAI">
                   <i className="fa-brands fa-twitter" />
                 </Link>
