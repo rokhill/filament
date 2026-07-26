@@ -118,7 +118,7 @@ export default function Pools() {
     useEffect(() => {
         loadMyPools();
         fetchStats().then(s => { if (s) setLcaiUsd(s.priceUsd); }).catch(()=>{});
-        fetchCoins().then(coins => {
+        if (address) fetchCoins().then(coins => {
             const m: Record<string,string> = {};
             coins.forEach(c => {
                 if (c.metadata?.image) {
