@@ -162,7 +162,7 @@ export default function Explore(){
             {pairs.map((p,i)=>{
               const up=p.change>=0;
               return(
-                <Link key={p.pair} href={`/?outputToken=${p.token}`}
+                <Link key={p.pair} href={`/forge/${p.token}`}
                   className="f-card rounded-2xl px-4 py-3.5 hover:-translate-y-0.5 transition-all block">
                   {/* desktop row */}
                   <div className="hidden sm:flex items-center gap-3">
