@@ -20,6 +20,7 @@ import useUserStore from "@/store/user-store";
 import { Pair } from "@/types/Pair";
 import { useEffect, useState } from "react";
 import { formatEther, formatUnits, getContract, zeroAddress } from "viem";
+import useMarkets from "@/hooks/useMarkets";
 import { useAccount } from "wagmi";
 import { useAppKit } from "@reown/appkit/react";
 import Link from "next/link";
@@ -34,6 +35,8 @@ export default function Pools() {
     const { pairs: pairTokens } = useUserStore();
     const { factoryV2Contract } = useContracts();
     const [pairs, setPairs] = useState<Pair[]>([]);
+    const [lcaiUsd, setLcaiUsd] = useState(0);
+    const { fetchStats } = useMarkets();
 
     const loadMyPools = async () => {
         if (!address) { setLoadingPage(false); return; }
@@ -111,6 +114,7 @@ export default function Pools() {
 
     useEffect(() => {
         loadMyPools();
+        fetchStats().then(s => { if (s) setLcaiUsd(s.priceUsd); }).catch(()=>{});
     }, [address, chain]);
 
     return (
@@ -180,13 +184,26 @@ export default function Pools() {
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent className="grid grid-cols-1 gap-4">
+                                            {lcaiUsd > 0 && (() => {
+                                                const wlcai = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
+                                                const t0isWlcai = pair.token0.address?.toLowerCase() === wlcai;
+                                                const t1isWlcai = pair.token1.address?.toLowerCase() === wlcai;
+                                                const lcaiAmt = t0isWlcai ? Number(formatUnits(pair.amount0, 18)) : t1isWlcai ? Number(formatUnits(pair.amount1, 18)) : 0;
+                                                const totalUsd = lcaiAmt * 2 * lcaiUsd;
+                                                return totalUsd > 0 ? (
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl p-3" style={{background:"rgba(255,140,30,.08)",border:"1px solid rgba(255,140,30,.2)"}}>
+                                                        <span className="font-semibold" style={{color:"var(--ae-aurum)"}}>Estimated Position Value</span>
+                                                        <span className="font-bold text-lg" style={{color:"var(--ae-aurum)"}}>${totalUsd.toLocaleString(undefined,{maximumFractionDigits:2})}</span>
+                                                    </div>
+                                                ) : null;
+                                            })()}
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <span>Your Total Pool Tokens:</span>
                                                 <span>{formatNumber(formatEther(pair.liquidity))}</span>
                                             </div>
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <span>
-                                                    Pooled {pair.token0.symbol}:
+                                                    Pooled {pair.token0.symbol === "WLCAI" ? "LCAI (wrapped)" : pair.token0.symbol}:
                                                 </span>
                                                 <div className="flex items-center gap-2">
                                                     <span className="">
@@ -194,7 +211,6 @@ export default function Pools() {
                                                             formatUnits(pair.amount0, pair.token0.decimals)
                                                         )}
                                                     </span>
-
                                                     <img
                                                         src={pair.token0.logoURI}
                                                         alt={pair.token0.symbol}
@@ -204,22 +220,23 @@ export default function Pools() {
                                             </div>
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <span>
-                                                    Pooled {pair.token1.symbol}:
+                                                    Pooled {pair.token1.symbol === "WLCAI" ? "LCAI (wrapped)" : pair.token1.symbol}:
                                                 </span>
-
                                                 <div className="flex items-center gap-2">
                                                     <span className="">
                                                         {formatNumber(
                                                             formatUnits(pair.amount1, pair.token1.decimals)
                                                         )}
                                                     </span>
-
                                                     <img
                                                         src={pair.token1.logoURI}
                                                         alt={pair.token1.symbol}
                                                         className="object-contain w-4 h-4 rounded-full"
                                                     />
                                                 </div>
+                                            </div>
+                                            <div className="text-xs rounded-xl p-3" style={{background:"rgba(255,140,30,.06)",color:"var(--ae-nebula)"}}>
+                                                ⚠️ <strong>Impermanent loss warning:</strong> If the price of your tokens changes significantly since you added liquidity, you may receive less value than if you had simply held them. <a href="/pools/guide" style={{color:"var(--ae-aurum)"}}>Learn more →</a>
                                             </div>
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <span>Your Pool Share:</span>
