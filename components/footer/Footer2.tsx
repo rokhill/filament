@@ -18,6 +18,7 @@ const Footer = () => {
           <Link href="/guide">Guide</Link>
           <Link href="/forge/guide">Forge Guide</Link>
           <a href="https://mainnet.lightscan.app" target="_blank" rel="noopener noreferrer">Explorer</a>
+          <a href="https://discord.gg/bbqvSB8wtM" target="_blank" rel="noopener noreferrer" style={{color:"var(--ae-aurum)",fontWeight:600}}>💬 Need help?</a>
           <Link href="/disclaimer" className="fil-footer-legal">Risk Disclaimer</Link>
         </div>
       </div>
