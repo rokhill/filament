@@ -415,11 +415,22 @@ function CreateModal({
             </p>
             <div className="mt-3 rounded-lg px-3 py-2 text-xs font-semibold"
               style={{ background: "var(--ae-night)", border: "1px solid rgba(255,140,30,0.4)", color: "var(--clr-heading)" }}>
-              Creation fee {fmtLcai(fee, 0)} LCAI
-              {Number(initialBuy) > 0 ? ` + your buy ${initialBuy} LCAI = ` : " · total "}
-              <span style={{ color: "var(--ae-aurum-bright)" }}>
-                {fmtLcai(fee + (Number(initialBuy) > 0 ? parseEther(initialBuy) : 0n), 0)} LCAI total
-              </span>
+              <div className="flex justify-between items-center">
+                <span>Creation fee</span>
+                <span>{fmtLcai(fee, 0)} LCAI</span>
+              </div>
+              {Number(initialBuy) > 0 && (
+                <div className="flex justify-between items-center mt-1">
+                  <span>Initial buy</span>
+                  <span>{initialBuy} LCAI</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center mt-1 pt-1" style={{borderTop:"1px solid rgba(255,140,30,0.2)"}}>
+                <span style={{color:"var(--ae-aurum)"}}>Total</span>
+                <span style={{color:"var(--ae-aurum-bright)"}}>
+                  {fmtLcai(fee + (Number(initialBuy) > 0 ? parseEther(initialBuy) : 0n), 0)} LCAI
+                </span>
+              </div>
             </div>
           </div>
         </div>
