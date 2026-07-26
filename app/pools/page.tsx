@@ -21,6 +21,7 @@ import { Pair } from "@/types/Pair";
 import { useEffect, useState } from "react";
 import { formatEther, formatUnits, getContract, zeroAddress } from "viem";
 import useMarkets from "@/hooks/useMarkets";
+import useForge from "@/hooks/useForge";
 import { useAccount } from "wagmi";
 import { useAppKit } from "@reown/appkit/react";
 import Link from "next/link";
@@ -36,7 +37,9 @@ export default function Pools() {
     const { factoryV2Contract } = useContracts();
     const [pairs, setPairs] = useState<Pair[]>([]);
     const [lcaiUsd, setLcaiUsd] = useState(0);
+    const [logoMap, setLogoMap] = useState<Record<string,string>>({});
     const { fetchStats } = useMarkets();
+    const { fetchCoins } = useForge();
 
     const loadMyPools = async () => {
         if (!address) { setLoadingPage(false); return; }
@@ -71,8 +74,8 @@ export default function Pools() {
                         publicClient.readContract({address:t0addr,abi:erc20Mini,functionName:"name"}).catch(()=>"LightChainAI"),
                         publicClient.readContract({address:t1addr,abi:erc20Mini,functionName:"name"}).catch(()=>"LightChainAI"),
                     ]);
-                    const token0 = {address:t0addr,symbol:sym0,name:name0,decimals:18,chainId:chain.id};
-                    const token1 = {address:t1addr,symbol:sym1,name:name1,decimals:18,chainId:chain.id};
+                    const token0 = {address:t0addr,symbol:sym0,name:name0,decimals:18,chainId:chain.id,logoURI:logoMap[t0addr.toLowerCase()]||""};
+                    const token1 = {address:t1addr,symbol:sym1,name:name1,decimals:18,chainId:chain.id,logoURI:logoMap[t1addr.toLowerCase()]||""};
                     allPairs.push({
                         address:pairAddress, token0, token1,
                         liquidity:lpBalance,
@@ -115,6 +118,16 @@ export default function Pools() {
     useEffect(() => {
         loadMyPools();
         fetchStats().then(s => { if (s) setLcaiUsd(s.priceUsd); }).catch(()=>{});
+        fetchCoins().then(coins => {
+            const m: Record<string,string> = {};
+            coins.forEach(c => {
+                if (c.metadata?.image) {
+                    const img = c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+c.metadata.image.slice(7) : c.metadata.image;
+                    m[c.address.toLowerCase()] = img;
+                }
+            });
+            setLogoMap(m);
+        }).catch(()=>{});
     }, [address, chain]);
 
     return (
