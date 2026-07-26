@@ -419,12 +419,10 @@ function CreateModal({
                 <span>Creation fee</span>
                 <span>{fmtLcai(fee, 0)} LCAI</span>
               </div>
-              {Number(initialBuy) > 0 && (
-                <div className="flex justify-between items-center mt-1">
+              <div className="flex justify-between items-center mt-1">
                   <span>Initial buy</span>
-                  <span>{initialBuy} LCAI</span>
+                  <span>{Number(initialBuy) > 0 ? `${initialBuy} LCAI` : "—"}</span>
                 </div>
-              )}
               <div className="flex justify-between items-center mt-1 pt-1" style={{borderTop:"1px solid rgba(255,140,30,0.2)"}}>
                 <span style={{color:"var(--ae-aurum)"}}>Total</span>
                 <span style={{color:"var(--ae-aurum-bright)"}}>
