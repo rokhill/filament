@@ -554,7 +554,6 @@ export default function ForgePage() {
   const [fee, setFee] = useState<bigint>(0n);
   const [activity, setActivity] = useState<(ForgeTrade & { token: `0x${string}` })[]>([]);
   const [lcaiUsd, setLcaiUsd] = useState<number>(0);
-  const [showCreate, setShowCreate] = useState(false);
   const [localBlocked, setLocalBlocked] = useState<string[]>([]);
   const isAdmin = address?.toLowerCase() === ADMIN_WALLET;
   const blocked = [...BLOCKED_COINS.map(a => a.toLowerCase()), ...localBlocked];
@@ -647,9 +646,7 @@ export default function ForgePage() {
             New here? Read how it works →
           </Link>
         </p>
-        <button className="forge-cta forge-intro-cta" onClick={() => setShowCreate(true)}>
-          + Forge a coin
-        </button>
+        <a href="/forge/create" className="forge-cta forge-intro-cta">+ Forge a coin</a>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap my-6">
@@ -720,7 +717,6 @@ export default function ForgePage() {
           ))}
         </div>
       )}
-      {showCreate && <CreateModal fee={fee} onClose={() => setShowCreate(false)} onCreated={load} />}
     </main>
   );
 }
