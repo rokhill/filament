@@ -377,20 +377,17 @@ const useWeb3Functions = () => {
         signature.s,
       ] as const;
 
-      if (
-        pair.token1.address &&
-        pair.token0.symbol === chain.nativeCurrency.symbol
-      ) {
-        simulate = await routerV2Contract.simulate.removeLiquidityETHWithPermit(
-          [pair.token1.address, liquidity, amountMin1, amountMin0, ...params],
-          { account: address }
-        );
-      } else if (
-        pair.token0.address &&
-        pair.token1.symbol === chain.nativeCurrency.symbol
-      ) {
+      const wlcaiAddr = weth.toLowerCase();
+      const t0isWlcai = pair.token0.address?.toLowerCase() === wlcaiAddr;
+      const t1isWlcai = pair.token1.address?.toLowerCase() === wlcaiAddr;
+      if (t1isWlcai && pair.token0.address) {
         simulate = await routerV2Contract.simulate.removeLiquidityETHWithPermit(
           [pair.token0.address, liquidity, amountMin0, amountMin1, ...params],
+          { account: address }
+        );
+      } else if (t0isWlcai && pair.token1.address) {
+        simulate = await routerV2Contract.simulate.removeLiquidityETHWithPermit(
+          [pair.token1.address, liquidity, amountMin1, amountMin0, ...params],
           { account: address }
         );
       } else if (pair.token0.address && pair.token1.address) {
