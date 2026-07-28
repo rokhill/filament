@@ -146,6 +146,7 @@ export default function Pools() {
                 <CardContent className="space-y-6">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <CardTitle className="text-[var(--clr-black)] dark:text-[var(--clr-heading)]">Your V2 Liquidity</CardTitle>
+                        <button onClick={loadMyPools} className="text-xs underline hover:opacity-80" style={{color:"var(--ae-nebula)"}}>↺ Refresh</button>
                         <div className="flex flex-wrap items-center gap-2">
                             <Link href="/add" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Create Pair</Link>
                             <Link href="/find" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{border:"1px solid rgba(255,140,30,.5)",color:"var(--ae-aurum)"}}>Import Pool</Link>
