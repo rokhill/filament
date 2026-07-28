@@ -48,7 +48,6 @@ export function ipfsToHttp(url?: string): string | undefined {
 export const BLOCKED_COINS: string[] = [
   "0xE0025336b2a45961B9885Ab4B82A57fa3005Cb76", // duplicate Black Dog
   "0xFF171cbF37Bd9bb9253965704218A1fbC65859C2", // SmokeTest
-  "0x33E24CD72C7Ad6bd78706Aec1786972E758F228a", // AIVM SOVEREIGN
 ];
 
 export function shortAddr(a: string): string {
