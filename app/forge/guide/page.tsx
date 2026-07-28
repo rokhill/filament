@@ -327,7 +327,6 @@ export default function ForgeGuidePage() {
           <div><span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>5.</span> Hit Verify &amp; Publish — Lightscan auto-detects constructor args</div>
         </div>
         <p className="text-xs mt-3" style={{ color: "var(--ae-nebula)" }}>
-          Need help? Ask in the <a href="https://discord.gg/lightchain" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--ae-aurum)" }}>LightChain Discord</a> — tag @Llihkor.
         </p>
       </section>
     </div>
