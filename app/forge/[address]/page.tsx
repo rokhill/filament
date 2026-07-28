@@ -73,6 +73,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
   const [amount, setAmount] = useState("");
   const [quote, setQuote] = useState<bigint>(0n);
   const [balance, setBalance] = useState<bigint>(0n);
+  const [isMax, setIsMax] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -106,7 +107,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
     if (side === "buy") {
       ok = await buyCoin(coin.address, amount);
     } else {
-      let amt = BigInt(Math.floor(Number(amount) * 1e6)) * 10n ** 12n;
+      let amt = isMax ? balance : BigInt(Math.floor(Number(amount) * 1e6)) * 10n ** 12n;
       if (amt > balance) amt = balance;
       ok = await sellCoin(coin.address, amt);
     }
@@ -151,7 +152,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
           {side === "sell" && (
             <button
               className="underline"
-              onClick={() => setAmount(formatEther(balance))}
+              onClick={() => { setIsMax(true); setAmount(formatEther(balance)); }}
             >
               Max: {fmtTokens(balance)}
             </button>
@@ -163,7 +164,7 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
           placeholder="0.0"
           inputMode="decimal"
           value={amount}
-          onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+          onChange={(e) => { setIsMax(false); setAmount(e.target.value.replace(/[^0-9.]/g, "")); }}
         />
       </div>
 
