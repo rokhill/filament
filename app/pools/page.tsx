@@ -266,8 +266,8 @@ export default function Pools() {
                                                 <Button className="w-32 rounded-full" asChild>
                                                     <Link
                                                         href={getRouteAsPath("/add/[token0]/[token1]", {
-                                                            token0: pair.token0.address || pair.token0.symbol,
-                                                            token1: pair.token1.address || pair.token1.symbol,
+                                                            token0: pair.token0.address?.toLowerCase() === "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64" ? "LCAI" : (pair.token0.address || pair.token0.symbol),
+                                                            token1: pair.token1.address?.toLowerCase() === "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64" ? "LCAI" : (pair.token1.address || pair.token1.symbol),
                                                         })}
                                                     >
                                                         Add
