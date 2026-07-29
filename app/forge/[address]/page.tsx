@@ -143,19 +143,19 @@ function TradePanel({ coin, onTraded }: { coin: ForgeCoin; onTraded: () => void 
   };
 
   const sideBtn = (s: "buy" | "sell", label: string, color: string) => (
-    <button
+    <SparkButton
       onClick={() => { if (side !== s) { setSide(s); setAmount(""); setQuote(0n); } }}
       className="flex-1 rounded-xl py-2 text-sm font-semibold transition-all"
       style={
         side === s && s === "buy"
-          ? { background: "linear-gradient(180deg,#ffaa32,#e07a12)", color: "#140d05", boxShadow: "0 0 16px -3px #ffaa3288" }
+          ? { background: "#0b0b0b", color: "#ffaa32", border: "1px solid rgba(255,140,30,0.6)", boxShadow: "0 0 14px -4px rgba(255,140,30,0.6)" }
           : side === s && s === "sell"
           ? { background: color, color: "var(--ae-ink)", boxShadow: "0 0 12px -3px " + color }
           : { background: "transparent", color: "var(--ae-nebula)", border: "1px dashed var(--clr-border)", opacity: 0.65 }
       }
     >
-      {s === "buy" && side === "buy" ? "🔥 Buy" : label}
-    </button>
+      {label}
+    </SparkButton>
   );
 
   return (
