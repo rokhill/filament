@@ -29,7 +29,7 @@ export function parseMetadata(uri: string): CoinMetadata {
 
 export function encodeMetadata(m: CoinMetadata): string {
   const clean: CoinMetadata = {};
-  if (m.description?.trim()) clean.description = m.description.trim().slice(0, 500);
+  if (m.description?.trim()) clean.description = m.description.trim().slice(0, 2000);
   if (m.image?.trim()) clean.image = m.image.trim();
   if (m.twitter?.trim()) clean.twitter = m.twitter.trim();
   if (m.telegram?.trim()) clean.telegram = m.telegram.trim();
