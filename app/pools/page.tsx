@@ -262,7 +262,7 @@ export default function Pools() {
                                                     %
                                                 </span>
                                             </div>
-                                            <div className="flex items-center justify-end gap-2">
+                                            <div className="flex items-center justify-end flex-wrap gap-2">
                                                 <Button className="w-32 rounded-full" asChild>
                                                     <Link
                                                         href={getRouteAsPath("/add/[token0]/[token1]", {
