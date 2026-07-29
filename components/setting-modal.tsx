@@ -49,7 +49,7 @@ export function SettingModal({ trigger, className }: Props) {
             <Label className="block mb-4 md:mb-6 text-lg leading-[1.33] text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
               Slippage Tolerance
             </Label>
-            <div className="grid grid-cols-4 gap-1 md:gap-2">
+            <div className="grid grid-cols-4 gap-1">
               {slippageToleranceOptions.map((option, key) => (
                 <Button
                   key={key}
@@ -62,9 +62,8 @@ export function SettingModal({ trigger, className }: Props) {
                   {option}%
                 </Button>
               ))}
-              <div className="flex items-center gap-1">
-                <Input
-                  className="h-10 py-[9px] md:text-base dark:bg-transparent"
+              <Input
+                  className="h-10 py-[9px] md:text-base dark:bg-transparent text-center"
                   value={slippageTolerance}
                   type="number"
                   step={0.1}
@@ -74,8 +73,6 @@ export function SettingModal({ trigger, className }: Props) {
                     })
                   }
                 />
-                %
-              </div>
             </div>
             {slippageTolerance < 0.5 && (
               <p className="mt-1 text-sm text-yellow-600 ">
