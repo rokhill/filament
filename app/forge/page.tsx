@@ -1,4 +1,5 @@
-"use client";
+"use client"
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";;
 
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
@@ -16,7 +17,7 @@ const ADMIN_WALLET = "0xDB902DC48ef55d5D69F6cB72583518577C6C021c".toLowerCase();
 
 function CoinImage({ coin, size = 64 }: { coin: ForgeCoin; size?: number }) {
   const [err, setErr] = useState(false);
-  const src = ipfsToHttp(coin.metadata.image);
+  const src = FORGE_IMAGE_OVERRIDES[coin.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address] ?? ipfsToHttp(coin.metadata.image);
   if (!src || err) {
     return (
       <div

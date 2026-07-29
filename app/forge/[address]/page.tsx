@@ -1,4 +1,5 @@
-"use client";
+"use client"
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";;
 import GraduationBanner from "@/components/GraduationBanner";
 import SparkButton from "@/components/SparkButton";
 import { useAccount } from "wagmi";
@@ -291,7 +292,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
       </main>
     );
 
-  const img = ipfsToHttp(coin.metadata.image);
+  const img = FORGE_IMAGE_OVERRIDES[coin.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address] ?? ipfsToHttp(coin.metadata.image);
   const creatorPct = Number((creatorBal * 10_000n) / TOTAL_SUPPLY) / 100;
   const socials: [string, string | undefined][] = [
     ["Website", coin.metadata.website],
