@@ -18,6 +18,28 @@ import ProgressBar from "@/components/forge/progress-bar";
 /*  Price chart — pure SVG from Trade events, no chart lib             */
 /* ------------------------------------------------------------------ */
 
+function ExpandableDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const LIMIT = 280;
+  const isLong = text.length > LIMIT;
+  return (
+    <div className="mb-4 max-w-2xl">
+      <p className="text-sm" style={{ color: "var(--ae-nebula)" }}>
+        {expanded || !isLong ? text : text.slice(0, LIMIT) + "…"}
+      </p>
+      {isLong && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-xs mt-1 font-semibold"
+          style={{ color: "var(--ae-aurum)" }}
+        >
+          {expanded ? "Show less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function PriceChart({ trades, live }: { trades: ForgeTrade[]; live: bigint }) {
   const points = useMemo(() => {
     const prices = trades.map((t) => Number(formatEther(t.priceWei)));
@@ -359,9 +381,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
       </div>
 
       {coin.metadata.description && (
-        <p className="text-sm mb-4 max-w-2xl" style={{ color: "var(--ae-nebula)" }}>
-          {coin.metadata.description}
-        </p>
+        <ExpandableDescription text={coin.metadata.description} />
       )}
 
       {coin?.graduated && (
