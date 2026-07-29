@@ -75,7 +75,7 @@ export default function CreateCoinPage() {
               <div className="flex flex-col items-center gap-1 py-4">
                 <span className="text-3xl">🖼️</span>
                 <span className="text-sm font-semibold" style={{ color: "var(--clr-heading)" }}>Upload coin image</span>
-                <span className="text-xs">PNG, JPG, GIF up to 10MB — optional but recommended</span>
+                <span className="text-xs">PNG or JPG up to 10MB — optional but recommended</span>
               </div>
             )}
             <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={async (e) => {
