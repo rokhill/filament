@@ -1,4 +1,5 @@
 'use client'
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
 
 import LoadingBlock from "@/components/loading-block";
 import TokenAvatar from "@/components/token-avatar";
@@ -121,7 +122,10 @@ export default function Pools() {
         if (address) fetchCoins().then(coins => {
             const m: Record<string,string> = {};
             coins.forEach(c => {
-                if (c.metadata?.image) {
+                const override = FORGE_IMAGE_OVERRIDES[c.address.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[c.address];
+                if (override) {
+                    m[c.address.toLowerCase()] = override;
+                } else if (c.metadata?.image) {
                     const img = c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+c.metadata.image.slice(7) : c.metadata.image;
                     m[c.address.toLowerCase()] = img;
                 }
@@ -129,6 +133,14 @@ export default function Pools() {
             setLogoMap(m);
         }).catch(()=>{});
     }, [address, chain]);
+    useEffect(() => {
+        if (!Object.keys(logoMap).length) return;
+        setPairs(prev => prev.map(pair => ({
+            ...pair,
+            token0: { ...pair.token0, logoURI: logoMap[pair.token0.address?.toLowerCase() ?? ""] || pair.token0.logoURI },
+            token1: { ...pair.token1, logoURI: logoMap[pair.token1.address?.toLowerCase() ?? ""] || pair.token1.logoURI },
+        })));
+    }, [logoMap]);
 
     return (
         <div className="container py-12">
