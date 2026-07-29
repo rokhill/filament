@@ -322,56 +322,64 @@ function CreateModal({
           <input className={field} style={fieldStyle} placeholder="Symbol — required (e.g. PPUP)" maxLength={16} value={symbol} onChange={(e) => setSymbol(e.target.value)} />
           <textarea className={field} style={fieldStyle} placeholder="Description (optional, but coins with stories sell)" rows={3} maxLength={2000} value={description} onChange={(e) => setDescription(e.target.value)} />
           <div>
-            <div className="flex gap-2">
+            <label
+              className="flex flex-col items-center justify-center w-full rounded-xl cursor-pointer transition-opacity hover:opacity-80"
+              style={{ background: "var(--ae-veil)", border: "2px dashed var(--clr-border)", minHeight: 96, color: "var(--ae-nebula)" }}
+            >
+              {uploading ? (
+                <span className="text-sm font-semibold" style={{ color: "var(--ae-aurum)" }}>Uploading…</span>
+              ) : image ? (
+                <div className="flex flex-col items-center gap-2 py-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={image} alt="preview" className="rounded-xl object-cover" style={{ width: 72, height: 72, background: "var(--ae-veil)" }} onError={() => setImage("")} />
+                  <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>Tap to change image</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-1 py-4">
+                  <span className="text-3xl">🖼️</span>
+                  <span className="text-sm font-semibold" style={{ color: "var(--clr-heading)" }}>Upload coin image</span>
+                  <span className="text-xs">PNG, JPG, GIF up to 10MB — optional but recommended</span>
+                </div>
+              )}
               <input
-                className={field}
-                style={{ ...fieldStyle, flex: 1 }}
-                placeholder="Image URL (optional — https:// or ipfs://)"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={uploading}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (file.size > 10 * 1024 * 1024) { toast.error("Image must be under 10 MB"); return; }
+                  setUploading(true);
+                  try {
+                    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+                    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+                    if (!cloudName || !uploadPreset) throw new Error("Image upload not configured");
+                    const fd = new FormData();
+                    fd.append("file", file);
+                    fd.append("upload_preset", uploadPreset);
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                      method: "POST",
+                      body: fd,
+                    });
+                    const json = await res.json();
+                    if (json.secure_url) { setImage(json.secure_url); toast.success("Image uploaded!"); }
+                    else throw new Error(json.error?.message ?? "Upload failed");
+                  } catch (err: any) {
+                    toast.error(err.message ?? "Upload failed — paste an image URL instead");
+                  } finally {
+                    setUploading(false);
+                  }
+                }}
               />
-              <label
-                className="rounded-xl px-3.5 py-2.5 text-sm font-semibold cursor-pointer transition-opacity hover:opacity-80 flex items-center gap-1.5 whitespace-nowrap"
-                style={{ background: "var(--ae-veil)", color: "var(--clr-heading)", border: "1px solid var(--clr-border)" }}
-              >
-                {uploading ? "Uploading…" : "📁 Upload"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  disabled={uploading}
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    if (file.size > 10 * 1024 * 1024) { toast.error("Image must be under 10 MB"); return; }
-                    setUploading(true);
-                    try {
-                      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-                      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-                      if (!cloudName || !uploadPreset) throw new Error("Image upload not configured");
-                      const fd = new FormData();
-                      fd.append("file", file);
-                      fd.append("upload_preset", uploadPreset);
-                      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                        method: "POST",
-                        body: fd,
-                      });
-                      const json = await res.json();
-                      if (json.secure_url) { setImage(json.secure_url); toast.success("Image uploaded"); }
-                      else throw new Error(json.error?.message ?? "Upload failed");
-                    } catch (err: any) {
-                      toast.error(err.message ?? "Upload failed — paste an image URL instead");
-                    } finally {
-                      setUploading(false);
-                    }
-                  }}
-                />
-              </label>
-            </div>
-            {image && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={image} alt="preview" className="mt-2 rounded-xl object-cover" style={{ width: 64, height: 64, background: "var(--ae-veil)" }} onError={() => setImage("")} />
-            )}
+            </label>
+            <input
+              className={field}
+              style={{ ...fieldStyle, marginTop: 8, fontSize: 12 }}
+              placeholder="Or paste an image URL (https:// or ipfs://)"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <input className={field} style={fieldStyle} placeholder="Twitter/X (optional)" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
