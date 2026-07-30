@@ -521,14 +521,14 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
               {/* Actions */}
               <div className="flex gap-2">
                 <Link
-                  href={`/swap?inputCurrency=LCAI&outputCurrency=${coin.address}`}
+                  href={`/?inputCurrency=LCAI&outputCurrency=${coin.address}`}
                   className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-center transition-all"
                   style={{ background: "linear-gradient(180deg,#ffaa32,#e07a12)", color: "#140d05" }}
                 >
                   Buy {coin.symbol}
                 </Link>
                 <Link
-                  href={`/swap?inputCurrency=${coin.address}&outputCurrency=LCAI`}
+                  href={`/?inputCurrency=${coin.address}&outputCurrency=LCAI`}
                   className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-center transition-all"
                   style={{ background: "var(--ae-night)", color: "var(--ae-nebula)", border: "1px solid var(--clr-border)" }}
                 >
