@@ -20,7 +20,7 @@ import useUserStore from "@/store/user-store";
 import { MAX_UINT256 } from "@/lib/utils";
 import config from "@/config";
 import { toast } from "sonner";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { estimateContractGas, simulateContract } from "viem/actions";
 import wethAbi from "@/contracts/wethAbi";
 
@@ -44,6 +44,9 @@ const useWeb3Functions = () => {
     (isNativeToken(tokenA) && isWrappedNativeToken(tokenB)) ||
     (isWrappedNativeToken(tokenA) && isNativeToken(tokenB));
 
+  // Stores which router won the last quote — read at swap time, no re-render
+  const bestRouterRef = useRef<"own" | "alt">("own");
+
   const getAmountFromTo = async (
     amount: string,
     tokenFrom: Token,
@@ -53,21 +56,31 @@ const useWeb3Functions = () => {
     if (isNativeWrappedPair(tokenFrom, tokenTo)) return amount;
 
     try {
-      const tokenAmount = await routerV2Contract.read
-        .getAmountsOut([
-          parseUnits(amount, tokenFrom.decimals),
-          [tokenFrom.address || weth, tokenTo.address || weth],
-        ])
-        .catch(() => [0n, 0n]);
+      const amountIn = parseUnits(amount, tokenFrom.decimals);
+      const ownPath  = [tokenFrom.address || weth, tokenTo.address || weth] as [`0x${string}`, `0x${string}`];
+      const altWeth  = config.altWETH[chain.id];
+      const altPath  = [tokenFrom.address || altWeth, tokenTo.address || altWeth] as [`0x${string}`, `0x${string}`];
 
-      return formatUnits(tokenAmount[tokenAmount.length - 1], tokenTo.decimals);
+      const [ownResult, altResult] = await Promise.all([
+        routerV2Contract.read.getAmountsOut([amountIn, ownPath]).catch(() => [0n, 0n]),
+        getContract({ address: config.altRouterV2Address[chain.id], abi: routerV2Contract.abi, client: { public: publicClient } })
+          .read.getAmountsOut([amountIn, altPath]).catch(() => [0n, 0n]),
+      ]);
+
+      const ownOut = (ownResult as bigint[])[ownResult.length - 1] ?? 0n;
+      const altOut = (altResult as bigint[])[altResult.length - 1] ?? 0n;
+
+      bestRouterRef.current = altOut > ownOut ? "alt" : "own";
+      const best = altOut > ownOut ? altOut : ownOut;
+      return formatUnits(best, tokenTo.decimals);
     } catch (e) {
       console.log(e);
     }
   };
 
-  const checkAllowance = async (token: Token, amount: bigint) => {
+  const checkAllowance = async (token: Token, amount: bigint, spender?: `0x${string}`) => {
     if (!address || !walletClient || !token.address) return;
+    const spenderAddr = spender ?? routerV2Contract.address;
 
     const tokenContract = getContract({
       abi: erc20Abi,
@@ -79,12 +92,12 @@ const useWeb3Functions = () => {
     });
     const allowance = await tokenContract.read.allowance([
       address,
-      routerV2Contract.address,
+      spenderAddr,
     ]);
 
     if (allowance < amount) {
       const hash = await tokenContract.write.approve(
-        [routerV2Contract.address, MAX_UINT256],
+        [spenderAddr, MAX_UINT256],
         { account: address }
       );
 
@@ -146,8 +159,13 @@ const useWeb3Functions = () => {
           ? zeroAddress
           : tokenTo.address;
 
+      // Pick winning router from last quote
+      const useAlt = bestRouterRef.current === "alt";
+      const activeRouterAddress = useAlt ? config.altRouterV2Address[chain.id] : routerV2Contract.address;
+      const activeWeth = useAlt ? config.altWETH[chain.id] : weth;
+
       if (tokenFrom.symbol !== chain.nativeCurrency.symbol) {
-        await checkAllowance(tokenFrom, amount);
+        await checkAllowance(tokenFrom, amount, activeRouterAddress);
       }
 
       let methods: ContractFunctionName<
@@ -157,13 +175,13 @@ const useWeb3Functions = () => {
       let path: `0x${string}`[] = [];
 
       if (fromAddress === zeroAddress) {
-        path = [weth, toAddress];
+        path = [activeWeth, toAddress];
         methods = [
           "swapETHForExactTokens",
           "swapExactETHForTokensSupportingFeeOnTransferTokens",
         ];
       } else if (toAddress === zeroAddress) {
-        path = [fromAddress, weth];
+        path = [fromAddress, activeWeth];
         methods = [
           "swapExactTokensForETH",
           "swapExactTokensForETHSupportingFeeOnTransferTokens",
@@ -182,10 +200,10 @@ const useWeb3Functions = () => {
 
       const options = {
         abi: routerV2Contract.abi,
-        address: routerV2Contract.address,
+        address: activeRouterAddress,
         account: address,
-        value: path[0] === weth ? amount : (undefined as any),
-        args: path[0] === weth ? ethParams : (params as any),
+        value: path[0] === activeWeth ? amount : (undefined as any),
+        args: path[0] === activeWeth ? ethParams : (params as any),
       } as const;
 
       const estimateGas = await Promise.all(
