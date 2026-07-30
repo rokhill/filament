@@ -265,6 +265,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   const [trades, setTrades] = useState<ForgeTrade[]>([]);
   const [creatorBal, setCreatorBal] = useState<bigint>(0n);
   const [dexPrice, setDexPrice] = useState<number | null>(null);
+  const [lpReserves, setLpReserves] = useState<{lcai: bigint, tok: bigint} | null>(null);
   const [lcaiUsd, setLcaiUsd] = useState(0);
   const { fetchStats } = useMarkets();
 
@@ -286,7 +287,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           const wlcaiIsT0 = (t0 as string).toLowerCase()===WLCAI;
           const resLCAI = wlcaiIsT0?r[0]:r[1];
           const resTok = wlcaiIsT0?r[1]:r[0];
-          if(resTok>0n) setDexPrice(Number(resLCAI)/Number(resTok));
+          if(resTok>0n) { setDexPrice(Number(resLCAI)/Number(resTok)); setLpReserves({lcai:resLCAI, tok:resTok}); }
         }).catch(()=>{});
       }
     }
@@ -481,15 +482,85 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           {!coin.graduated ? (
             <TradePanel coin={coin} onTraded={load} />
           ) : (
-            <div
-              className="rounded-2xl p-5 text-sm text-center"
-              style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)", color: "var(--ae-nebula)" }}
-            >
-              This coin graduated. Swap it on{" "}
-              <Link href="/" className="underline" style={{ color: "var(--ae-aurum)" }}>
-                Filament
+            <div className="rounded-2xl p-5 space-y-4" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
+              {/* Header */}
+              <div className="flex items-center gap-2 mb-1">
+                <span style={{ color: "var(--ae-aurum)", fontSize: 18 }}>🎓</span>
+                <span className="font-bold text-sm" style={{ color: "var(--clr-heading)" }}>Graduated — Live on Filament DEX</span>
+              </div>
+
+              {/* Pool stats */}
+              {lpReserves && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
+                    <div className="text-xs mb-1" style={{ color: "var(--ae-nebula)" }}>LCAI in Pool</div>
+                    <div className="font-semibold text-sm" style={{ color: "var(--clr-heading)" }}>
+                      {Number(lpReserves.lcai / 10n**18n).toLocaleString()} LCAI
+                    </div>
+                    {lcaiUsd > 0 && (
+                      <div className="text-xs" style={{ color: "var(--ae-nebula)" }}>
+                        ${(Number(lpReserves.lcai / 10n**18n) * lcaiUsd).toLocaleString(undefined, {maximumFractionDigits:2})}
+                      </div>
+                    )}
+                  </div>
+                  <div className="rounded-xl p-3" style={{ background: "var(--ae-night)" }}>
+                    <div className="text-xs mb-1" style={{ color: "var(--ae-nebula)" }}>{coin.symbol} in Pool</div>
+                    <div className="font-semibold text-sm" style={{ color: "var(--clr-heading)" }}>
+                      {Number(lpReserves.tok / 10n**18n).toLocaleString()} {coin.symbol}
+                    </div>
+                  </div>
+                  <div className="rounded-xl p-3 col-span-2" style={{ background: "var(--ae-night)" }}>
+                    <div className="text-xs mb-1" style={{ color: "var(--ae-nebula)" }}>Pair Address</div>
+                    <a href={`https://mainnet.lightscan.app/address/${coin.pair}`} target="_blank" rel="noopener noreferrer" className="text-xs font-mono underline" style={{ color: "var(--ae-aurum)" }}>
+                      {coin.pair?.slice(0,6)}…{coin.pair?.slice(-4)} ↗
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-2">
+                <Link
+                  href={`/swap?inputCurrency=LCAI&outputCurrency=${coin.address}`}
+                  className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-center transition-all"
+                  style={{ background: "linear-gradient(180deg,#ffaa32,#e07a12)", color: "#140d05" }}
+                >
+                  Buy {coin.symbol}
+                </Link>
+                <Link
+                  href={`/swap?inputCurrency=${coin.address}&outputCurrency=LCAI`}
+                  className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-center transition-all"
+                  style={{ background: "var(--ae-night)", color: "var(--ae-nebula)", border: "1px solid var(--clr-border)" }}
+                >
+                  Sell {coin.symbol}
+                </Link>
+              </div>
+              <Link
+                href={`/add/LCAI/${coin.address}`}
+                className="block w-full rounded-xl py-2.5 text-sm font-semibold text-center transition-all"
+                style={{ background: "var(--ae-night)", color: "var(--ae-aurum)", border: "1px dashed rgba(255,140,30,0.4)" }}
+              >
+                + Add Liquidity
               </Link>
-              .
+
+              {/* Recent trades */}
+              {trades.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold mb-2" style={{ color: "var(--ae-nebula)" }}>Recent Trades</div>
+                  <div className="space-y-1">
+                    {trades.slice(0, 8).map((t, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs rounded-lg px-2 py-1.5" style={{ background: "var(--ae-night)" }}>
+                        <span className="font-semibold" style={{ color: t.isBuy ? "var(--clr-success)" : "var(--clr-danger)" }}>
+                          {t.isBuy ? "BUY" : "SELL"}
+                        </span>
+                        <span style={{ color: "var(--ae-nebula)" }}>{t.trader.slice(0,6)}…{t.trader.slice(-4)}</span>
+                        <span style={{ color: "var(--clr-heading)" }}>{Number(t.lcaiAmount / 10n**18n).toFixed(2)} LCAI</span>
+                        <a href={`https://mainnet.lightscan.app/tx/${t.tx}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--ae-aurum)" }}>↗</a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
