@@ -7,23 +7,23 @@ import { fmtLcai } from "@/hooks/useForge";
 
 // Uniswap V3 candle: [timestamp_s, open, high, low, close, volume, quoteVolume]
 type Candle = [number, string, string, string, string, string, string];
-const POOL = "0x0d047a370611437a1b8e6c2a95ea36f69fdda3be";
-const SUBGRAPH = "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3";
+const GECKO_POOL = "0x0d047a370611437a1b8e6c2a95ea36f69fdda3be";
 async function fetchUniswapCandles(step: number, limit: number): Promise<Candle[]> {
   try {
-    const periodSeconds = step * 60;
-    const now = Math.floor(Date.now() / 1000);
-    const since = now - periodSeconds * limit;
-    const query = `{ poolHourDatas(first: ${Math.min(limit, 1000)} orderBy: periodStartUnix orderDirection: asc where: { pool: "${POOL}", periodStartUnix_gte: ${since} }) { periodStartUnix open high low close volumeToken0 volumeUSD } }`;
-    const r = await fetch(SUBGRAPH, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-      cache: "no-store",
-    });
+    const res = step <= 60 ? "hour" : step <= 240 ? "hour" : "day";
+    const lim = Math.min(limit, 1000);
+    const r = await fetch(
+      `https://api.geckoterminal.com/api/v2/networks/eth/pools/${GECKO_POOL}/ohlcv/${res}?limit=${lim}&currency=usd`,
+      { cache: "no-store" }
+    );
     const j = await r.json();
-    const data = j?.data?.poolHourDatas ?? [];
-    return data.map((d: any) => [d.periodStartUnix, d.open, d.high, d.low, d.close, d.volumeToken0, d.volumeUSD]);
+    const list = j?.data?.attributes?.ohlcv_list ?? [];
+    // GeckoTerminal returns newest-first — reverse to oldest-first
+    return list.reverse().map((d: any) => [
+      Math.floor(d[0] / 1000), // ms -> s
+      String(d[1]), String(d[2]), String(d[3]), String(d[4]),
+      String(d[5]), String(d[5]),
+    ]);
   } catch { return []; }
 }
 
