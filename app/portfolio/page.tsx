@@ -16,6 +16,33 @@ const erc20Abi = [
 ] as const;
 
 type Holding = ForgeCoin & { balance: bigint; valueWei: bigint };
+type LPPosition = {
+  pair: `0x${string}`;
+  token0Symbol: string;
+  token1Symbol: string;
+  lpBalance: bigint;
+  lpTotal: bigint;
+  reserveLCAI: bigint;
+  valueWei: bigint;
+};
+
+const FACTORIES = [
+  "0x5Cf3b069dDB232d1adc5139a9eFb30C48F629389",
+  "0xBA502917c3F7233F9100f9430f4048a224A7D8DE",
+] as const;
+const WLCAI_LC = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
+const PAIR_ABI = [
+  { type:"function",name:"getReserves",inputs:[],outputs:[{type:"uint112"},{type:"uint112"},{type:"uint32"}],stateMutability:"view" },
+  { type:"function",name:"token0",inputs:[],outputs:[{type:"address"}],stateMutability:"view" },
+  { type:"function",name:"totalSupply",inputs:[],outputs:[{type:"uint256"}],stateMutability:"view" },
+  { type:"function",name:"balanceOf",inputs:[{type:"address"}],outputs:[{type:"uint256"}],stateMutability:"view" },
+] as const;
+const ERC20_SYM_ABI = [
+  { type:"function",name:"symbol",inputs:[],outputs:[{type:"string"}],stateMutability:"view" },
+] as const;
+const FACTORY_ABI = [
+  { type:"event",name:"PairCreated",inputs:[{type:"address",indexed:true},{type:"address",indexed:true},{type:"address",indexed:false},{type:"uint256",indexed:false}] },
+] as const;
 
 function CoinIcon({ coin, size = 44 }: { coin: ForgeCoin; size?: number }) {
   const [err, setErr] = useState(false);
@@ -42,6 +69,7 @@ export default function PortfolioPage() {
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [lcaiUsd, setLcaiUsd] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [lpPositions, setLpPositions] = useState<LPPosition[]>([]);
 
   const load = async () => {
     if (!address || !publicClient) { setLoading(false); return; }
@@ -69,6 +97,42 @@ export default function PortfolioPage() {
         } catch { /* skip */ }
       }
       setHoldings(held);
+
+      // Scan LP positions across both factories
+      const lpHeld: LPPosition[] = [];
+      for (const factory of FACTORIES) {
+        try {
+          const logs = await publicClient.getLogs({ address: factory as `0x${string}`, fromBlock: 0n, toBlock: "latest" });
+          for (const l of logs) {
+            if (!l.topics[1] || !l.topics[2]) continue;
+            const pair = ("0x" + l.data.slice(26, 66)) as `0x${string}`;
+            try {
+              const lpBal = await publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "balanceOf", args: [address] });
+              if ((lpBal as bigint) === 0n) continue;
+              const [t0addr, res, lpTotal] = await Promise.all([
+                publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "token0" }),
+                publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "getReserves" }),
+                publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "totalSupply" }),
+              ]);
+              const t0 = ("0x" + l.topics[1].slice(26)) as `0x${string}`;
+              const t1 = ("0x" + l.topics[2].slice(26)) as `0x${string}`;
+              const wlcaiIsT0 = (t0addr as string).toLowerCase() === WLCAI_LC;
+              const r = res as [bigint, bigint, number];
+              const reserveLCAI = wlcaiIsT0 ? r[0] : r[1];
+              const tokenAddr = wlcaiIsT0 ? t1 : t0;
+              const [sym0, sym1] = await Promise.all([
+                publicClient.readContract({ address: tokenAddr, abi: ERC20_SYM_ABI, functionName: "symbol" }).catch(() => "???"),
+                Promise.resolve("LCAI"),
+              ]);
+              const lpTotalBig = lpTotal as bigint;
+              const share = lpTotalBig > 0n ? (lpBal as bigint) * 10n**18n / lpTotalBig : 0n;
+              const valueWei = lpTotalBig > 0n ? reserveLCAI * 2n * share / 10n**18n : 0n;
+              lpHeld.push({ pair, token0Symbol: sym0 as string, token1Symbol: "LCAI", lpBalance: lpBal as bigint, lpTotal: lpTotalBig, reserveLCAI, valueWei });
+            } catch { continue; }
+          }
+        } catch { continue; }
+      }
+      setLpPositions(lpHeld);
     } catch { /* noop */ }
     setLoading(false);
   };
@@ -76,7 +140,8 @@ export default function PortfolioPage() {
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [address]);
 
   const totalForgeValue = useMemo(() => holdings.reduce((a, h) => a + h.valueWei, 0n), [holdings]);
-  const totalLcaiEquivalent = nativeLcai + wlcai + totalForgeValue;
+  const totalLpValue = useMemo(() => lpPositions.reduce((a, p) => a + p.valueWei, 0n), [lpPositions]);
+  const totalLcaiEquivalent = nativeLcai + wlcai + totalForgeValue + totalLpValue;
 
   const usd = (wei: bigint) => lcaiUsd > 0 ? `~$${(Number(formatEther(wei)) * lcaiUsd).toFixed(2)}` : "";
 
@@ -155,6 +220,41 @@ export default function PortfolioPage() {
               <div className="text-right flex-shrink-0">
                 <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(h.valueWei, 2)} LCAI</div>
                 {lcaiUsd > 0 && <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>{usd(h.valueWei)}</div>}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* LP Positions */}
+      <div className="f-section mt-8">
+        <h2>LP Positions</h2>
+      </div>
+      {lpPositions.length === 0 ? (
+        <div className="py-8 text-center rounded-2xl mb-6" style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
+          <p className="text-sm" style={{ color: "var(--ae-nebula)" }}>No LP positions found.</p>
+          <Link href="/pools" className="text-sm underline mt-1 block" style={{ color: "var(--ae-aurum)" }}>View Pools →</Link>
+        </div>
+      ) : (
+        <div className="space-y-3 mb-6">
+          {lpPositions.map((lp) => (
+            <Link key={lp.pair} href="/pools"
+              className="pf-card flex items-center gap-4 rounded-2xl p-4">
+              <div className="flex items-center justify-center rounded-xl font-bold flex-shrink-0"
+                style={{ width: 44, height: 44, background: "var(--ae-veil)", color: "var(--ae-aurum)", fontSize: 13 }}>
+                LP
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold truncate" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
+                  {lp.token0Symbol} / {lp.token1Symbol}
+                </div>
+                <div className="text-xs mt-0.5" style={{ color: "var(--ae-nebula)" }}>
+                  {lp.lpTotal > 0n ? ((Number(lp.lpBalance) / Number(lp.lpTotal)) * 100).toFixed(4) : "0"}% of pool
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(lp.valueWei, 2)} LCAI</div>
+                {lcaiUsd > 0 && <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>{usd(lp.valueWei)}</div>}
               </div>
             </Link>
           ))}
