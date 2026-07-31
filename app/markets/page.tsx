@@ -5,19 +5,25 @@ import Link from "next/link";
 import useMarkets, { MarketStats, Venue, ForgeMarket, fmtUsd } from "@/hooks/useMarkets";
 import { fmtLcai } from "@/hooks/useForge";
 
-// BitMart candle: [timestamp_s, open, high, low, close, volume, quoteVolume]
+// Uniswap V3 candle: [timestamp_s, open, high, low, close, volume, quoteVolume]
 type Candle = [number, string, string, string, string, string, string];
-
-async function fetchBitMartCandles(step: number, limit: number): Promise<Candle[]> {
+const POOL = "0x0d047a370611437a1b8e6c2a95ea36f69fdda3be";
+const SUBGRAPH = "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3";
+async function fetchUniswapCandles(step: number, limit: number): Promise<Candle[]> {
   try {
-    const r = await fetch(
-      `https://api-cloud.bitmart.com/spot/quotation/v3/klines?symbol=LCAI_USDT&step=${step}&limit=${limit}`,
-      { cache: "no-store" }
-    );
+    const periodSeconds = step * 60;
+    const now = Math.floor(Date.now() / 1000);
+    const since = now - periodSeconds * limit;
+    const query = `{ poolHourDatas(first: ${Math.min(limit, 1000)} orderBy: periodStartUnix orderDirection: asc where: { pool: "${POOL}", periodStartUnix_gte: ${since} }) { periodStartUnix open high low close volumeToken0 volumeUSD } }`;
+    const r = await fetch(SUBGRAPH, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+      cache: "no-store",
+    });
     const j = await r.json();
-    if (j.code !== 1000 || !j.data) return [];
-    // BitMart returns oldest-first for klines — use as-is
-    return j.data;
+    const data = j?.data?.poolHourDatas ?? [];
+    return data.map((d: any) => [d.periodStartUnix, d.open, d.high, d.low, d.close, d.volumeToken0, d.volumeUSD]);
   } catch { return []; }
 }
 
@@ -163,7 +169,7 @@ export default function MarketsPage() {
 
   useEffect(() => {
     let alive = true;
-    fetchBitMartCandles(timeframe.step, timeframe.limit).then(c => { if (alive) setCandles(c); });
+    fetchUniswapCandles(timeframe.step, timeframe.limit).then(c => { if (alive) setCandles(c); });
     return () => { alive = false; };
     // eslint-disable-next-line
   }, [timeframe]);
@@ -196,7 +202,7 @@ export default function MarketsPage() {
       </div>
 
       {/* Chart */}
-      <div className="f-section"><h2>LCAI / USDT · BitMart</h2></div>
+      <div className="f-section"><h2>LCAI / WETH · Uniswap V3</h2></div>
       <div className="flex justify-between items-center mb-3 -mt-2 gap-2 flex-wrap">
         <div className="flex gap-1.5">
           {([{ step: 15, limit: 200, label: "15M" }, { step: 60, limit: 200, label: "1H" }, { step: 240, limit: 200, label: "4H" }, { step: 1440, limit: 90, label: "1D" }] as const).map((tf) => (
