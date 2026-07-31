@@ -113,6 +113,45 @@ function ActivityTicker({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Graduation ticker                                                  */
+/* ------------------------------------------------------------------ */
+function GraduationTicker({ coins }: { coins: ForgeCoin[] }) {
+  const graduated = coins.filter(c => c.graduated);
+  const approaching = coins
+    .filter(c => !c.graduated && c.progressBps > 0)
+    .sort((a, b) => b.progressBps - a.progressBps)
+    .slice(0, 2);
+  if (graduated.length === 0 && approaching.length === 0) return null;
+  const items = [
+    ...graduated.map(c => (
+      <Link key={"g-"+c.address} href={`/forge/${c.address}`} className="inline-flex items-center gap-1.5 text-xs">
+        <span>🎓</span>
+        <span style={{ color: "var(--ae-aurum)", fontWeight: 600 }}>${c.symbol}</span>
+        <span style={{ color: "var(--ae-nebula)" }}>graduated</span>
+      </Link>
+    )),
+    ...approaching.map(c => (
+      <Link key={"a-"+c.address} href={`/forge/${c.address}`} className="inline-flex items-center gap-1.5 text-xs">
+        <span>🔥</span>
+        <span style={{ color: "var(--ae-aurum)", fontWeight: 600 }}>${c.symbol}</span>
+        <span style={{ color: "var(--ae-nebula)" }}>{(c.progressBps / 100).toFixed(1)}% to graduation</span>
+      </Link>
+    )),
+  ];
+  return (
+    <div
+      className="rounded-xl overflow-hidden py-2 mb-4"
+      style={{ background: "var(--ae-night)", border: "1px solid rgba(255,140,30,0.2)" }}
+    >
+      <div className="forge-ticker-track">
+        <span className="inline-flex gap-10 px-5">{items}</span>
+        <span className="inline-flex gap-10 px-5" aria-hidden>{items}</span>
+      </div>
+    </div>
+  );
+}
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
 /*  How it works + stats                                               */
 /* ------------------------------------------------------------------ */
 
@@ -697,6 +736,7 @@ export default function ForgePage() {
           symbols={Object.fromEntries((coins ?? []).map((c) => [c.address.toLowerCase(), c.symbol]))}
         />
       )}
+      {coins && coins.length > 0 && !query && <GraduationTicker coins={coins} />}
 
       {coins !== null && coins.length > 0 && !query && filter === "all" && <StatsStrip coins={coins} />}
       {coins !== null && coins.length < 4 && <HowItWorks />}
