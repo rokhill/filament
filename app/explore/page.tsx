@@ -51,9 +51,15 @@ export default function Explore(){
 
   useEffect(()=>{
     (async()=>{
-      const [coins,stats]=await Promise.all([fetchCoins().catch(()=>[]),fetchStats().catch(()=>null)]);
-      const lcaiUsd=stats?.priceUsd??0;
+      const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+      const [pairsRaw, stats] = await Promise.all([
+        INDEXER ? fetch(`${INDEXER}/api/v1/pairs?limit=200`).then(r=>r.json()).catch(()=>[]) : Promise.resolve([]),
+        fetchStats().catch(()=>null),
+      ]);
+      const lcaiUsd = stats?.priceUsd ?? 0;
       setLcaiUsdState(lcaiUsd);
+
+      const coins = await fetchCoins().catch(()=>[]);
       const logoMap:Record<string,string>={};
       for(const c of coins){
         if(c.metadata?.image){
@@ -61,52 +67,44 @@ export default function Explore(){
           logoMap[c.address.toLowerCase()]=img;
         }
       }
-      const all:Pair[]=[];
-      const seen=new Set<string>();
-      for(const fac of [{a:MY_FACTORY,l:"Filament"},{a:TEAM_FACTORY,l:"Official"}]){
-        const logs=await client.getLogs({address:fac.a as `0x${string}`,fromBlock:0n,toBlock:"latest"});
-        for(const l of logs){
-          if(!l.topics[1]||!l.topics[2])continue;
-          const t0=("0x"+l.topics[1].slice(26)) as `0x${string}`;
-          const t1=("0x"+l.topics[2].slice(26)) as `0x${string}`;
-          const pair=("0x"+l.data.slice(26,66)) as `0x${string}`;
-          const token=t0.toLowerCase()===WLCAI?t1:t0;
-          seen.add(token.toLowerCase());
-          try{
-            const [name,symbol,tsRaw,t0addr,res,ts,burned]=await Promise.all([
-              client.readContract({address:token,abi:erc20Abi,functionName:"name"}),
-              client.readContract({address:token,abi:erc20Abi,functionName:"symbol"}),
-              client.readContract({address:token,abi:erc20Abi,functionName:"totalSupply"}),
-              client.readContract({address:pair,abi:PAIR_ABI,functionName:"token0"}),
-              client.readContract({address:pair,abi:PAIR_ABI,functionName:"getReserves"}),
-              client.readContract({address:pair,abi:PAIR_ABI,functionName:"totalSupply"}),
-              client.readContract({address:pair,abi:PAIR_ABI,functionName:"balanceOf",args:[DEAD]}),
-            ]);
-            const wlcaiIsT0=(t0addr as string).toLowerCase()===WLCAI;
-            const r=res as [bigint,bigint,number];
-            // if wlcai is token0: r[0]=wlcai=lcai, r[1]=token
-            // if wlcai is token1: r[0]=token, r[1]=wlcai=lcai
-            const reserveLCAI=wlcaiIsT0?r[0]:r[1];
-            const reserveToken=wlcaiIsT0?r[1]:r[0];
-            if(reserveLCAI===0n)continue;
-            const pricePerToken=Number(formatEther(reserveLCAI))/Number(formatEther(reserveToken));
-            const priceUsd=pricePerToken*lcaiUsd;
-            const mcapUsd=priceUsd*Number(formatEther(tsRaw as bigint));
-            const lpTotal=ts as bigint;
-            const lpBurned=lpTotal>0n&&(burned as bigint)>=lpTotal*99n/100n;
-            // price history from sync events
-            const slogs=await client.getLogs({address:pair,fromBlock:0n,toBlock:"latest"});
-            const history=slogs.filter(s=>s.topics[0]===SYNC_TOPIC).map(s=>{
-              const sr0=BigInt("0x"+s.data.slice(2,66));
-              const sr1=BigInt("0x"+s.data.slice(66,130));
-              const lR=wlcaiIsT0?sr0:sr1;
-              const tR=wlcaiIsT0?sr1:sr0;
-              return tR>0n?Number(formatEther(lR))/Number(formatEther(tR)):0;
-            }).filter(x=>x>0);
-            const change=history.length>=2?((history[history.length-1]-history[0])/history[0])*100:0;
-            all.push({pair,token,name:name as string,symbol:symbol as string,factory:fac.l,reserveLCAI,pricePerToken,priceUsd,mcapUsd,lpBurned,logoURI:logoMap[token.toLowerCase()],history,change});
-          }catch{}
-        }
+
+      const all:Pair[] = [];
+      for(const p of (pairsRaw as any[])){
+        if(!p.base_token) continue;
+        const reserveLCAI = BigInt(p.wlcai_is_t0 ? p.reserve0 : p.reserve1);
+        const reserveToken = BigInt(p.wlcai_is_t0 ? p.reserve1 : p.reserve0);
+        if(reserveLCAI === 0n) continue;
+        const pricePerToken = Number(reserveLCAI) / Number(reserveToken);
+        const priceUsd = pricePerToken * lcaiUsd;
+        const lpBurned = p.lp_burned;
+        // fetch price history from indexer
+        let history:number[] = [];
+        let change = 0;
+        try{
+          const hist = INDEXER ? await fetch(`${INDEXER}/api/v1/pairs/${p.address}/history?limit=200`).then(r=>r.json()) : [];
+          history = (hist as any[]).map((h:any)=>h.price_lcai).filter(Boolean);
+          if(history.length>=2) change=((history[history.length-1]-history[0])/history[0])*100;
+        }catch{}
+        all.push({
+          pair: p.address,
+          token: p.base_token,
+          name: p.base_token, // will be overridden by token name below
+          symbol: p.base_token,
+          factory: p.factory_label,
+          reserveLCAI,
+          pricePerToken,
+          priceUsd,
+          mcapUsd: 0,
+          lpBurned,
+          logoURI: logoMap[p.base_token.toLowerCase()],
+          history,
+          change,
+        });
+      }
+      // enrich with token name/symbol from forge coins
+      for(const c of coins){
+        const row = all.find(a=>a.token.toLowerCase()===c.address.toLowerCase());
+        if(row){ row.name=c.name; row.symbol=c.symbol; }
       }
       all.sort((a,b)=>b.reserveLCAI>a.reserveLCAI?1:-1);
       setPairs(all);
