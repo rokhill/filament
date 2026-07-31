@@ -8,10 +8,28 @@ import { useEffect, useState } from "react";
 import { formatEther } from "viem";
 import SwapForm from "@/components/swap-form";
 import SwapPoolsTabs from "@/components/swap-pools-tabs";
+import { useSearchParams } from "next/navigation";
+import useTokens from "@/hooks/useTokens";
+import useStore from "@/store";
 
 export default function Home() {
   const { fetchForgeMarket } = useMarkets();
   const [forgeStats, setForgeStats] = useState<{ coins: number; raised: bigint; graduated: number } | null>(null);
+  const searchParams = useSearchParams();
+  const { tokens } = useTokens();
+
+  useEffect(() => {
+    const input = searchParams.get("inputCurrency");
+    const output = searchParams.get("outputCurrency");
+    if ((input || output) && tokens?.length) {
+      const find = (val: string) => tokens.find(t =>
+        t.address?.toLowerCase() === val.toLowerCase() ||
+        t.symbol?.toLowerCase() === val.toLowerCase()
+      );
+      if (input) { const t = find(input); if (t) useStore.setState({ token0: t }); }
+      if (output) { const t = find(output); if (t) useStore.setState({ token1: t }); }
+    }
+  }, [searchParams, tokens]);
 
   useEffect(() => {
     fetchForgeMarket().then(f => {
