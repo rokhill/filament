@@ -613,7 +613,24 @@ export default function ForgePage() {
       const [c, f] = await Promise.all([fetchCoins(), getCreationFee()]);
       setCoins(c);
       setFee(f);
-      fetchActivity().then(setActivity);
+      const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+      if (INDEXER) {
+        fetch(`${INDEXER}/api/v1/forge/activity?limit=30`)
+          .then(r => r.json())
+          .then(rows => setActivity(rows.map((r: any) => ({
+            trader: r.trader,
+            isBuy: r.is_buy === 1,
+            lcaiAmount: BigInt(r.lcai_amount),
+            tokenAmount: BigInt(r.token_amount),
+            priceWei: 0n,
+            block: BigInt(r.block),
+            tx: r.tx,
+            token: r.coin,
+          }))))
+          .catch(() => fetchActivity().then(setActivity));
+      } else {
+        fetchActivity().then(setActivity);
+      }
       getLcaiUsdPrice().then(setLcaiUsd);
     } catch {
       setCoins([]);
