@@ -15,6 +15,7 @@ type StateType = {
   };
   slippageTolerance: number;
   txDeadline: number;
+  bestPriceRouting: boolean;
 };
 
 const useUserStore = create<StateType>()(
@@ -24,6 +25,7 @@ const useUserStore = create<StateType>()(
       pairs: {},
       slippageTolerance: 0.5,
       txDeadline: 20,
+      bestPriceRouting: true as boolean,
     }),
     { name: "user" }
   )

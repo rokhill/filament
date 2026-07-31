@@ -29,7 +29,7 @@ const useWeb3Functions = () => {
   const { address } = useAccount();
   const { publicClient, walletClient } = useWeb3Clients();
   const { routerV2Contract } = useContracts();
-  const { slippageTolerance, txDeadline } = useUserStore();
+  const { slippageTolerance, txDeadline, bestPriceRouting } = useUserStore();
 
   const weth = useMemo(() => config.WETH[chain.id], [chain.id]);
   const nativeCurrencySymbol = chain.nativeCurrency.symbol;
@@ -61,17 +61,16 @@ const useWeb3Functions = () => {
       const altWeth  = config.altWETH[chain.id];
       const altPath  = [tokenFrom.address || altWeth, tokenTo.address || altWeth] as [`0x${string}`, `0x${string}`];
 
-      const [ownResult, altResult] = await Promise.all([
-        routerV2Contract.read.getAmountsOut([amountIn, ownPath]).catch(() => [0n, 0n]),
-        getContract({ address: config.altRouterV2Address[chain.id], abi: routerV2Contract.abi, client: { public: publicClient } })
-          .read.getAmountsOut([amountIn, altPath]).catch(() => [0n, 0n]),
-      ]);
-
+      const ownResult = await routerV2Contract.read.getAmountsOut([amountIn, ownPath]).catch(() => [0n, 0n]);
       const ownOut = (ownResult as bigint[])[ownResult.length - 1] ?? 0n;
-      const altOut = (altResult as bigint[])[altResult.length - 1] ?? 0n;
-
-      bestRouterRef.current = altOut > ownOut ? "alt" : "own";
-      const best = altOut > ownOut ? altOut : ownOut;
+      let best = ownOut;
+      bestRouterRef.current = "own";
+      if (bestPriceRouting) {
+        const altResult = await getContract({ address: config.altRouterV2Address[chain.id], abi: routerV2Contract.abi, client: { public: publicClient } })
+          .read.getAmountsOut([amountIn, altPath]).catch(() => [0n, 0n]);
+        const altOut = (altResult as bigint[])[altResult.length - 1] ?? 0n;
+        if (altOut > ownOut) { bestRouterRef.current = "alt"; best = altOut; }
+      }
       return formatUnits(best, tokenTo.decimals);
     } catch (e) {
       console.log(e);

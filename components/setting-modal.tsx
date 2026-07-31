@@ -23,7 +23,7 @@ type Props = {
 };
 
 export function SettingModal({ trigger, className }: Props) {
-  const { slippageTolerance, txDeadline } = useUserStore();
+  const { slippageTolerance, txDeadline, bestPriceRouting } = useUserStore();
 
   return (
     <Dialog>
@@ -79,6 +79,19 @@ export function SettingModal({ trigger, className }: Props) {
                 Your transaction may fail
               </p>
             )}
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <Label className="text-lg font-normal leading-[1.33] text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
+              Best-price routing
+            </Label>
+            <button
+              onClick={() => useUserStore.setState({ bestPriceRouting: !bestPriceRouting })}
+              className="relative w-12 h-6 rounded-full transition-colors"
+              style={{ background: bestPriceRouting ? "linear-gradient(180deg,#ffaa32,#e07a12)" : "var(--ae-veil)" }}
+            >
+              <span className="absolute top-1 transition-all w-4 h-4 rounded-full bg-white"
+                style={{ left: bestPriceRouting ? "calc(100% - 20px)" : "4px" }} />
+            </button>
           </div>
           <div className="flex items-center justify-between gap-4">
             <Label className="text-lg font-normal leading-[1.33] text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
