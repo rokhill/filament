@@ -610,12 +610,40 @@ export default function ForgePage() {
 
   const load = async () => {
     try {
-      const [c, f] = await Promise.all([fetchCoins(), getCreationFee()]);
-      setCoins(c);
-      setFee(f);
-      const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
-      if (INDEXER) {
-        fetch(`${INDEXER}/api/v1/forge/activity?limit=30`)
+      const idxUrl = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+      let c;
+      if (idxUrl) {
+        try {
+          const [rows, f2] = await Promise.all([
+            fetch(`${idxUrl}/api/v1/forge/coins?limit=200&sort=progress`).then(r=>r.json()),
+            getCreationFee(),
+          ]);
+          setFee(f2);
+          c = (rows as any[]).map((r: any) => ({
+            address: r.address,
+            creator: r.creator,
+            name: r.name,
+            symbol: r.symbol,
+            priceWei: BigInt(r.price_wei || "0"),
+            progressBps: r.progress_bps,
+            lcaiRaised: BigInt(r.lcai_raised || "0"),
+            graduated: !!r.graduated,
+            pair: r.pair,
+            metadata: (() => { try { return JSON.parse(r.metadata_uri || "{}"); } catch { return {}; } })(),
+          }));
+          setCoins(c);
+        } catch {
+          c = await fetchCoins();
+          setCoins(c);
+        }
+      } else {
+        const [coins2, f2] = await Promise.all([fetchCoins(), getCreationFee()]);
+        c = coins2;
+        setCoins(c);
+        setFee(f2);
+      }
+      if (idxUrl) {
+        fetch(`${idxUrl}/api/v1/forge/activity?limit=30`)
           .then(r => r.json())
           .then(rows => setActivity(rows.map((r: any) => ({
             trader: r.trader,
