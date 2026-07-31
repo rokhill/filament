@@ -546,7 +546,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           )}
         </div>
 
-        <div>
+        <div className={coin.graduated ? "order-first lg:order-last" : ""}>
           {!coin.graduated ? (
             <TradePanel coin={coin} onTraded={load} />
           ) : (
