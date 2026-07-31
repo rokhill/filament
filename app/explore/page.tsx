@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { createPublicClient, http, erc20Abi, formatEther } from "viem";
 import { lcai } from "@/config/chains";
 import Link from "next/link";
@@ -42,13 +43,17 @@ export default function Explore(){
   const [pairs,setPairs]=useState<Pair[]>([]);
   const [forge,setForge]=useState<ForgeCoin[]>([]);
   const [loading,setLoading]=useState(true);
+  const [lcaiUsdState,setLcaiUsdState]=useState(0);
+  const [lpBalances,setLpBalances]=useState<Record<string,bigint>>({});
   const {fetchCoins}=useForge();
   const {fetchStats}=useMarkets();
+  const {address}=useAccount();
 
   useEffect(()=>{
     (async()=>{
       const [coins,stats]=await Promise.all([fetchCoins().catch(()=>[]),fetchStats().catch(()=>null)]);
       const lcaiUsd=stats?.priceUsd??0;
+      setLcaiUsdState(lcaiUsd);
       const logoMap:Record<string,string>={};
       for(const c of coins){
         if(c.metadata?.image){
@@ -105,6 +110,16 @@ export default function Explore(){
       }
       all.sort((a,b)=>b.reserveLCAI>a.reserveLCAI?1:-1);
       setPairs(all);
+      if(address){
+        const balMap:Record<string,bigint>={};
+        await Promise.all(all.map(async pr=>{
+          try{
+            const bal=await client.readContract({address:pr.pair as `0x${string}`,abi:erc20Abi,functionName:"balanceOf",args:[address]});
+            if((bal as bigint)>0n) balMap[pr.pair.toLowerCase()]=bal as bigint;
+          }catch{}
+        }));
+        setLpBalances(balMap);
+      }
       const forgeList:ForgeCoin[]=coins.filter(c=>!c.graduated).map(c=>({
         token:c.address,name:c.name,symbol:c.symbol,
         logoURI:logoMap[c.address.toLowerCase()],
@@ -175,6 +190,7 @@ export default function Explore(){
                       <div className="text-xs f-meta flex items-center gap-2 mt-0.5">
                         <span>${p.symbol}</span>
                         {p.factory==="Filament"&&<span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap" style={{background:"rgba(255,140,30,.2)",color:"var(--ae-aurum)"}}>✦ Exclusive</span>}
+                        {lpBalances[p.pair.toLowerCase()]&&<span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap" style={{background:"rgba(74,222,128,.15)",color:"var(--clr-success)"}}>◆ Your LP</span>}
                       </div>
                     </div>
                     <div className="w-28 text-right flex-shrink-0">
@@ -186,8 +202,8 @@ export default function Explore(){
                       <div className="text-xs f-meta">all time</div>
                     </div>
                     <div className="w-28 text-right flex-shrink-0">
-                      <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{fmt(Number(formatEther(p.reserveLCAI)),0)}</div>
-                      <div className="text-xs f-meta">LCAI</div>
+                      <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{fmt(Number(formatEther(p.reserveLCAI)),0)} LCAI</div>
+                      <div className="text-xs f-meta">{lcaiUsdState>0?"$"+fmt(Number(formatEther(p.reserveLCAI))*lcaiUsdState,0)+" USD":""}</div>
                     </div>
                     <div className="w-24 text-right flex-shrink-0">
                       <div className="text-sm font-semibold" style={{color:"var(--clr-heading)"}}>{p.mcapUsd>0?compact(p.mcapUsd):"—"}</div>
