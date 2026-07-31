@@ -18,6 +18,44 @@ import ProgressBar from "@/components/forge/progress-bar";
 /*  Price chart — pure SVG from Trade events, no chart lib             */
 /* ------------------------------------------------------------------ */
 
+const SYNC_TOPIC = "0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1";
+const SWAP_TOPIC = "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822";
+const WLCAI_ADDR = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
+
+type DexTrade = { isBuy: boolean; lcai: number; token: number; tx: string; };
+
+function DexPriceChart({ history }: { history: number[] }) {
+  if (history.length < 2) return (
+    <div className="h-48 rounded-xl flex items-center justify-center text-xs"
+      style={{ background: "var(--ae-night)", color: "var(--ae-nebula)" }}>
+      Loading DEX price history…
+    </div>
+  );
+  const W = 600; const H = 180;
+  const min = Math.min(...history); const max = Math.max(...history);
+  const span = max - min || max || 1;
+  const x = (i: number) => (i / (history.length - 1)) * W;
+  const y = (p: number) => H - 12 - ((p - min) / span) * (H - 24);
+  const path = history.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p).toFixed(1)}`).join(" ");
+  const area = `${path} L${W},${H} L0,${H} Z`;
+  const up = history[history.length - 1] >= history[0];
+  const color = up ? "#4ade80" : "#f87171";
+  return (
+    <div className="rounded-xl overflow-hidden mb-4" style={{ background: "var(--ae-night)" }}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 180 }}>
+        <defs>
+          <linearGradient id="dexGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.01" />
+          </linearGradient>
+        </defs>
+        <path d={area} fill="url(#dexGrad)" />
+        <path d={path} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+
 function ExpandableDescription({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
   const LIMIT = 280;
@@ -266,6 +304,8 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   const [creatorBal, setCreatorBal] = useState<bigint>(0n);
   const [dexPrice, setDexPrice] = useState<number | null>(null);
   const [lpReserves, setLpReserves] = useState<{lcai: bigint, tok: bigint} | null>(null);
+  const [dexHistory, setDexHistory] = useState<number[]>([]);
+  const [dexTrades, setDexTrades] = useState<DexTrade[]>([]);
   const [lcaiUsd, setLcaiUsd] = useState(0);
   const { fetchStats } = useMarkets();
 
@@ -279,16 +319,44 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
       if (c.graduated && c.pair && c.pair !== "0x0000000000000000000000000000000000000000") {
         const PAIR_ABI = [{type:"function",name:"getReserves",inputs:[],outputs:[{type:"uint112"},{type:"uint112"},{type:"uint32"}],stateMutability:"view"},{type:"function",name:"token0",inputs:[],outputs:[{type:"address"}],stateMutability:"view"}] as const;
         const WLCAI = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
-        Promise.all([
-          publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"getReserves"}),
-          publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"token0"}),
-        ]).then(([res,t0])=>{
-          const r = res as [bigint,bigint,number];
-          const wlcaiIsT0 = (t0 as string).toLowerCase()===WLCAI;
-          const resLCAI = wlcaiIsT0?r[0]:r[1];
-          const resTok = wlcaiIsT0?r[1]:r[0];
-          if(resTok>0n) { setDexPrice(Number(resLCAI)/Number(resTok)); setLpReserves({lcai:resLCAI, tok:resTok}); }
-        }).catch(()=>{});
+        (async () => {
+          try {
+            const [res, t0] = await Promise.all([
+              publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"getReserves"}),
+              publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"token0"}),
+            ]);
+            const r = res as [bigint,bigint,number];
+            const wlcaiIsT0 = (t0 as string).toLowerCase()===WLCAI;
+            const resLCAI = wlcaiIsT0?r[0]:r[1];
+            const resTok = wlcaiIsT0?r[1]:r[0];
+            if(resTok>0n) { setDexPrice(Number(resLCAI)/Number(resTok)); setLpReserves({lcai:resLCAI, tok:resTok}); }
+            const allLogs = await publicClient.getLogs({address:c.pair as `0x${string}`,fromBlock:0n,toBlock:"latest"});
+            const hist = allLogs
+              .filter(l => l.topics[0] === SYNC_TOPIC)
+              .map(l => {
+                const r0 = BigInt("0x" + l.data.slice(2, 66));
+                const r1 = BigInt("0x" + l.data.slice(66, 130));
+                const lR = wlcaiIsT0 ? r0 : r1;
+                const tR = wlcaiIsT0 ? r1 : r0;
+                return tR > 0n ? Number(formatEther(lR)) / Number(formatEther(tR)) : 0;
+              }).filter(x => x > 0);
+            setDexHistory(hist);
+            const swaps = allLogs
+              .filter(l => l.topics[0] === SWAP_TOPIC)
+              .slice(-20)
+              .map(l => {
+                const a0in  = BigInt("0x" + l.data.slice(2,   66));
+                const a1in  = BigInt("0x" + l.data.slice(66,  130));
+                const a0out = BigInt("0x" + l.data.slice(130, 194));
+                const a1out = BigInt("0x" + l.data.slice(194, 258));
+                const isBuy = wlcaiIsT0 ? a0in > 0n : a1in > 0n;
+                const lcai  = Number(formatEther(wlcaiIsT0 ? (a0in > 0n ? a0in : a0out) : (a1in > 0n ? a1in : a1out)));
+                const token = Number(formatEther(wlcaiIsT0 ? (a1in > 0n ? a1in : a1out) : (a0in > 0n ? a0in : a0out)));
+                return { isBuy, lcai, token, tx: l.transactionHash ?? "" };
+              });
+            setDexTrades(swaps.reverse());
+          } catch {}
+        })();
       }
     }
   };
@@ -543,19 +611,22 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                 + Add Liquidity
               </Link>
 
-              {/* Recent trades */}
-              {trades.length > 0 && (
+              {/* DEX price chart */}
+              {dexHistory.length > 1 && <DexPriceChart history={dexHistory} />}
+
+              {/* Recent DEX trades */}
+              {dexTrades.length > 0 && (
                 <div>
-                  <div className="text-xs font-semibold mb-2" style={{ color: "var(--ae-nebula)" }}>Recent Trades</div>
+                  <div className="text-xs font-semibold mb-2" style={{ color: "var(--ae-nebula)" }}>Recent DEX Trades</div>
                   <div className="space-y-1">
-                    {trades.slice(0, 8).map((t, i) => (
+                    {dexTrades.slice(0, 10).map((t, i) => (
                       <div key={i} className="flex items-center justify-between text-xs rounded-lg px-2 py-1.5" style={{ background: "var(--ae-night)" }}>
                         <span className="font-semibold" style={{ color: t.isBuy ? "var(--clr-success)" : "var(--clr-danger)" }}>
                           {t.isBuy ? "BUY" : "SELL"}
                         </span>
-                        <span style={{ color: "var(--ae-nebula)" }}>{t.trader.slice(0,6)}…{t.trader.slice(-4)}</span>
-                        <span style={{ color: "var(--clr-heading)" }}>{Number(t.lcaiAmount / 10n**18n).toFixed(2)} LCAI</span>
-                        <a href={`https://mainnet.lightscan.app/tx/${t.tx}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--ae-aurum)" }}>↗</a>
+                        <span style={{ color: "var(--clr-heading)" }}>{t.lcai.toFixed(2)} LCAI</span>
+                        <span style={{ color: "var(--ae-nebula)" }}>{t.token.toLocaleString(undefined,{maximumFractionDigits:0})} {coin.symbol}</span>
+                        {t.tx && <a href={`https://mainnet.lightscan.app/tx/${t.tx}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--ae-aurum)" }}>↗</a>}
                       </div>
                     ))}
                   </div>
