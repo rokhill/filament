@@ -10,7 +10,8 @@ import Link from "next/link";
 import useForge, { ForgeCoin, fmtLcai } from "@/hooks/useForge";
 import useWeb3Clients from "@/hooks/useWeb3Clients";
 import { forgeAbi } from "@/contracts/forgeAbi";
-import { FORGE_ADDRESS } from "@/config/forge";
+import { FORGE_ADDRESS, ipfsToHttp } from "@/config/forge";
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
 
 type PulseTrade = {
   token: `0x${string}`;
@@ -41,7 +42,7 @@ const SUPPLY = 1_000_000_000n * 10n ** 18n;
 
 function Avatar({ coin, size = 40 }: { coin: ForgeCoin; size?: number }) {
   const [err, setErr] = useState(false);
-  const src = coin.metadata.image;
+  const src = FORGE_IMAGE_OVERRIDES[coin.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address] ?? ipfsToHttp(coin.metadata?.image);
   if (!src || err) {
     return (
       <div
