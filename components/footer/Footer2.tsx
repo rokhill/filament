@@ -23,7 +23,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="text-center py-2" style={{ borderTop: "1px solid rgba(255,140,30,0.15)", marginTop: "0.5rem" }}>
-        <p className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>
+        <p className="text-[12px]" style={{ color: "var(--ae-nebula)" }}>
           ⚡ Powered by{" "}
           <span style={{ color: "var(--ae-aurum)", fontWeight: 600 }}>Filament Indexer™</span>
           {" "}· Proprietary on-chain data infrastructure · Chain 9200
