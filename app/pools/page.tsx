@@ -46,11 +46,18 @@ export default function Pools() {
         if (!address) { setLoadingPage(false); return; }
         setLoadingPage(true);
         try {
-            // Get pair list from indexer, check LP balances on-chain (wallet-specific)
+            // Get pair list + token map from indexer
             const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
-            const pairList = INDEXER
-                ? await fetch(`${INDEXER}/api/v1/pairs?limit=200`).then(r=>r.json()).catch(()=>[])
-                : [];
+            const [pairList, tokenList] = INDEXER
+                ? await Promise.all([
+                    fetch(`${INDEXER}/api/v1/pairs?limit=200`).then(r=>r.json()).catch(()=>[]),
+                    fetch(`${INDEXER}/api/v1/tokens?limit=500`).then(r=>r.json()).catch(()=>[]),
+                  ])
+                : [[], []];
+            const tokenMap: Record<string,{symbol:string,name:string}> = {};
+            for (const t of (tokenList as any[])) {
+                if (t.address) tokenMap[t.address.toLowerCase()] = {symbol: t.symbol||"TOKEN", name: t.name||"Token"};
+            }
             const allPairs: Pair[] = [];
             for (const p of (pairList as any[])) {
                 const pairAddress = p.address as `0x${string}`;
@@ -64,10 +71,12 @@ export default function Pools() {
                 const t0addr = p.token0 as `0x${string}`;
                 const t1addr = p.token1 as `0x${string}`;
                 const wlcai = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
-                const sym0 = t0addr.toLowerCase()===wlcai?"LCAI":p.base_token===t1addr.toLowerCase()?"LCAI":(p.base_token===t0addr.toLowerCase()?p.base_token:"?");
-                const sym1 = t1addr.toLowerCase()===wlcai?"LCAI":p.base_token===t0addr.toLowerCase()?"LCAI":(p.base_token===t1addr.toLowerCase()?p.base_token:"?");
-                const token0 = {address:t0addr,symbol:t0addr.toLowerCase()===wlcai?"LCAI":"TOKEN",name:t0addr.toLowerCase()===wlcai?"LightChainAI":"Token",decimals:18,chainId:chain.id,logoURI:logoMap[t0addr.toLowerCase()]||""};
-                const token1 = {address:t1addr,symbol:t1addr.toLowerCase()===wlcai?"LCAI":"TOKEN",name:t1addr.toLowerCase()===wlcai?"LightChainAI":"Token",decimals:18,chainId:chain.id,logoURI:logoMap[t1addr.toLowerCase()]||""};
+                const baseAddr = (p.base_token as string)?.toLowerCase();
+                const baseInfo = tokenMap[baseAddr] || {symbol: baseAddr?.slice(0,6)||"TOKEN", name: baseAddr||"Token"};
+                const baseLogoURI = logoMap[baseAddr] || "";
+                const isT0Wlcai = t0addr.toLowerCase()===wlcai;
+                const token0 = {address:t0addr,symbol:isT0Wlcai?"LCAI":baseInfo.symbol,name:isT0Wlcai?"LightChainAI":baseInfo.name,decimals:18,chainId:chain.id,logoURI:isT0Wlcai?"":baseLogoURI};
+                const token1 = {address:t1addr,symbol:!isT0Wlcai?"LCAI":baseInfo.symbol,name:!isT0Wlcai?"LightChainAI":baseInfo.name,decimals:18,chainId:chain.id,logoURI:!isT0Wlcai?"":baseLogoURI};
                 allPairs.push({
                     address:pairAddress, token0, token1,
                     liquidity:lpBalance,
