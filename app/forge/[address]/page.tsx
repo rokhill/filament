@@ -503,7 +503,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
         <div>
-          <PriceChart trades={trades} live={coin.priceWei} />
+           {!coin.graduated && <PriceChart trades={trades} live={coin.priceWei} />}
 
           {!coin.graduated && (
             <div className="mt-4">
@@ -563,6 +563,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
             <summary className="text-sm font-semibold mb-3 cursor-pointer select-none list-none flex items-center gap-2" style={{ color: coin.graduated ? "var(--ae-aurum)" : "var(--clr-heading)" }}>
               {coin.graduated ? "📈 Curve History — tap to expand" : "Recent trades"}
             </summary>
+            {coin.graduated && <PriceChart trades={trades} live={coin.priceWei} />}
           {trades.length === 0 ? (
             <p className="text-xs" style={{ color: "var(--ae-nebula)" }}>No trades yet.</p>
           ) : (
