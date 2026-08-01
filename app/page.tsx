@@ -136,8 +136,8 @@ export default function Explore(){
   return(
     <><BootSplash /><main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
       <div className="f-eyebrow mb-2">Filament DEX · LightChain AI</div>
-      <h1 className="f-display text-5xl sm:text-7xl mb-2 forge-title forge-breathe">Filament.</h1>
-      <p className="f-display text-xl sm:text-2xl mb-4" style={{ color: "var(--ae-nebula)" }}>Stay Ahead of the Curve.</p>
+      <h1 className="f-display text-4xl sm:text-5xl mb-1">Explore</h1>
+      <p className="f-meta text-sm mb-2" style={{ color: "var(--ae-aurum)" }}>Stay Ahead of the Curve.</p>
       <p className="f-meta mb-8">Every token with liquidity on LightChain AI — live from on-chain events, powered by Filament Indexer™.</p>
       {loading?(
         <div className="f-card rounded-2xl p-10 text-center">
