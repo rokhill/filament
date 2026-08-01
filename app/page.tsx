@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import BootSplash from "@/components/boot-splash";
 import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
 import { useAccount } from "wagmi";
 import { createPublicClient, http, erc20Abi, formatEther } from "viem";
@@ -133,7 +134,7 @@ export default function Explore(){
   const totalLCAI=pairs.reduce((a,p)=>a+p.reserveLCAI,0n);
 
   return(
-    <main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
+    <><BootSplash /><main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
       <div className="f-eyebrow mb-2">Filament · LightChain AI</div>
       <h1 className="f-display text-4xl sm:text-5xl mb-1">Stay Ahead of the Curve.</h1>
       <p className="f-meta mb-8">Every token with liquidity on LightChain AI — live from on-chain events, powered by Filament Indexer™.</p>
@@ -263,6 +264,6 @@ export default function Explore(){
           )}
         </>
       )}
-    </main>
+    </main></>
   );
 }
