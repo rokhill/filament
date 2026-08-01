@@ -143,6 +143,7 @@ export default function Pools() {
                 }
             });
             setLogoMap(m);
+            loadMyPools();
         }).catch(()=>{});
     }, [address, chain]);
     useEffect(() => {
