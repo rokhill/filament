@@ -129,22 +129,25 @@ export default function Pools() {
     };
 
     useEffect(() => {
-        loadMyPools();
         fetchStats().then(s => { if (s) setLcaiUsd(s.priceUsd); }).catch(()=>{});
-        if (address) fetchCoins().then(coins => {
-            const m: Record<string,string> = {};
-            coins.forEach(c => {
-                const override = FORGE_IMAGE_OVERRIDES[c.address.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[c.address];
-                if (override) {
-                    m[c.address.toLowerCase()] = override;
-                } else if (c.metadata?.image) {
-                    const img = c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+c.metadata.image.slice(7) : c.metadata.image;
-                    m[c.address.toLowerCase()] = img;
-                }
-            });
-            setLogoMap(m);
+        if (address) {
+            fetchCoins().then(coins => {
+                const m: Record<string,string> = {};
+                coins.forEach(c => {
+                    const override = FORGE_IMAGE_OVERRIDES[c.address.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[c.address];
+                    if (override) {
+                        m[c.address.toLowerCase()] = override;
+                    } else if (c.metadata?.image) {
+                        const img = c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+c.metadata.image.slice(7) : c.metadata.image;
+                        m[c.address.toLowerCase()] = img;
+                    }
+                });
+                setLogoMap(m);
+                loadMyPools();
+            }).catch(()=>{ loadMyPools(); });
+        } else {
             loadMyPools();
-        }).catch(()=>{});
+        }
     }, [address, chain]);
     useEffect(() => {
         if (!Object.keys(logoMap).length) return;
