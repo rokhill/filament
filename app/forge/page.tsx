@@ -1,4 +1,5 @@
 "use client"
+import { useIndexerStream } from "@/hooks/useIndexerStream";
 import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";;
 
 import { useEffect, useMemo, useState } from "react";
@@ -672,6 +673,19 @@ export default function ForgePage() {
     return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useIndexerStream(["forge_trade"], (_, data) => {
+    setActivity(prev => [{
+      trader: data.trader,
+      isBuy: data.is_buy === 1,
+      lcaiAmount: BigInt(data.lcai_amount || "0"),
+      tokenAmount: BigInt(data.token_amount || "0"),
+      priceWei: 0n,
+      block: BigInt(data.block || 0),
+      tx: data.tx,
+      token: data.coin,
+    }, ...prev].slice(0, 50));
+  });
 
   const king = useMemo(() => {
     if (!coins) return null;
