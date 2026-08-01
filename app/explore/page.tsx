@@ -134,7 +134,7 @@ export default function Explore(){
 
   return(
     <main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
-      <div className="f-eyebrow mb-2">Filament · LightChain AI</div>
+      <div className="f-eyebrow mb-2">Filament DEX · LightChain AI</div>
       <h1 className="f-display text-4xl sm:text-5xl mb-1">Stay Ahead of the Curve.</h1>
       <p className="f-meta mb-8">Every token with liquidity on LightChain AI — live from on-chain events, powered by Filament Indexer™.</p>
       {loading?(
@@ -152,13 +152,15 @@ export default function Explore(){
                 <div className="f-meta text-xs mt-1">Live pairs</div>
               </div>
               <div className="f-card rounded-2xl p-4 text-center">
-                <div className="text-xl font-bold" style={{color:"var(--ae-aurum)"}}>{fmt(Number(formatEther(totalLCAI)),0)}</div>
-                <div className="f-meta text-xs mt-1">LCAI locked</div>
-              </div>
-              <div className="f-card rounded-2xl p-4 text-center">
                 <div className="text-xl font-bold" style={{color:"var(--ae-aurum)"}}>{pairs.filter(p=>p.lpBurned).length}</div>
                 <div className="f-meta text-xs mt-1">LP burned</div>
               </div>
+              </div>
+              <div className="f-card rounded-2xl p-4 text-center mb-8">
+                <div className="text-2xl font-bold" style={{color:"var(--ae-aurum)"}}>{fmtLiq(totalLCAI)}</div>
+                <div className="f-meta text-xs mt-1">Total LCAI Locked</div>
+              </div>
+              <div className="grid grid-cols-3 gap-3 mb-8" style={{display:"none"}}>
           </div>
 
           {/* desktop header */}
