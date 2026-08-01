@@ -145,64 +145,53 @@ export default function ForgePulse() {
     let alive = true;
     (async () => {
       try {
-        const all = await fetchCoins();
-        const coins = all.filter((c) => !c.graduated);
-        const grads = all.filter((c) => c.graduated);
-        if (coins.length === 0) { if (alive) { setStats([]); setLoading(false); } return; }
+        const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+        const [allCoins, allTrades, gradCoins] = await Promise.all([
+          INDEXER ? fetch(`${INDEXER}/api/v1/forge/coins?limit=200&status=curve`).then(r=>r.json()).catch(()=>[]) : fetchCoins().then(c=>c.filter((x:any)=>!x.graduated)),
+          INDEXER ? fetch(`${INDEXER}/api/v1/forge/activity?limit=1000`).then(r=>r.json()).catch(()=>[]) : Promise.resolve([]),
+          INDEXER ? fetch(`${INDEXER}/api/v1/forge/coins?limit=50&status=graduated`).then(r=>r.json()).catch(()=>[]) : fetchCoins().then(c=>c.filter((x:any)=>x.graduated)),
+        ]);
 
-        // dynamic 24h window: measure real block time from the chain
-        const latest = await publicClient.getBlock();
-        const probeNum = latest.number > 10_000n ? latest.number - 10_000n : 0n;
-        const probe = await publicClient.getBlock({ blockNumber: probeNum });
-        const secsPerBlock =
-          latest.number > probeNum
-            ? Number(latest.timestamp - probe.timestamp) / Number(latest.number - probeNum)
-            : 2;
-        const blocks24h = BigInt(Math.max(1, Math.round(86_400 / Math.max(0.25, secsPerBlock))));
-        const blocks7d = blocks24h * 7n;
-        const from7d = latest.number > blocks7d ? latest.number - blocks7d : 0n;
-        const cut24 = latest.number > blocks24h ? latest.number - blocks24h : 0n;
-        const cut48 = latest.number > blocks24h * 2n ? latest.number - blocks24h * 2n : 0n;
-
-        const logs = await publicClient.getContractEvents({
-          address: FORGE_ADDRESS, abi: forgeAbi, eventName: "Trade",
-          fromBlock: from7d, toBlock: "latest",
-        });
-        const trades: PulseTrade[] = logs.map((l) => ({
-          token: (l.args.token as `0x${string}`),
-          trader: (l.args.trader as `0x${string}`),
-          isBuy: l.args.isBuy as boolean,
-          lcai: l.args.lcaiAmount as bigint,
-          block: l.blockNumber,
+        const coins = (allCoins as any[]).map((r:any) => ({
+          address: r.address, creator: r.creator, name: r.name, symbol: r.symbol,
+          priceWei: BigInt(r.price_wei||"0"), progressBps: r.progress_bps,
+          lcaiRaised: BigInt(r.lcai_raised||"0"), graduated: false, pair: r.pair,
+          metadata: (() => { try { return JSON.parse(r.metadata_uri||"{}"); } catch { return {}; } })(),
+        }));
+        const grads = (gradCoins as any[]).map((r:any) => ({
+          address: r.address, creator: r.creator, name: r.name, symbol: r.symbol,
+          priceWei: BigInt(r.price_wei||"0"), progressBps: r.progress_bps,
+          lcaiRaised: BigInt(r.lcai_raised||"0"), graduated: true, pair: r.pair,
+          metadata: (() => { try { return JSON.parse(r.metadata_uri||"{}"); } catch { return {}; } })(),
         }));
 
-        const creatorBals = await Promise.all(
-          coins.map((c) => fetchCreatorBalance(c.address, c.creator))
-        );
+        const now = Math.floor(Date.now()/1000);
+        const cut24 = now - 86400;
+        const cut48 = now - 86400*2;
 
-        const out: CoinStats[] = coins.map((coin, i) => {
-          const mine = trades.filter((t) => t.token.toLowerCase() === coin.address.toLowerCase());
-          const cur = mine.filter((t) => t.block > cut24);
-          const prev = mine.filter((t) => t.block <= cut24);
-          const buyerSet = new Set(cur.filter((t) => t.isBuy).map((t) => t.trader.toLowerCase()));
-          const maxBuy = cur.filter((t) => t.isBuy).reduce((m, t) => (t.lcai > m ? t.lcai : m), 0n);
-          const all7d = mine;
-          const buyers7dSet = new Set(all7d.filter((t) => t.isBuy).map((t) => t.trader.toLowerCase()));
-          const maxBuy7d = all7d.filter((t) => t.isBuy).reduce((m, t) => (t.lcai > m ? t.lcai : m), 0n);
+        const out: CoinStats[] = coins.map((coin:any) => {
+          const mine = (allTrades as any[]).filter((t:any) => t.coin?.toLowerCase()===coin.address.toLowerCase());
+          const cur = mine.filter((t:any) => (t.ts||0) > cut24);
+          const prev = mine.filter((t:any) => (t.ts||0) > cut48 && (t.ts||0) <= cut24);
+          const all7d = mine.filter((t:any) => (t.ts||0) > now - 86400*7);
+          const buyerSet = new Set(cur.filter((t:any)=>t.is_buy===1).map((t:any)=>t.trader?.toLowerCase()));
+          const buyers7dSet = new Set(all7d.filter((t:any)=>t.is_buy===1).map((t:any)=>t.trader?.toLowerCase()));
+          const maxBuy = cur.filter((t:any)=>t.is_buy===1).reduce((m:bigint,t:any)=>{ const v=BigInt(t.lcai_amount||"0"); return v>m?v:m; },0n);
+          const maxBuy7d = all7d.filter((t:any)=>t.is_buy===1).reduce((m:bigint,t:any)=>{ const v=BigInt(t.lcai_amount||"0"); return v>m?v:m; },0n);
           return {
             coin,
-            vol24: cur.reduce((a, t) => a + t.lcai, 0n),
-            volPrev24: prev.reduce((a, t) => a + t.lcai, 0n),
+            vol24: cur.reduce((a:bigint,t:any)=>a+BigInt(t.lcai_amount||"0"),0n),
+            volPrev24: prev.reduce((a:bigint,t:any)=>a+BigInt(t.lcai_amount||"0"),0n),
             buyers24: buyerSet.size,
-            buys24: cur.filter((t) => t.isBuy).length,
-            sells24: cur.filter((t) => !t.isBuy).length,
-            lastTradeBlock: mine.length ? mine[mine.length - 1].block : 0n,
-            creatorPct: Number((creatorBals[i] * 10_000n) / SUPPLY) / 100,
+            buys24: cur.filter((t:any)=>t.is_buy===1).length,
+            sells24: cur.filter((t:any)=>t.is_buy===0).length,
+            lastTradeBlock: mine.length ? BigInt(mine[mine.length-1].block||0) : 0n,
+            creatorPct: 0,
             maxBuy24: maxBuy,
-            vol7d: all7d.reduce((a, t) => a + t.lcai, 0n),
+            vol7d: all7d.reduce((a:bigint,t:any)=>a+BigInt(t.lcai_amount||"0"),0n),
             buyers7d: buyers7dSet.size,
-            buys7d: all7d.filter((t) => t.isBuy).length,
-            sells7d: all7d.filter((t) => !t.isBuy).length,
+            buys7d: all7d.filter((t:any)=>t.is_buy===1).length,
+            sells7d: all7d.filter((t:any)=>t.is_buy===0).length,
             maxBuy7d,
           };
         });
