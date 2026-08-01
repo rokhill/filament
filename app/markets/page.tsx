@@ -159,9 +159,26 @@ export default function MarketsPage() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      const [s, v, f] = await Promise.all([fetchStats(), fetchVenues(), fetchForgeMarket()]);
+      const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+      const [s, v, idxStats] = await Promise.all([
+        fetchStats(),
+        fetchVenues(),
+        INDEXER ? fetch(`${INDEXER}/api/v1/stats`).then(r=>r.json()).catch(()=>null) : fetchForgeMarket(),
+      ]);
       if (!alive) return;
-      setStats(s); setVenues(v); setForge(f); setLoading(false);
+      setStats(s); setVenues(v);
+      if (idxStats && idxStats.forge_coins !== undefined) {
+        setForge({
+          coinCount: idxStats.forge_coins,
+          totalRaised: BigInt(Math.round(idxStats.lcai_locked * 1e18 || 0)),
+          graduated: idxStats.graduations,
+          topCoin: null,
+          recent: [],
+        });
+      } else {
+        setForge(idxStats);
+      }
+      setLoading(false);
     })();
     return () => { alive = false; };
     // eslint-disable-next-line

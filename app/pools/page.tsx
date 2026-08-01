@@ -43,7 +43,7 @@ export default function Pools() {
     const { fetchCoins } = useForge();
 
     const loadMyPools = async (overrideLogoMap?: Record<string,string>) => {
-        const logoMap = overrideLogoMap ?? {}; // use passed map, not stale state
+        const logoMap = overrideLogoMap instanceof MouseEvent ? {} : (overrideLogoMap ?? {}); // use passed map, not stale state
         if (!address) { setLoadingPage(false); return; }
         setLoadingPage(true);
         try {
