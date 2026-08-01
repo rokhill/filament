@@ -1,5 +1,4 @@
 "use client";
-import { FORGE_IMAGE_OVERRIDES, ipfsToHttp } from "@/config/forge";
 
 /* ------------------------------------------------------------------ */
 /*  FORGE PULSE — the data layer of the Forge.                         */
@@ -42,7 +41,7 @@ const SUPPLY = 1_000_000_000n * 10n ** 18n;
 
 function Avatar({ coin, size = 40 }: { coin: ForgeCoin; size?: number }) {
   const [err, setErr] = useState(false);
-  const src = FORGE_IMAGE_OVERRIDES[coin.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address] ?? ipfsToHttp(coin.metadata?.image);
+  const src = coin.metadata.image;
   if (!src || err) {
     return (
       <div
