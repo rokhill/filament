@@ -53,7 +53,7 @@ export default function GraduationBanner({ name, symbol, address }: { name: stri
           </div>
         </div>
         <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-          <Link href={`/?inputCurrency=LCAI&outputCurrency=${address}`} style={{background:"linear-gradient(180deg,#ffaa32,#e07a12)",color:"#140d05",borderRadius:10,padding:"8px 18px",fontSize:13,fontWeight:700,textDecoration:"none"}}>Trade ${symbol} on Filament →</Link>
+          <Link href={`/exchange?inputCurrency=LCAI&outputCurrency=${address}`} style={{background:"linear-gradient(180deg,#ffaa32,#e07a12)",color:"#140d05",borderRadius:10,padding:"8px 18px",fontSize:13,fontWeight:700,textDecoration:"none"}}>Trade ${symbol} on Filament →</Link>
           <a href={`https://mainnet.lightscan.app/address/${address}`} target="_blank" rel="noopener noreferrer" style={{border:"1px solid rgba(255,140,30,.4)",color:"#ffaa32",borderRadius:10,padding:"8px 18px",fontSize:13,fontWeight:600,textDecoration:"none"}}>Verify LP burn ↗</a>
         </div>
       </div>
