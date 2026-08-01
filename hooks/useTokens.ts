@@ -16,6 +16,8 @@ const useTokens = () => {
 
   // auto-add all forge coins to token list (indexer first, RPC fallback)
   useEffect(() => {
+    // wipe stale persisted tokens for this chain so old V1 coins don't linger
+    useUserStore.setState((state) => ({ tokens: { ...state.tokens, [chain.id]: {} } }));
     const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
     const load = INDEXER
       ? fetch(`${INDEXER}/api/v1/forge/coins?limit=200`).then(r=>r.json()).then((rows:any[]) =>
