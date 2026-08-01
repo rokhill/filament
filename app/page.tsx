@@ -147,17 +147,19 @@ export default function Explore(){
       ):(
         <>
           {/* stats */}
-          <div className="grid grid-cols-3 gap-3 mb-8">
-            {[
-              {l:"Live pairs",v:pairs.length.toString()},
-              {l:"LCAI locked",v:fmtLiq(totalLCAI)},
-              {l:"LP burned",v:pairs.filter(p=>p.lpBurned).length+" pairs"},
-            ].map(s=>(
-              <div key={s.l} className="f-card rounded-2xl p-4 text-center">
-                <div className="text-xl font-bold" style={{color:"var(--ae-aurum)"}}>{s.v}</div>
-                <div className="f-meta text-xs mt-1">{s.l}</div>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="f-card rounded-2xl p-4 text-center">
+              <div className="text-xl font-bold" style={{color:"var(--ae-aurum)"}}>{pairs.length}</div>
+              <div className="f-meta text-xs mt-1">Live pairs</div>
+            </div>
+            <div className="f-card rounded-2xl p-4 text-center">
+              <div className="text-xl font-bold" style={{color:"var(--ae-aurum)"}}>{pairs.filter(p=>p.lpBurned).length}</div>
+              <div className="f-meta text-xs mt-1">LP burned</div>
+            </div>
+          </div>
+          <div className="f-card rounded-2xl p-4 text-center mb-8">
+            <div className="text-2xl font-bold" style={{color:"var(--ae-aurum)"}}>{fmtLiq(totalLCAI)}</div>
+            <div className="f-meta text-xs mt-1">Total LCAI Locked</div>
           </div>
 
           {/* desktop header */}
