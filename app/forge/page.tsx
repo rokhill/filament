@@ -80,13 +80,16 @@ function AdminHideButton({ coin, blocked, onToggle }: { coin: ForgeCoin; blocked
 function ActivityTicker({
   items,
   symbols,
+  newTxs,
 }: {
   items: (ForgeTrade & { token: `0x${string}` })[];
   symbols: Record<string, string>;
+  newTxs?: Set<string>;
 }) {
   if (items.length === 0) return null;
   const row = items.map((t, i) => (
     <Link key={i} href={`/forge/${t.token}`} className="inline-flex items-center gap-1.5 text-xs">
+      {newTxs?.has(t.tx) && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full animate-pulse" style={{ background: "rgba(255,140,30,.25)", color: "var(--ae-aurum)" }}>NEW</span>}
       <span style={{ color: t.isBuy ? "var(--clr-success)" : "var(--clr-danger)" }}>
         {t.isBuy ? "\u25b2" : "\u25bc"}
       </span>
@@ -103,7 +106,7 @@ function ActivityTicker({
       className="rounded-xl overflow-hidden py-2 mb-6"
       style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}
     >
-      <div className="forge-ticker-track">
+      <div className="forge-ticker-track" style={{ animationDuration: "80s" }}>
         <span className="inline-flex gap-10 px-5">{row}</span>
         <span className="inline-flex gap-10 px-5" aria-hidden>
           {row}
@@ -602,6 +605,7 @@ export default function ForgePage() {
   const [coins, setCoins] = useState<ForgeCoin[] | null>(null);
   const [fee, setFee] = useState<bigint>(0n);
   const [activity, setActivity] = useState<(ForgeTrade & { token: `0x${string}` })[]>([]);
+  const [newTxs, setNewTxs] = useState<Set<string>>(new Set());
   const [lcaiUsd, setLcaiUsd] = useState<number>(0);
   const [localBlocked, setLocalBlocked] = useState<string[]>([]);
   const isAdmin = address?.toLowerCase() === ADMIN_WALLET;
@@ -675,6 +679,9 @@ export default function ForgePage() {
   }, []);
 
   useIndexerStream(["forge_trade"], (_, data) => {
+    const tx = data.tx;
+    setNewTxs(prev => { const next = new Set(prev); next.add(tx); return next; });
+    setTimeout(() => setNewTxs(prev => { const next = new Set(prev); next.delete(tx); return next; }), 15000);
     setActivity(prev => [{
       trader: data.trader,
       isBuy: data.is_buy === 1,
@@ -793,6 +800,7 @@ export default function ForgePage() {
         <ActivityTicker
           items={activity}
           symbols={Object.fromEntries((coins ?? []).map((c) => [c.address.toLowerCase(), c.symbol]))}
+          newTxs={newTxs}
         />
       )}
       {coins && coins.length > 0 && !query && <GraduationTicker coins={coins} />}
