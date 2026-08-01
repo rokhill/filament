@@ -14,23 +14,27 @@ const useTokens = () => {
   const userTokens = useUserStore();
   const listedTokens = useTokenStore();
 
-  // auto-add graduated forge coins to token list
+  // auto-add all forge coins to token list (indexer first, RPC fallback)
   useEffect(() => {
-    fetchCoins().then((coins) => {
-      coins.forEach((c) => {
-        const img = c.metadata?.image ? (c.metadata.image.startsWith("ipfs://")
-          ? "https://ipfs.io/ipfs/" + c.metadata.image.slice(7)
-          : c.metadata.image) : undefined;
-        addToken({
-          address: c.address as `0x${string}`,
-          chainId: chain.id,
-          name: c.name,
-          symbol: c.symbol,
-          decimals: 18,
-          ...(img ? { logoURI: img } : {}),
+    const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+    const load = INDEXER
+      ? fetch(`${INDEXER}/api/v1/forge/coins?limit=200`).then(r=>r.json()).then((rows:any[]) =>
+          rows.map((r:any) => {
+            let img: string|undefined;
+            try { const m = JSON.parse(r.metadata_uri||"{}"); img = m.image ? (m.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+m.image.slice(7) : m.image) : undefined; } catch {}
+            return { address: r.address as `0x${string}`, chainId: chain.id, name: r.name, symbol: r.symbol, decimals: 18, ...(img ? { logoURI: img } : {}) };
+          })
+        ).catch(()=>null)
+      : Promise.resolve(null);
+    load.then(coins => {
+      if (coins) { coins.forEach(addToken); return; }
+      fetchCoins().then((coins) => {
+        coins.forEach((c) => {
+          const img = c.metadata?.image ? (c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/" + c.metadata.image.slice(7) : c.metadata.image) : undefined;
+          addToken({ address: c.address as `0x${string}`, chainId: chain.id, name: c.name, symbol: c.symbol, decimals: 18, ...(img ? { logoURI: img } : {}) });
         });
-      });
-    }).catch(() => {});
+      }).catch(() => {});
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain.id]);
 
