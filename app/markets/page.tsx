@@ -150,6 +150,7 @@ export default function MarketsPage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [candles, setCandles] = useState<Candle[]>([]);
   const [forge, setForge] = useState<ForgeMarket | null>(null);
+  const [idxData, setIdxData] = useState<any>(null);
   const [chartMode, setChartMode] = useState<"line" | "candle">("candle");
   const [timeframe, setTimeframe] = useState<{ step: number; limit: number; label: string }>(
     { step: 60, limit: 200, label: "1H" }
@@ -168,6 +169,7 @@ export default function MarketsPage() {
       if (!alive) return;
       setStats(s); setVenues(v);
       if (idxStats && idxStats.forge_coins !== undefined) {
+        setIdxData(idxStats);
         setForge({
           coinCount: idxStats.forge_coins,
           totalRaised: BigInt(Math.round(idxStats.lcai_locked * 1e18 || 0)),
@@ -274,8 +276,11 @@ export default function MarketsPage() {
       </Link>
       <div className="grid grid-cols-3 gap-3 mb-4">
         <Stat label="Coins Forged" value={forge ? String(forge.coinCount) : "—"} />
-        <Stat label="LCAI Raised" value={forge ? fmtLcai(forge.totalRaised, 0) : "—"} color="var(--ft-gold)" />
+        <Stat label="LCAI Locked" value={idxData ? fmtLcai(BigInt(Math.round((idxData.lcai_locked||0)*1e18)),0) : forge ? fmtLcai(forge.totalRaised,0) : "—"} color="var(--ft-gold)" />
         <Stat label="Graduated" value={forge ? String(forge.graduated) : "—"} />
+        <Stat label="Forge Vol 24h" value={idxData ? fmtLcai(BigInt(Math.round(idxData.forge_volume_24h_lcai_wei||0)),0)+" LCAI" : "—"} color="var(--ft-gold)" />
+        <Stat label="DEX Vol 24h" value={idxData ? fmtLcai(BigInt(Math.round(idxData.dex_volume_24h_lcai_wei||0)),0)+" LCAI" : "—"} />
+        <Stat label="DEX Swaps 24h" value={idxData ? String(idxData.dex_swaps_24h) : "—"} />
       </div>
 
       {forge?.topCoin && (
