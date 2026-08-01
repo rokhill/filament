@@ -10,8 +10,10 @@ const Footer = () => {
         </Link>
 
         <p className="fil-footer-copy">
-          © {new Date().getFullYear()} Filament · non-custodial DEX &amp; memecoin
-          launchpad on LightChain AI (chain 9200)
+          © {new Date().getFullYear()} Filament · non-custodial DEX &amp; memecoin launchpad on LightChain AI (chain 9200)
+          <br />
+          <span style={{ fontSize: "11px", color: "var(--ae-aurum)", fontWeight: 600 }}>⚡ Powered by Filament Indexer™</span>
+          <span style={{ fontSize: "11px", color: "var(--ae-nebula)" }}> · Proprietary on-chain data infrastructure</span>
         </p>
 
         <div className="fil-footer-links">
@@ -22,13 +24,7 @@ const Footer = () => {
           <Link href="/disclaimer" className="fil-footer-legal">Risk Disclaimer</Link>
         </div>
       </div>
-      <div className="text-center py-2" style={{ borderTop: "1px solid rgba(255,140,30,0.15)", marginTop: "0.5rem" }}>
-        <p className="text-[12px]" style={{ color: "var(--ae-nebula)" }}>
-          ⚡ Powered by{" "}
-          <span style={{ color: "var(--ae-aurum)", fontWeight: 600 }}>Filament Indexer™</span>
-          {" "}· Proprietary on-chain data infrastructure · Chain 9200
-        </p>
-      </div>
+
     </footer>
   );
 };
