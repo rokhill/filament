@@ -310,51 +310,72 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   const { fetchStats } = useMarkets();
 
   const load = async () => {
-    const c = await fetchCoin(token);
-    setCoin(c);
+    const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+    let c;
+    if (INDEXER) {
+      try {
+        const row = await fetch(`${INDEXER}/api/v1/forge/coins/${token}?trades=50`).then(r=>r.json());
+        if (row && row.address) {
+          c = {
+            address: row.address,
+            creator: row.creator,
+            name: row.name,
+            symbol: row.symbol,
+            priceWei: BigInt(row.price_wei || "0"),
+            progressBps: row.progress_bps,
+            lcaiRaised: BigInt(row.lcai_raised || "0"),
+            graduated: !!row.graduated,
+            pair: row.pair,
+            metadata: (() => { try { return JSON.parse(row.metadata_uri || "{}"); } catch { return {}; } })(),
+          } as any;
+          setCoin(c);
+          // curve trades from indexer
+          if (row.trades?.length) {
+            setTrades(row.trades.map((t: any) => ({
+              trader: t.trader,
+              isBuy: t.is_buy === 1,
+              lcaiAmount: BigInt(t.lcai_amount),
+              tokenAmount: BigInt(t.token_amount),
+              priceWei: BigInt(row.price_wei || "0"),
+              block: BigInt(t.block),
+              tx: t.tx,
+            })));
+          }
+        }
+      } catch { c = null; }
+    }
+    if (!c) {
+      c = await fetchCoin(token);
+      setCoin(c);
+      if (c) fetchTrades(token).then(setTrades);
+    }
     if (c) {
-      fetchTrades(token).then(setTrades);
       fetchCreatorBalance(token, c.creator).then(setCreatorBal);
       fetchStats().then(s => { if (s) setLcaiUsd(s.priceUsd); }).catch(()=>{});
       if (c.graduated && c.pair && c.pair !== "0x0000000000000000000000000000000000000000") {
-        const PAIR_ABI = [{type:"function",name:"getReserves",inputs:[],outputs:[{type:"uint112"},{type:"uint112"},{type:"uint32"}],stateMutability:"view"},{type:"function",name:"token0",inputs:[],outputs:[{type:"address"}],stateMutability:"view"}] as const;
-        const WLCAI = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
         (async () => {
           try {
-            const [res, t0] = await Promise.all([
-              publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"getReserves"}),
-              publicClient.readContract({address:c.pair as `0x${string}`,abi:PAIR_ABI,functionName:"token0"}),
-            ]);
-            const r = res as [bigint,bigint,number];
-            const wlcaiIsT0 = (t0 as string).toLowerCase()===WLCAI;
-            const resLCAI = wlcaiIsT0?r[0]:r[1];
-            const resTok = wlcaiIsT0?r[1]:r[0];
-            if(resTok>0n) { setDexPrice(Number(resLCAI)/Number(resTok)); setLpReserves({lcai:resLCAI, tok:resTok}); }
-            const allLogs = await publicClient.getLogs({address:c.pair as `0x${string}`,fromBlock:0n,toBlock:"latest"});
-            const hist = allLogs
-              .filter(l => l.topics[0] === SYNC_TOPIC)
-              .map(l => {
-                const r0 = BigInt("0x" + l.data.slice(2, 66));
-                const r1 = BigInt("0x" + l.data.slice(66, 130));
-                const lR = wlcaiIsT0 ? r0 : r1;
-                const tR = wlcaiIsT0 ? r1 : r0;
-                return tR > 0n ? Number(formatEther(lR)) / Number(formatEther(tR)) : 0;
-              }).filter(x => x > 0);
-            setDexHistory(hist);
-            const swaps = allLogs
-              .filter(l => l.topics[0] === SWAP_TOPIC)
-              .slice(-20)
-              .map(l => {
-                const a0in  = BigInt("0x" + l.data.slice(2,   66));
-                const a1in  = BigInt("0x" + l.data.slice(66,  130));
-                const a0out = BigInt("0x" + l.data.slice(130, 194));
-                const a1out = BigInt("0x" + l.data.slice(194, 258));
-                const isBuy = wlcaiIsT0 ? a0in > 0n : a1in > 0n;
-                const lcai  = Number(formatEther(wlcaiIsT0 ? (a0in > 0n ? a0in : a0out) : (a1in > 0n ? a1in : a1out)));
-                const token = Number(formatEther(wlcaiIsT0 ? (a1in > 0n ? a1in : a1out) : (a0in > 0n ? a0in : a0out)));
-                return { isBuy, lcai, token, tx: l.transactionHash ?? "" };
-              });
-            setDexTrades(swaps.reverse());
+            // reserves from indexer pair detail
+            if (INDEXER) {
+              const pd = await fetch(`${INDEXER}/api/v1/pairs/${c.pair}`).then(r=>r.json()).catch(()=>null);
+              if (pd) {
+                const resLCAI = BigInt(pd.wlcai_is_t0 ? pd.reserve0 : pd.reserve1);
+                const resTok = BigInt(pd.wlcai_is_t0 ? pd.reserve1 : pd.reserve0);
+                if (resTok > 0n) { setDexPrice(Number(resLCAI)/Number(resTok)); setLpReserves({lcai:resLCAI, tok:resTok}); }
+              }
+              // price history from indexer
+              const hist = await fetch(`${INDEXER}/api/v1/pairs/${c.pair}/history?limit=500`).then(r=>r.json()).catch(()=>[]);
+              setDexHistory((hist as any[]).map((h:any)=>h.price_lcai).filter(Boolean));
+              // DEX swaps from indexer
+              const swapRows = await fetch(`${INDEXER}/api/v1/pairs/${c.pair}/swaps?limit=20`).then(r=>r.json()).catch(()=>[]);
+              setDexTrades((swapRows as any[]).map((s:any)=>({
+                isBuy: s.is_buy === 1,
+                lcai: Number(BigInt(s.lcai_amount||"0")) / 1e18,
+                token: Number(BigInt(s.token_amount||"0")) / 1e18,
+                tx: s.tx,
+              })));
+              return;
+            }
           } catch {}
         })();
       }
