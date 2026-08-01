@@ -78,6 +78,7 @@ function Row({ s, metric, rank }: { s: CoinStats; metric: string; rank: number }
         <span className="font-semibold block"
           style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
           {s.coin.name}
+        </span>
         <span className="f-meta text-xs">${s.coin.symbol} · <span style={{ color: "var(--ae-aurum)" }}>{metric}</span></span>
       </div>
     </Link>
