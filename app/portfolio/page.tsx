@@ -75,12 +75,21 @@ export default function PortfolioPage() {
     if (!address || !publicClient) { setLoading(false); return; }
     setLoading(true);
     try {
-      const [native, wlcaiBal, coins, usd] = await Promise.all([
+      const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+      const [native, wlcaiBal, coinRows, usd] = await Promise.all([
         publicClient.getBalance({ address }),
         publicClient.readContract({ address: WLCAI_ADDRESS, abi: erc20Abi, functionName: "balanceOf", args: [address] }).catch(() => 0n),
-        fetchCoins(),
+        INDEXER ? fetch(`${INDEXER}/api/v1/forge/coins?limit=200`).then(r=>r.json()).catch(()=>null) : null,
         getLcaiUsdPrice(),
       ]);
+      const coins = coinRows
+        ? (coinRows as any[]).map((r:any) => ({
+            address: r.address, creator: r.creator, name: r.name, symbol: r.symbol,
+            priceWei: BigInt(r.price_wei||"0"), progressBps: r.progress_bps,
+            lcaiRaised: BigInt(r.lcai_raised||"0"), graduated: !!r.graduated, pair: r.pair,
+            metadata: (() => { try { return JSON.parse(r.metadata_uri||"{}"); } catch { return {}; } })(),
+          }))
+        : await fetchCoins();
       setNativeLcai(native);
       setWlcai(wlcaiBal as bigint);
       setLcaiUsd(usd);
