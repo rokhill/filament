@@ -196,6 +196,18 @@ export default function ForgePulse() {
           };
         });
         if (alive) { setStats(out); setGrads(grads); setLoading(false); }
+
+        // fetch creator balances on-chain for skin check (async, non-blocking)
+        const SUPPLY = 1_000_000_000n * 10n**18n;
+        const creatorBals = await Promise.all(
+          coins.map((coin:any) => fetchCreatorBalance(coin.address, coin.creator).catch(()=>0n))
+        );
+        if (alive) {
+          setStats(prev => prev.map((s, i) => ({
+            ...s,
+            creatorPct: Number((creatorBals[i] * 10_000n) / SUPPLY) / 100,
+          })));
+        }
       } catch {
         if (alive) setLoading(false);
       }
