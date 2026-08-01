@@ -332,15 +332,21 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
           setCoin(c);
           // curve trades from indexer
           if (row.trades?.length) {
-            setTrades(row.trades.map((t: any) => ({
-              trader: t.trader,
-              isBuy: t.is_buy === 1,
-              lcaiAmount: BigInt(t.lcai_amount),
-              tokenAmount: BigInt(t.token_amount),
-              priceWei: BigInt(row.price_wei || "0"),
-              block: BigInt(t.block),
-              tx: t.tx,
-            })));
+            setTrades(row.trades.map((t: any, i: number, arr: any[]) => {
+              // compute implied priceWei from lcai/token ratio for chart
+              const lcai = BigInt(t.lcai_amount || "0");
+              const tok = BigInt(t.token_amount || "0");
+              const priceWei = tok > 0n ? (lcai * 10n**18n) / tok : 0n;
+              return {
+                trader: t.trader,
+                isBuy: t.is_buy === 1,
+                lcaiAmount: lcai,
+                tokenAmount: tok,
+                priceWei,
+                block: BigInt(t.block),
+                tx: t.tx,
+              };
+            }).reverse());
           }
         }
       } catch { c = null; }
