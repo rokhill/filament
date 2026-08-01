@@ -42,7 +42,8 @@ export default function Pools() {
     const { fetchStats } = useMarkets();
     const { fetchCoins } = useForge();
 
-    const loadMyPools = async () => {
+    const loadMyPools = async (overrideLogoMap?: Record<string,string>) => {
+        const logoMap = overrideLogoMap ?? {}; // use passed map, not stale state
         if (!address) { setLoadingPage(false); return; }
         setLoadingPage(true);
         try {
@@ -143,7 +144,7 @@ export default function Pools() {
                     }
                 });
                 setLogoMap(m);
-                loadMyPools();
+                loadMyPools(m);
             }).catch(()=>{ loadMyPools(); });
         } else {
             loadMyPools();
