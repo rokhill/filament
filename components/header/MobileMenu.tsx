@@ -7,11 +7,11 @@ import WalletConnectButton from "../wallet-connect-button";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/", label: "Exchange", sub: "Swap tokens" },
+  { href: "/exchange", label: "Exchange", sub: "Swap tokens" },
   { href: "/forge", label: "Forge", sub: "Memecoin launchpad" },
   { href: "/pools", label: "Pools", sub: "Earn from liquidity" },
   { href: "/bridge", label: "Bridge", sub: "Official LCAI bridge" },
-  { href: "/explore", label: "Explore", sub: "All tokens on LightChain AI" },
+  { href: "/", label: "Explore", sub: "Live on-chain data powered by Filament Indexer™" },
   { href: "/markets", label: "Markets", sub: "LCAI market data" },
   { href: "/portfolio", label: "Portfolio", sub: "Your holdings" },
   { href: "/guides", label: "Guides", sub: "Learn how it all works" },

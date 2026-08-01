@@ -134,9 +134,9 @@ export default function Explore(){
 
   return(
     <main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
-      <div className="f-eyebrow mb-2">Tokens · LightChain AI</div>
-      <h1 className="f-display text-4xl sm:text-5xl mb-1">Explore</h1>
-      <p className="f-meta mb-8">Every token with liquidity on LightChain AI — live from on-chain events, zero curation.</p>
+      <div className="f-eyebrow mb-2">Filament · LightChain AI</div>
+      <h1 className="f-display text-4xl sm:text-5xl mb-1">Stay Ahead of the Curve.</h1>
+      <p className="f-meta mb-8">Every token with liquidity on LightChain AI — live from on-chain events, powered by Filament Indexer™.</p>
       {loading?(
         <div className="f-card rounded-2xl p-10 text-center">
           <div className="text-3xl mb-3">🔍</div>

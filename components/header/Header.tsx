@@ -10,10 +10,10 @@ import WalletConnectButton from "../wallet-connect-button";
 import { BRIDGE_ENABLED } from "@/config/bridge";
 
 const NAV = [
-  { href: "/", label: "Exchange" },
+  { href: "/exchange", label: "Exchange" },
   { href: "/forge", label: "Forge" },
   ...(BRIDGE_ENABLED ? [{ href: "/bridge", label: "Bridge" }] : []),
-  { href: "/explore", label: "Explore" },
+  { href: "/", label: "Explore" },
   { href: "/markets", label: "Markets" },
   { href: "/portfolio", label: "Portfolio" },
 ];
