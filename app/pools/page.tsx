@@ -46,46 +46,36 @@ export default function Pools() {
         if (!address) { setLoadingPage(false); return; }
         setLoadingPage(true);
         try {
-            const FACTORIES = [
-                "0x5Cf3b069dDB232d1adc5139a9eFb30C48F629389",
-                "0xBA502917c3F7233F9100f9430f4048a224A7D8DE",
-            ] as const;
-            const erc20Mini = [
-                {type:"function",name:"symbol",inputs:[],outputs:[{type:"string"}],stateMutability:"view"},
-                {type:"function",name:"name",inputs:[],outputs:[{type:"string"}],stateMutability:"view"},
-            ] as const;
+            // Get pair list from indexer, check LP balances on-chain (wallet-specific)
+            const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+            const pairList = INDEXER
+                ? await fetch(`${INDEXER}/api/v1/pairs?limit=200`).then(r=>r.json()).catch(()=>[])
+                : [];
             const allPairs: Pair[] = [];
-            for (const factory of FACTORIES) {
-                const logs = await publicClient.getLogs({address:factory,fromBlock:0n,toBlock:"latest"});
-                for (const l of logs) {
-                    if (!l.topics[1]||!l.topics[2]) continue;
-                    const pairAddress = ("0x"+l.data.slice(26,66)) as `0x${string}`;
-                    const t0addr = ("0x"+l.topics[1].slice(26)) as `0x${string}`;
-                    const t1addr = ("0x"+l.topics[2].slice(26)) as `0x${string}`;
-                    const pair = getContract({address:pairAddress,abi:pairAbi,client:publicClient});
-                    const lpBalance = await pair.read.balanceOf([address]);
-                    if (lpBalance === 0n) continue;
-                    const [reserves, totalSupply] = await Promise.all([
-                        pair.read.getReserves(),
-                        pair.read.totalSupply(),
-                    ]);
-                    const [sym0,sym1,name0,name1] = await Promise.all([
-                        publicClient.readContract({address:t0addr,abi:erc20Mini,functionName:"symbol"}).catch(()=>"LCAI"),
-                        publicClient.readContract({address:t1addr,abi:erc20Mini,functionName:"symbol"}).catch(()=>"LCAI"),
-                        publicClient.readContract({address:t0addr,abi:erc20Mini,functionName:"name"}).catch(()=>"LightChainAI"),
-                        publicClient.readContract({address:t1addr,abi:erc20Mini,functionName:"name"}).catch(()=>"LightChainAI"),
-                    ]);
-                    const token0 = {address:t0addr,symbol:sym0,name:name0,decimals:18,chainId:chain.id,logoURI:logoMap[t0addr.toLowerCase()]||""};
-                    const token1 = {address:t1addr,symbol:sym1,name:name1,decimals:18,chainId:chain.id,logoURI:logoMap[t1addr.toLowerCase()]||""};
-                    allPairs.push({
-                        address:pairAddress, token0, token1,
-                        liquidity:lpBalance,
-                        reserve0:reserves[0], reserve1:reserves[1],
-                        amount0:totalSupply>0n?lpBalance*reserves[0]/totalSupply:0n,
-                        amount1:totalSupply>0n?lpBalance*reserves[1]/totalSupply:0n,
-                        totalSupply,
-                    } as Pair);
-                }
+            for (const p of (pairList as any[])) {
+                const pairAddress = p.address as `0x${string}`;
+                const pair = getContract({address:pairAddress,abi:pairAbi,client:publicClient});
+                const lpBalance = await pair.read.balanceOf([address]);
+                if (lpBalance === 0n) continue;
+                const [reserves, totalSupply] = await Promise.all([
+                    pair.read.getReserves(),
+                    pair.read.totalSupply(),
+                ]);
+                const t0addr = p.token0 as `0x${string}`;
+                const t1addr = p.token1 as `0x${string}`;
+                const wlcai = "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64";
+                const sym0 = t0addr.toLowerCase()===wlcai?"LCAI":p.base_token===t1addr.toLowerCase()?"LCAI":(p.base_token===t0addr.toLowerCase()?p.base_token:"?");
+                const sym1 = t1addr.toLowerCase()===wlcai?"LCAI":p.base_token===t0addr.toLowerCase()?"LCAI":(p.base_token===t1addr.toLowerCase()?p.base_token:"?");
+                const token0 = {address:t0addr,symbol:t0addr.toLowerCase()===wlcai?"LCAI":"TOKEN",name:t0addr.toLowerCase()===wlcai?"LightChainAI":"Token",decimals:18,chainId:chain.id,logoURI:logoMap[t0addr.toLowerCase()]||""};
+                const token1 = {address:t1addr,symbol:t1addr.toLowerCase()===wlcai?"LCAI":"TOKEN",name:t1addr.toLowerCase()===wlcai?"LightChainAI":"Token",decimals:18,chainId:chain.id,logoURI:logoMap[t1addr.toLowerCase()]||""};
+                allPairs.push({
+                    address:pairAddress, token0, token1,
+                    liquidity:lpBalance,
+                    reserve0:reserves[0], reserve1:reserves[1],
+                    amount0:totalSupply>0n?lpBalance*reserves[0]/totalSupply:0n,
+                    amount1:totalSupply>0n?lpBalance*reserves[1]/totalSupply:0n,
+                    totalSupply,
+                } as Pair);
             }
             // also include manually imported pairs
             const WETH = config.WETH[chain.id];
