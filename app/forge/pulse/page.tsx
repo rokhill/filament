@@ -75,7 +75,7 @@ function Row({ s, metric, rank }: { s: CoinStats; metric: string; rank: number }
       </span>
       <Avatar coin={s.coin} />
       <div className="min-w-0 flex-1">
-        <span className="font-semibold block"
+        <span className="font-semibold block truncate"
           style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
           {s.coin.name}
         </span>
