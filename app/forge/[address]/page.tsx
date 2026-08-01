@@ -1,4 +1,5 @@
 "use client"
+import { useIndexerStream } from "@/hooks/useIndexerStream";
 import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";;
 import GraduationBanner from "@/components/GraduationBanner";
 import SparkButton from "@/components/SparkButton";
@@ -388,6 +389,19 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
     return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+
+  useIndexerStream(["forge_trade"], (_, data) => {
+    if (data.coin?.toLowerCase() !== token.toLowerCase()) return;
+    setTrades(prev => [{
+      trader: data.trader,
+      isBuy: data.is_buy === 1,
+      lcaiAmount: BigInt(data.lcai_amount || "0"),
+      tokenAmount: BigInt(data.token_amount || "0"),
+      priceWei: BigInt(data.price_wei || "0"),
+      block: BigInt(data.block || 0),
+      tx: data.tx,
+    }, ...prev].slice(0, 50));
+  });
 
   if (coin === undefined)
     return (
