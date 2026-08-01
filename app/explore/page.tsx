@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
 import { useAccount } from "wagmi";
 import { createPublicClient, http, erc20Abi, formatEther } from "viem";
 import { lcai } from "@/config/chains";
@@ -61,6 +62,7 @@ export default function Explore(){
 
       const coins = await fetchCoins().catch(()=>[]);
       const logoMap:Record<string,string>={};
+      Object.assign(logoMap, Object.fromEntries(Object.entries(FORGE_IMAGE_OVERRIDES).map(([k,v])=>[k.toLowerCase(),v])));
       for(const c of coins){
         if(c.metadata?.image){
           const img=c.metadata.image.startsWith("ipfs://")?"https://ipfs.io/ipfs/"+c.metadata.image.slice(7):c.metadata.image;
