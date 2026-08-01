@@ -48,16 +48,29 @@ export default function Pools() {
         try {
             // Get pair list + token map from indexer
             const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
-            const [pairList, tokenList] = INDEXER
+            const [pairList, tokenList, coinList] = INDEXER
                 ? await Promise.all([
                     fetch(`${INDEXER}/api/v1/pairs?limit=200`).then(r=>r.json()).catch(()=>[]),
                     fetch(`${INDEXER}/api/v1/tokens?limit=500`).then(r=>r.json()).catch(()=>[]),
+                    fetch(`${INDEXER}/api/v1/forge/coins?limit=200`).then(r=>r.json()).catch(()=>[]),
                   ])
-                : [[], []];
+                : [[], [], []];
             const tokenMap: Record<string,{symbol:string,name:string}> = {};
             for (const t of (tokenList as any[])) {
                 if (t.address) tokenMap[t.address.toLowerCase()] = {symbol: t.symbol||"TOKEN", name: t.name||"Token"};
             }
+            // build logoMap from forge coins upfront so images show on first load
+            const newLogoMap: Record<string,string> = {};
+            for (const c of (coinList as any[])) {
+                try {
+                    const meta = JSON.parse(c.metadata_uri || "{}");
+                    if (meta.image) {
+                        const img = meta.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+meta.image.slice(7) : meta.image;
+                        newLogoMap[c.address.toLowerCase()] = img;
+                    }
+                } catch {}
+            }
+            if (Object.keys(newLogoMap).length) setLogoMap(newLogoMap);
             const allPairs: Pair[] = [];
             for (const p of (pairList as any[])) {
                 const pairAddress = p.address as `0x${string}`;
