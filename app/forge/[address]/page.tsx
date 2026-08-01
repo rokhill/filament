@@ -559,9 +559,10 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
               </div>
             </div>
           )}
-          <h3 className="text-sm font-semibold mt-8 mb-3" style={{ color: "var(--clr-heading)" }}>
-            Recent trades
-          </h3>
+          <details className="mt-6" open={!coin.graduated}>
+            <summary className="text-sm font-semibold mb-3 cursor-pointer select-none list-none flex items-center gap-2" style={{ color: coin.graduated ? "var(--ae-aurum)" : "var(--clr-heading)" }}>
+              {coin.graduated ? "📈 Curve History — tap to expand" : "Recent trades"}
+            </summary>
           {trades.length === 0 ? (
             <p className="text-xs" style={{ color: "var(--ae-nebula)" }}>No trades yet.</p>
           ) : (
@@ -585,6 +586,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
               ))}
             </div>
           )}
+          </details>
         </div>
 
         <div className={coin.graduated ? "order-first lg:order-last" : ""}>
