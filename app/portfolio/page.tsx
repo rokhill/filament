@@ -100,7 +100,19 @@ export default function PortfolioPage() {
         try {
           const bal = await getBalance(c.address);
           if (bal > 0n) {
-            const valueWei = (bal * c.priceWei) / 10n ** 18n;
+            let priceWei = c.priceWei;
+            // for graduated coins fetch live DEX price from indexer
+            if (c.graduated && c.pair && INDEXER) {
+              try {
+                const pd = await fetch(`${INDEXER}/api/v1/pairs/${c.pair}`).then(r=>r.json());
+                if (pd?.reserve0 && pd?.reserve1) {
+                  const resLCAI = BigInt(pd.wlcai_is_t0 ? pd.reserve0 : pd.reserve1);
+                  const resTok = BigInt(pd.wlcai_is_t0 ? pd.reserve1 : pd.reserve0);
+                  if (resTok > 0n) priceWei = (resLCAI * 10n**18n) / resTok;
+                }
+              } catch {}
+            }
+            const valueWei = (bal * priceWei) / 10n ** 18n;
             held.push({ ...c, balance: bal, valueWei });
           }
         } catch { /* skip */ }
