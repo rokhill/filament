@@ -234,9 +234,11 @@ export default function PortfolioPage() {
                 <div className="flex items-center gap-2">
                   <span className="font-semibold truncate" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>{h.name}</span>
                   <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>${h.symbol}</span>
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>{fmtTokens(h.balance)} tokens</span>
                   {h.graduated && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(74,222,128,.12)", color: "var(--clr-success)" }}>GRADUATED</span>}
                 </div>
-                <div className="text-xs mt-0.5" style={{ color: "var(--ae-nebula)" }}>{fmtTokens(h.balance)} tokens</div>
               </div>
               <div className="text-right flex-shrink-0">
                 <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(h.valueWei, 2)} LCAI</div>
