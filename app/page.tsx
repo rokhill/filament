@@ -163,6 +163,11 @@ export default function Explore(){
             <div className="f-meta text-xs mt-1">Total LCAI Locked</div>
           </div>
 
+          <div className="flex items-center gap-2 mb-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/bulb-mark.png" alt="Filament" width={20} height={20} className="rounded-full opacity-80" />
+            <span className="f-eyebrow" style={{ color: "var(--ae-aurum)" }}>Trading on Filament DEX</span>
+          </div>
           {/* desktop header */}
           <div className="hidden sm:flex items-center gap-3 text-xs font-semibold px-4 mb-2" style={{color:"var(--ae-nebula)"}}>
             <span className="w-6">#</span>
@@ -244,7 +249,11 @@ export default function Explore(){
           {/* forge section */}
           {forge.length>0&&(
             <>
-              <div className="f-eyebrow mb-4">🔥 On the Forge — approaching graduation</div>
+              <div className="f-eyebrow mb-4 flex items-center gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/brand/forge-badge.png" alt="Forge" width={22} height={22} className="rounded-full" style={{filter:"drop-shadow(0 0 6px rgba(227,179,65,0.5))"}} />
+                On the Forge — approaching graduation
+              </div>
               <div className="space-y-2">
                 {forge.map(c=>(
                   <Link key={c.token} href={`/forge/${c.token}`}
