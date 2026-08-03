@@ -15,7 +15,7 @@ const erc20Abi = [
   { type: "function", name: "balanceOf", stateMutability: "view", inputs: [{ type: "address" }], outputs: [{ type: "uint256" }] },
 ] as const;
 
-type Holding = ForgeCoin & { balance: bigint; valueWei: bigint };
+type Holding = ForgeCoin & { balance: bigint; valueWei: bigint; spentWei: bigint; receivedWei: bigint; };
 type LPPosition = {
   pair: `0x${string}`;
   token0Symbol: string;
@@ -94,6 +94,21 @@ export default function PortfolioPage() {
       setWlcai(wlcaiBal as bigint);
       setLcaiUsd(usd);
 
+      // Fetch wallet trade history for PnL calculation
+      let tradeMap: Record<string, {spent: bigint, received: bigint}> = {};
+      if (INDEXER) {
+        try {
+          const trades = await fetch(`${INDEXER}/api/v1/wallet/${address}/trades?limit=1000`).then(r=>r.json());
+          for (const t of (trades as any[])) {
+            const coin = t.coin?.toLowerCase();
+            if (!coin) continue;
+            if (!tradeMap[coin]) tradeMap[coin] = {spent: 0n, received: 0n};
+            const amt = BigInt(t.lcai_amount || "0");
+            if (t.is_buy === 1) tradeMap[coin].spent += amt;
+            else tradeMap[coin].received += amt;
+          }
+        } catch {}
+      }
       // Sequential balance reads for each Forge coin
       const held: Holding[] = [];
       for (const c of coins) {
@@ -113,7 +128,9 @@ export default function PortfolioPage() {
               } catch {}
             }
             const valueWei = (bal * priceWei) / 10n ** 18n;
-            held.push({ ...c, balance: bal, valueWei });
+            const coinKey = c.address.toLowerCase();
+            const costBasis = tradeMap[coinKey] || {spent: 0n, received: 0n};
+            held.push({ ...c, balance: bal, valueWei, spentWei: costBasis.spent, receivedWei: costBasis.received });
           }
         } catch { /* skip */ }
       }
@@ -243,6 +260,13 @@ export default function PortfolioPage() {
               <div className="text-right flex-shrink-0">
                 <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(h.valueWei, 2)} LCAI</div>
                 {lcaiUsd > 0 && <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>{usd(h.valueWei)}</div>}
+                {h.spentWei > 0n && (() => {
+                  const pnl = h.valueWei + h.receivedWei - h.spentWei;
+                  const isPos = pnl >= 0n;
+                  return <div className="text-[10px] font-semibold mt-0.5" style={{ color: isPos ? "var(--clr-success)" : "var(--clr-danger)" }}>
+                    {isPos ? "+" : ""}{fmtLcai(pnl, 2)} LCAI
+                  </div>;
+                })()}
               </div>
             </Link>
           ))}
