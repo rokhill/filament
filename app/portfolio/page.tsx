@@ -264,7 +264,7 @@ export default function PortfolioPage() {
                   const pnl = h.valueWei + h.receivedWei - h.spentWei;
                   const isPos = pnl >= 0n;
                   return <div className="text-[10px] font-semibold mt-0.5" style={{ color: isPos ? "var(--clr-success)" : "var(--clr-danger)" }}>
-                    {isPos ? "+" : ""}{fmtLcai(pnl, 2)} LCAI
+                    {isPos ? "+" : "-"}{fmtLcai(isPos ? pnl : -pnl, 2)} LCAI
                   </div>;
                 })()}
               </div>
