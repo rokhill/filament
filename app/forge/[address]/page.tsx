@@ -307,6 +307,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   const [lpReserves, setLpReserves] = useState<{lcai: bigint, tok: bigint} | null>(null);
   const [dexHistory, setDexHistory] = useState<number[]>([]);
   const [dexTrades, setDexTrades] = useState<DexTrade[]>([]);
+  const [holders, setHolders] = useState<{address:string,balance:string}[]>([]);
   const [lcaiUsd, setLcaiUsd] = useState(0);
   const { fetchStats } = useMarkets();
 
@@ -375,6 +376,9 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
               setDexHistory((hist as any[]).map((h:any)=>h.price_lcai).filter(Boolean));
               // DEX swaps from indexer
               const swapRows = await fetch(`${INDEXER}/api/v1/pairs/${c.pair}/swaps?limit=20`).then(r=>r.json()).catch(()=>[]);
+              // fetch top holders
+              const holdersRaw = await fetch(`${INDEXER}/api/v1/forge/coins/${token}/holders?limit=10`).then(r=>r.json()).catch(()=>[]);
+              setHolders(holdersRaw);
               setDexTrades((swapRows as any[]).map((s:any)=>({
                 isBuy: s.is_buy === 1,
                 lcai: Number(BigInt(s.lcai_amount||"0")) / 1e18,
@@ -659,6 +663,24 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
               {dexHistory.length > 1 && <DexPriceChart history={dexHistory} />}
 
               {/* Recent DEX trades */}
+              {holders.length > 0 && (
+                <div className="mb-4">
+                  <div className="text-xs font-semibold mb-2" style={{ color: "var(--ae-nebula)" }}>Top Holders</div>
+                  <div className="space-y-1">
+                    {holders.map((h, i) => {
+                      const bal = Number(BigInt(h.balance)) / 1e18;
+                      const pct = (bal / 1e9 * 100).toFixed(1);
+                      return (
+                        <div key={i} className="flex items-center justify-between text-xs rounded-lg px-2 py-1.5" style={{ background: "var(--ae-night)" }}>
+                          <span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>#{i+1}</span>
+                          <span style={{ color: "var(--ae-nebula)" }}>{h.address.slice(0,6)}…{h.address.slice(-4)}</span>
+                          <span style={{ color: "var(--clr-heading)" }}>{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               {dexTrades.length > 0 && (
                 <div>
                   <div className="text-xs font-semibold mb-2" style={{ color: "var(--ae-nebula)" }}>Recent DEX Trades</div>
