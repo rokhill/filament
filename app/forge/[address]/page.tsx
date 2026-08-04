@@ -359,6 +359,10 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
     }
     if (c) {
       fetchCreatorBalance(token, c.creator).then(setCreatorBal);
+      const INDEXER2 = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+      if (INDEXER2) {
+        fetch(`${INDEXER2}/api/v1/forge/coins/${token}/holders?limit=10`).then(r=>r.json()).then(setHolders).catch(()=>{});
+      }
       fetchStats().then(s => { if (s) setLcaiUsd(s.priceUsd); }).catch(()=>{});
       if (c.graduated && c.pair && c.pair !== "0x0000000000000000000000000000000000000000") {
         (async () => {
@@ -670,10 +674,13 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                     {holders.map((h, i) => {
                       const bal = Number(BigInt(h.balance)) / 1e18;
                       const pct = (bal / 1e9 * 100).toFixed(1);
+                      const isLp = coin.pair && h.address.toLowerCase() === coin.pair.toLowerCase();
+                      const isCreator = h.address.toLowerCase() === coin.creator.toLowerCase();
+                      const label = isLp ? "🔒 LP (Burned)" : isCreator ? "👤 Creator" : `${h.address.slice(0,6)}…${h.address.slice(-4)}`;
                       return (
                         <div key={i} className="flex items-center justify-between text-xs rounded-lg px-2 py-1.5" style={{ background: "var(--ae-night)" }}>
                           <span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>#{i+1}</span>
-                          <span style={{ color: "var(--ae-nebula)" }}>{h.address.slice(0,6)}…{h.address.slice(-4)}</span>
+                          <span style={{ color: isLp ? "var(--clr-success)" : isCreator ? "var(--ae-aurum)" : "var(--ae-nebula)" }}>{label}</span>
                           <span style={{ color: "var(--clr-heading)" }}>{pct}%</span>
                         </div>
                       );
