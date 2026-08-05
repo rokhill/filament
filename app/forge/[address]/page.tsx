@@ -569,6 +569,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
               </div>
             </div>
           )}
+          {coin.graduated && coin.pair && <TradingChart pair={coin.pair} symbol={coin.symbol} />}
           <details className="mt-6" open={!coin.graduated}>
             <summary className="text-sm font-semibold mb-3 cursor-pointer select-none list-none flex items-center gap-2" style={{ color: coin.graduated ? "var(--ae-aurum)" : "var(--clr-heading)" }}>
               {coin.graduated ? "📈 Curve History — tap to expand" : "Recent trades"}
@@ -665,8 +666,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                 + Add Liquidity
               </Link>
 
-              {/* DEX price chart */}
-              {coin.pair && <TradingChart pair={coin.pair} symbol={coin.symbol} />}
+              {/* DEX price chart moved to left column */}
 
               {/* Recent DEX trades */}
               {holders.length > 0 && (
