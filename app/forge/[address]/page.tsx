@@ -1,6 +1,5 @@
 "use client"
 import { useIndexerStream } from "@/hooks/useIndexerStream";
-import TradingChart from "@/components/TradingChart";
 import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";;
 import GraduationBanner from "@/components/GraduationBanner";
 import SparkButton from "@/components/SparkButton";
@@ -665,7 +664,7 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
               </Link>
 
               {/* DEX price chart */}
-              {c.pair && <TradingChart pair={c.pair} symbol={coin.symbol} />}
+              {dexHistory.length > 1 && <DexPriceChart history={dexHistory} />}
 
               {/* Recent DEX trades */}
               {holders.length > 0 && (
