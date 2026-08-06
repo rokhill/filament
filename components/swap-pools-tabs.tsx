@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { href: "/", label: "Swap" },
+  { href: "/exchange", label: "Swap" },
   { href: "/pools", label: "Pools" },
 ];
 
@@ -16,7 +16,7 @@ export default function SwapPoolsTabs() {
     <div className="w-full flex justify-center">
       <div className="inline-flex items-center gap-2 rounded-full p-1 bg-[#0b0b0b] border border-[rgba(255,140,30,0.55)] shadow-[0_0_14px_-4px_rgba(255,140,30,0.6)]">
         {tabs.map((tab) => {
-          const isActive = pathname === tab.href;
+          const isActive = tab.href === "/exchange" ? (pathname === "/exchange" || pathname === "/") : pathname === tab.href;
 
           return (
             <Link
@@ -26,7 +26,7 @@ export default function SwapPoolsTabs() {
                 "px-5 py-2 rounded-full text-sm font-semibold transition-colors",
                 isActive
                   ? "text-[#ffaa32] bg-[#161616] border border-[rgba(255,140,30,0.6)] shadow-[0_0_12px_-2px_rgba(255,150,40,0.7)] [text-shadow:0_0_8px_rgba(255,140,30,0.7)]"
-                  : "text-[var(--clr-black)] dark:text-[var(--clr-heading)] hover:text-[var(--clr-primary)]"
+                  : "text-[var(--clr-heading)] hover:text-[var(--clr-primary)]"
               )}
             >
               {tab.label}
