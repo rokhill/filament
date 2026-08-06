@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import useUserStore from "@/store/user-store";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { SettingsIcon } from "lucide-react";
+import { SettingsIcon, X } from "lucide-react";
 import type { JSX } from "react";
 
 const slippageToleranceOptions = [0.1, 0.5, 1];
@@ -24,87 +24,83 @@ type Props = {
 
 export function SettingModal({ trigger, className }: Props) {
   const { slippageTolerance, txDeadline, bestPriceRouting } = useUserStore();
-
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
-          <Button className={cn("text-primary bg-transparent hover:bg-[var(--clr-gray-200)] dark:hover:bg-[var(--clr-blackest)] hover:text-[var(--clr-primary)]", className)} size={"icon"}>
+        {trigger ? trigger : (
+          <Button className={cn("text-primary bg-transparent hover:bg-[var(--ae-haze)]", className)} size={"icon"}>
             <SettingsIcon size={20} />
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="gap-3 max-w-[min(404px,calc(100vw-2rem))] dark:bg-[var(--clr-blackest)] border border-transparent dark:border-[rgba(91,75,255,0.10)]" hideCloseButton>
-        <div className="hidden dark:block w-[calc(100%-0px)] h-[calc(100%-0px)] bg-[linear-gradient(329deg,#14152C_0%,#34306D_100%)] rounded-[10px] absolute left-1/2 top-1/2 -translate-1/2 z-[-1]" />
-        <DialogClose className="w-8! h-8 rounded-full border border-[var(--clr-border-light)] dark:border-[#2B294D] bg-[#EFEFFF] dark:bg-[var(--clr-blackest)] absolute -top-2 -right-2 hover:text-[var(--clr-primary)] transition-all duration-300">
-          <i className="fa-regular fa-close"></i>
+      <DialogContent className="gap-4 max-w-[min(400px,calc(100vw-2rem))] border border-[rgba(255,140,30,0.3)] rounded-2xl p-6"
+        style={{ background: "var(--ae-night)" }} hideCloseButton>
+        <DialogClose className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center transition-colors"
+          style={{ background: "var(--ae-haze)", color: "var(--ae-nebula)" }}>
+          <X size={14} />
         </DialogClose>
         <DialogHeader>
-          <DialogTitle className="text-2xl tracking-[-1px]">{"Settings"}</DialogTitle>
+          <DialogTitle className="text-xl font-bold" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
+            Settings
+          </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4">
+        <div className="grid gap-5">
+          {/* Slippage */}
           <div>
-            <Label className="block mb-4 md:mb-6 text-lg leading-[1.33] text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
+            <Label className="block mb-3 text-sm font-semibold" style={{ color: "var(--ae-nebula)" }}>
               Slippage Tolerance
             </Label>
-            <div className="flex flex-wrap gap-1">
-              {slippageToleranceOptions.map((option, key) => (
-                <Button
-                  key={key}
-                  variant={"secondary"}
-                  onClick={() =>
-                    useUserStore.setState({ slippageTolerance: option })
-                  }
-                  className="h-10 py-[9px] md:text-base text-[var(--clr-black)] dark:text-[var(--clr-heading)] bg-[#EFEFFF] dark:bg-[rgba(255,255,255,0.10)] hover:bg-[#EFEFFF]  hover:text-[var(--clr-primary)] dark:hover:text-[var(--clr-primary)] border-2 border-transparent hover:border[rgba(0, 0, 0, 0.05)] dark:hover:border-[rgba(255,255,255,0.10)]"
-                >
+            <div className="flex flex-wrap gap-2">
+              {slippageToleranceOptions.map((option) => (
+                <button key={option}
+                  onClick={() => useUserStore.setState({ slippageTolerance: option })}
+                  className="h-9 px-4 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: slippageTolerance === option ? "linear-gradient(180deg,#ffaa32,#e07a12)" : "var(--ae-haze)",
+                    color: slippageTolerance === option ? "#140d05" : "var(--clr-heading)",
+                    border: slippageTolerance === option ? "none" : "1px solid var(--clr-border)",
+                  }}>
                   {option}%
-                </Button>
+                </button>
               ))}
               <Input
-                  className="h-10 py-[9px] md:text-base dark:bg-transparent text-center w-16"
-                  value={slippageTolerance}
-                  type="number"
-                  step={0.1}
-                  onChange={(e) =>
-                    useUserStore.setState({
-                      slippageTolerance: Number(e.target.value),
-                    })
-                  }
-                />
+                className="h-9 w-16 text-sm text-center rounded-xl border"
+                style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)" }}
+                value={slippageTolerance}
+                type="number"
+                step={0.1}
+                onChange={(e) => useUserStore.setState({ slippageTolerance: Number(e.target.value) })}
+              />
             </div>
             {slippageTolerance < 0.5 && (
-              <p className="mt-1 text-sm text-yellow-600 ">
-                Your transaction may fail
-              </p>
+              <p className="mt-2 text-xs" style={{ color: "var(--clr-warning)" }}>⚠️ Your transaction may fail</p>
             )}
           </div>
+          {/* Best-price routing */}
           <div className="flex items-center justify-between gap-4">
-            <Label className="text-sm md:text-lg font-normal leading-[1.33] text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
+            <Label className="text-sm font-semibold" style={{ color: "var(--ae-nebula)" }}>
               Best-price routing
             </Label>
             <button
               onClick={() => useUserStore.setState({ bestPriceRouting: !bestPriceRouting })}
-              className="relative w-12 h-6 rounded-full transition-colors"
-              style={{ background: bestPriceRouting ? "linear-gradient(180deg,#ffaa32,#e07a12)" : "var(--ae-veil)" }}
-            >
+              className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
+              style={{ background: bestPriceRouting ? "linear-gradient(180deg,#ffaa32,#e07a12)" : "var(--ae-haze)", border: "1px solid var(--clr-border)" }}>
               <span className="absolute top-1 transition-all w-4 h-4 rounded-full bg-white"
-                style={{ left: bestPriceRouting ? "calc(100% - 20px)" : "4px" }} />
+                style={{ left: bestPriceRouting ? "calc(100% - 20px)" : "3px" }} />
             </button>
           </div>
+          {/* Tx deadline */}
           <div className="flex items-center justify-between gap-4">
-            <Label className="text-sm md:text-lg font-normal leading-[1.33] text-[var(--clr-black)] dark:text-[var(--clr-heading)]">
+            <Label className="text-sm font-semibold" style={{ color: "var(--ae-nebula)" }}>
               Tx deadline (mins)
             </Label>
             <Input
               type="number"
-              className="w-14 md:w-20 h-10 py-[9px] text-sm md:text-base bg-[#EFEFFF] dark:bg-[rgba(255,255,255,0.10)] text-center"
+              className="w-16 h-9 text-sm text-center rounded-xl border flex-shrink-0"
+              style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)" }}
               min={2}
               value={txDeadline}
-              onChange={(e) =>
-                useUserStore.setState({ txDeadline: Number(e.target.value) })
-              }
+              onChange={(e) => useUserStore.setState({ txDeadline: Number(e.target.value) })}
             />
           </div>
         </div>
