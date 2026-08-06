@@ -45,6 +45,10 @@ export default function Home() {
 
   return (
     <div className="ex-canvas">
+      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -60%)", width: 600, height: 600, pointerEvents: "none", zIndex: 0, opacity: 0.06 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/bulb-mark.png" alt="" style={{ width: "100%", height: "100%", objectFit: "contain", filter: "blur(40px) saturate(2)" }} aria-hidden />
+      </div>
       <BootSplash />
       <div className="container max-w-lg mx-auto py-12">
         {/* Masthead — same structure as Markets: eyebrow, serif title, rule */}
