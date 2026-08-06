@@ -21,6 +21,7 @@ export default function CreateCoinPage() {
   const [website, setWebsite] = useState("");
   const [initialBuy, setInitialBuy] = useState("");
   const [busy, setBusy] = useState(false);
+  const [dupWarning, setDupWarning] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -55,7 +56,8 @@ export default function CreateCoinPage() {
         Filament automatically with liquidity burned forever.
       </p>
       <div className="space-y-3">
-        <input className={field} style={fieldStyle} placeholder="Name — required (e.g. Photon Pup)" maxLength={64} value={name} onChange={(e) => setName(e.target.value)} />
+        {dupWarning && <p className="text-xs mt-1" style={{ color: "var(--clr-warning)" }}>⚠️ A coin with this name already exists. Users should verify contract addresses, not names.</p>}
+        <input className={field} style={fieldStyle} placeholder="Name — required (e.g. Photon Pup)" maxLength={64} value={name} onChange={(e) => { setName(e.target.value); setDupWarning(false); }} onBlur={async () => { const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL||""; if (!name.trim() || !INDEXER) return; const rows = await fetch(`${INDEXER}/api/v1/forge/coins?limit=200`).then(r=>r.json()).catch(()=>[]); setDupWarning((rows as any[]).some((c:any) => c.name?.toLowerCase() === name.trim().toLowerCase())); }} />
         <input className={field} style={fieldStyle} placeholder="Symbol — required (e.g. PPUP)" maxLength={16} value={symbol} onChange={(e) => setSymbol(e.target.value)} />
         <textarea className={field} style={fieldStyle} placeholder="Description (optional, but coins with stories sell)" rows={3} maxLength={2000} value={description} onChange={(e) => setDescription(e.target.value)} />
         <div>
