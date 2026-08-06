@@ -35,7 +35,7 @@ export default function Home() {
     const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
     if (INDEXER) {
       fetch(`${INDEXER}/api/v1/stats`).then(r=>r.json()).then(s => {
-        setForgeStats({ coins: s.forge_coins, raised: BigInt(Math.round((s.lcai_locked||0)*1e18)), graduated: s.graduations });
+        setForgeStats({ coins: s.forge_coins, raised: BigInt(Math.round((s.lcai_on_curves||0)*1e18)), graduated: s.graduations });
       }).catch(() => fetchForgeMarket().then(f => { if (f) setForgeStats({ coins: f.coinCount, raised: f.totalRaised, graduated: f.graduated }); }));
     } else {
       fetchForgeMarket().then(f => { if (f) setForgeStats({ coins: f.coinCount, raised: f.totalRaised, graduated: f.graduated }); });
