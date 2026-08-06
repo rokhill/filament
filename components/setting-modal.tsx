@@ -36,7 +36,7 @@ export function SettingModal({ trigger, className }: Props) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="gap-3 w-[calc(100vw-2rem)] sm:max-w-[404px] dark:bg-[var(--clr-blackest)] border border-transparent dark:border-[rgba(91,75,255,0.10)]" hideCloseButton>
+      <DialogContent className="gap-3 max-w-[min(404px,calc(100vw-2rem))] dark:bg-[var(--clr-blackest)] border border-transparent dark:border-[rgba(91,75,255,0.10)]" hideCloseButton>
         <div className="hidden dark:block w-[calc(100%-0px)] h-[calc(100%-0px)] bg-[linear-gradient(329deg,#14152C_0%,#34306D_100%)] rounded-[10px] absolute left-1/2 top-1/2 -translate-1/2 z-[-1]" />
         <DialogClose className="w-8! h-8 rounded-full border border-[var(--clr-border-light)] dark:border-[#2B294D] bg-[#EFEFFF] dark:bg-[var(--clr-blackest)] absolute -top-2 -right-2 hover:text-[var(--clr-primary)] transition-all duration-300">
           <i className="fa-regular fa-close"></i>
