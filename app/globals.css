@@ -149,6 +149,7 @@
 
   body {
     @apply min-h-dvh bg-background text-foreground;
+    overflow-x: hidden;
   }
 
   button:not(:disabled),
