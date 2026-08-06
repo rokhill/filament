@@ -68,6 +68,32 @@ export default function GuidePage() {
         </ul>
       </section>
 
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Best-price routing</h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          Filament automatically checks all available on-chain liquidity before every swap and routes through whichever source gives you the best price. This happens silently — you don't need to do anything.
+        </p>
+        <p className="text-sm text-[var(--clr-body)]">
+          Power users can toggle best-price routing on or off in the settings (⚙️) icon on the Exchange page.
+        </p>
+      </section>
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Portfolio</h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          The Portfolio page shows all your Forge coin holdings, LP positions, and native LCAI balance in one place. Each holding shows:
+        </p>
+        <ul className="space-y-2 text-sm text-[var(--clr-body)] list-disc list-inside">
+          <li>Current value in LCAI and USD</li>
+          <li>PnL — your cost basis vs current value, calculated from your full trade history</li>
+          <li>LP position value across all pools you provide liquidity to</li>
+        </ul>
+      </section>
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Explore</h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          The Explore page is the Filament homepage — a live view of every token with liquidity on LightChain AI. Powered by the Filament Indexer™, it shows real-time prices, liquidity, price charts, and LP status for every pair on chain. No curation, no filtering — everything on-chain, live.
+        </p>
+      </section>
       <section>
         <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">Contracts</h2>
         <div className="rounded-xl bg-[var(--ae-haze)] border border-[var(--clr-border)] p-4 text-sm font-mono text-[var(--clr-body)] space-y-1">

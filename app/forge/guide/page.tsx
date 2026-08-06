@@ -275,6 +275,40 @@ export default function ForgeGuidePage() {
       </section>
 
 
+      {/* ---- Forge Pulse ---- */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          Forge Pulse — live rankings
+        </h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          Forge Pulse is a live ranking dashboard that scores every coin on the curve across nine categories — updated in real time from on-chain Trade events. No curation, no voting, just math.
+        </p>
+        <ul className="space-y-2 text-sm text-[var(--clr-body)] list-disc list-inside mb-3">
+          <li><strong className="text-[var(--clr-heading)]">Hot</strong> — highest LCAI volume in the last 24h</li>
+          <li><strong className="text-[var(--clr-heading)]">Momentum</strong> — volume growing fastest vs prior 24h</li>
+          <li><strong className="text-[var(--clr-heading)]">Whale Buys</strong> — largest single purchases</li>
+          <li><strong className="text-[var(--clr-heading)]">Crowd</strong> — most unique buyers</li>
+          <li><strong className="text-[var(--clr-heading)]">Nearly There</strong> — closest to graduation</li>
+          <li><strong className="text-[var(--clr-heading)]">Skin Check</strong> — creators with the lowest self-holdings (most committed)</li>
+          <li><strong className="text-[var(--clr-heading)]">Just Traded</strong> — most recently active</li>
+          <li><strong className="text-[var(--clr-heading)]">Cold</strong> — quiet coins, potential opportunity or signal to exit</li>
+        </ul>
+        <p className="text-sm text-[var(--clr-body)]">
+          Access Forge Pulse from the Forge page or at <Link href="/forge/pulse" className="underline" style={{ color: "var(--ae-aurum)" }}>filament.exchange/forge/pulse</Link>.
+        </p>
+      </section>
+      {/* ---- Top Holders ---- */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
+          Top holders
+        </h2>
+        <p className="text-sm text-[var(--clr-body)] mb-3">
+          Every coin page shows the top 10 holders by balance, powered by the Filament Indexer™. LP contracts are labeled <strong className="text-[var(--clr-heading)]">🔒 LP (Burned)</strong> and creator wallets are labeled <strong className="text-[var(--clr-heading)]">👤 Creator</strong>.
+        </p>
+        <p className="text-sm text-[var(--clr-body)]">
+          Use this to check concentration risk before buying — if one wallet holds 40%+ of supply outside of burned LP, that is a signal to research further.
+        </p>
+      </section>
       {/* ---- Honest risks ---- */}
       <section className="mb-10">
         <h2 className="text-lg font-bold text-[var(--clr-heading)] mb-3 border-b border-[var(--clr-border)] pb-2">
