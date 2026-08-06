@@ -351,7 +351,7 @@ export default function SwapForm() {
             </li>
             <li className="">
               <span>Order routing</span>
-              <span className="forge-breathe" style={{ color: "var(--ae-ember-bright)", fontWeight: 600 }}>⚡ Best price routing</span>
+              <span style={{ color: "var(--ae-aurum)" }}>⚡ Best price routing</span>
             </li>
             <li className="">
               <span>Max slippage</span>
