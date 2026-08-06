@@ -358,7 +358,7 @@ const useWeb3Functions = () => {
       // TODO: fix this type error
       const hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...(simulate.request as any), chain: lightchain }));
 
-      publicClient.waitForTransactionReceipt({ hash });
+      await publicClient.waitForTransactionReceipt({ hash });
 
       return hash;
     } catch (error: any) {
@@ -426,7 +426,7 @@ const useWeb3Functions = () => {
 
       const hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...(simulate.request as any), chain: lightchain }));
 
-      publicClient.waitForTransactionReceipt({ hash });
+      await publicClient.waitForTransactionReceipt({ hash });
 
       return hash;
     } catch (error: any) {
