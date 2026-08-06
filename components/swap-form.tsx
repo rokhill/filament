@@ -345,7 +345,7 @@ export default function SwapForm() {
             <li className="">
               <span>Network cost</span>
               <span>
-                {Number(formatEther(gasPrice?.data || 0n)).toFixed(6)} {chain.nativeCurrency.symbol}
+                {formatNumber(formatEther(gasPrice?.data || 0n))} {chain.nativeCurrency.symbol}
               </span>
             </li>
             <li className="">
