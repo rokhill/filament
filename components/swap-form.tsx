@@ -201,6 +201,13 @@ export default function SwapForm() {
                 )}
               </span>
             )}
+            {token0 && balance0.data && (
+              <button
+                onClick={() => setAmount0(balance0.data!.formatted)}
+                className="text-xs font-bold px-2 py-0.5 rounded-full"
+                style={{ background: "rgba(255,140,30,0.15)", color: "var(--ae-aurum)" }}
+              >MAX</button>
+            )}
           </div>
         </div>
         <div className="relative py-2">
