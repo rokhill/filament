@@ -113,6 +113,16 @@ export default function Explore(){
       }
       all.sort((a,b)=>b.reserveLCAI>a.reserveLCAI?1:-1);
       setPairs(all);
+      // seed DEX swap ticker from recent swaps
+      if (INDEXER) {
+        fetch(`${INDEXER}/api/v1/swaps/recent?limit=20`).then(r=>r.json()).then((rows:any[]) => {
+          setSwapTicker(rows.filter((r:any)=>r.is_buy!==null&&r.lcai_amount).map((r:any)=>({
+            base_token: r.pair,
+            is_buy: r.is_buy,
+            lcai_amount: r.lcai_amount,
+          })));
+        }).catch(()=>{});
+      }
       if(address){
         const balMap:Record<string,bigint>={};
         await Promise.all(all.map(async pr=>{
