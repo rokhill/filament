@@ -63,14 +63,14 @@ export function SettingModal({ trigger, className }: Props) {
                   {option}%
                 </button>
               ))}
-              <Input
-                className="h-9 w-16 text-sm text-center rounded-xl border"
-                style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)", MozAppearance: "textfield" }}
+              <input
+                className="h-9 w-16 text-sm text-center rounded-xl border outline-none"
+                style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)" }}
                 placeholder="Custom"
                 value={slippageToleranceOptions.includes(slippageTolerance) ? "" : slippageTolerance}
-                type="number"
-                step={0.1}
-                onChange={(e) => useUserStore.setState({ slippageTolerance: Number(e.target.value) })}
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) useUserStore.setState({ slippageTolerance: v }); }}
               />
             </div>
             {slippageTolerance < 0.5 && (
