@@ -64,12 +64,14 @@ export function SettingModal({ trigger, className }: Props) {
                 </button>
               ))}
               <input
-                className="h-9 w-16 text-sm text-center rounded-xl border outline-none"
-                style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)" }}
+                className="h-9 w-16 text-sm text-center rounded-xl outline-none"
+                style={{ background: slippageToleranceOptions.includes(slippageTolerance) ? "var(--ae-haze)" : "linear-gradient(180deg,#ffaa32,#e07a12)", color: slippageToleranceOptions.includes(slippageTolerance) ? "var(--ae-nebula)" : "#140d05", border: "1px solid var(--clr-border)", fontWeight: 600 }}
                 placeholder="Custom"
                 value={slippageToleranceOptions.includes(slippageTolerance) ? "" : slippageTolerance}
-                type="text"
-                inputMode="decimal"
+                type="number"
+                step={0.1}
+                min={0.1}
+                max={50}
                 onChange={(e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) useUserStore.setState({ slippageTolerance: v }); }}
               />
             </div>
