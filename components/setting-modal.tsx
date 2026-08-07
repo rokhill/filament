@@ -64,7 +64,7 @@ export function SettingModal({ trigger, className }: Props) {
                 </button>
               ))}
               <Input
-                className="h-9 w-12 text-sm text-center rounded-xl border"
+                className="h-9 w-12 text-sm text-center rounded-xl border [appearance:textfield] [rounded-xl border::-webkit-outer-spin-button]:appearance-none [rounded-xl border::-webkit-inner-spin-button]:appearance-none"
                 style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)" }}
                 value={slippageTolerance}
                 type="number"
