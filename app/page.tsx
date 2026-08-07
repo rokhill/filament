@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useIndexerStream } from "@/hooks/useIndexerStream";
 import BootSplash from "@/components/boot-splash";
 import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
 import { useAccount } from "wagmi";
@@ -45,6 +46,7 @@ export default function Explore(){
   const [pairs,setPairs]=useState<Pair[]>([]);
   const [forge,setForge]=useState<ForgeCoin[]>([]);
   const [loading,setLoading]=useState(true);
+  const [swapTicker,setSwapTicker]=useState<{base_token:string;is_buy:number;lcai_amount:string}[]>([]);
   const [lcaiUsdState,setLcaiUsdState]=useState(0);
   const [lpBalances,setLpBalances]=useState<Record<string,bigint>>({});
   const {fetchCoins}=useForge();
@@ -133,8 +135,29 @@ export default function Explore(){
 
   const totalLCAI=pairs.reduce((a,p)=>a+p.reserveLCAI,0n);
 
+  useIndexerStream(["swap"], (_, data) => {
+    setSwapTicker(prev => [data, ...prev].slice(0, 30));
+  });
+
   return(
     <><BootSplash /><main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
+      {swapTicker.length > 0 && (
+        <div className="rounded-xl overflow-hidden py-2 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+          <div className="forge-ticker-track" style={{ animationDuration: "60s" }}>
+            {[0,1].map(dup => (
+              <span key={dup} className="inline-flex gap-10 px-5" aria-hidden={dup===1}>
+                {swapTicker.map((t, i) => (
+                  <span key={i} className="inline-flex items-center gap-1.5 text-xs">
+                    <span style={{ color: t.is_buy===1 ? "var(--clr-success)" : "var(--clr-danger)" }}>{t.is_buy===1?"▲":"▼"}</span>
+                    <span style={{ color: "var(--ae-nebula)" }}>{t.base_token?.slice(0,6)}…{t.base_token?.slice(-4)}</span>
+                    <span style={{ color: "var(--clr-heading)" }}>{(Number(BigInt(t.lcai_amount||"0"))/1e18).toFixed(2)} LCAI</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="f-eyebrow mb-2">Filament DEX · LightChain AI</div>
       <h1 className="f-display text-4xl sm:text-5xl mb-1">Explore</h1>
       <p className="f-meta text-sm mb-2" style={{ color: "var(--ae-aurum)" }}>Stay Ahead of the Curve.</p>
