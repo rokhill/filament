@@ -39,7 +39,7 @@ export default function SwapForm() {
   const balance1 = useBalance({ address, token: token1?.address, query: { enabled: !!address } });
   const nativeBalance = useBalance({ address, query: { enabled: !!address } });
   const { getAmountFromTo, swap } = useWeb3Functions();
-  const { slippageTolerance } = useUserStore();
+  const { slippageTolerance, bestPriceRouting } = useUserStore();
   const setToken0 = (token?: Token) => useStore.setState({ token0: token });
   const setToken1 = (token?: Token) => useStore.setState({ token1: token });
   const [showDetails, setShowDetails] = useState(true);
@@ -357,7 +357,7 @@ export default function SwapForm() {
             </li>
             <li className="">
               <span>Order routing</span>
-              <span style={{ color: "var(--ae-aurum)" }}>⚡ Best price routing</span>
+              <span style={{ color: bestPriceRouting ? "var(--ae-aurum)" : "var(--ae-nebula)" }}>{bestPriceRouting ? "⚡ Best price routing" : "Filament DEX"}</span>
             </li>
             <li className="">
               <span>Max slippage</span>
