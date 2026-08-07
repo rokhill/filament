@@ -64,9 +64,10 @@ export function SettingModal({ trigger, className }: Props) {
                 </button>
               ))}
               <Input
-                className="h-9 w-12 text-sm text-center rounded-xl border [appearance:textfield] [rounded-xl border::-webkit-outer-spin-button]:appearance-none [rounded-xl border::-webkit-inner-spin-button]:appearance-none"
-                style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)" }}
-                value={slippageTolerance}
+                className="h-9 w-16 text-sm text-center rounded-xl border"
+                style={{ background: "var(--ae-haze)", borderColor: "var(--clr-border)", color: "var(--clr-heading)", MozAppearance: "textfield" }}
+                placeholder="Custom"
+                value={slippageToleranceOptions.includes(slippageTolerance) ? "" : slippageTolerance}
                 type="number"
                 step={0.1}
                 onChange={(e) => useUserStore.setState({ slippageTolerance: Number(e.target.value) })}
