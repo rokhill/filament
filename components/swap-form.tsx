@@ -205,8 +205,8 @@ export default function SwapForm() {
               <button
                 onClick={() => setAmount0(balance0.data!.formatted)}
                 className="text-xs font-bold px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,140,30,0.15)", fontWeight: 700 }}
-              ><span className="forge-title">MAX</span></button>
+                style={{ background: "rgba(255,140,30,0.2)", color: "#ffaa32", fontWeight: 700, letterSpacing: "0.05em" }}
+              >MAX</button>
             )}
           </div>
         </div>
