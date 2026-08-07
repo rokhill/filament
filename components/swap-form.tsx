@@ -205,7 +205,7 @@ export default function SwapForm() {
               <button
                 onClick={() => setAmount0(balance0.data!.formatted)}
                 className="text-xs font-bold px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,140,30,0.15)", color: "var(--ae-aurum)" }}
+                style={{ background: "rgba(255,140,30,0.15)", color: "var(--ae-ember-bright)", fontWeight: 700 }}
               >MAX</button>
             )}
           </div>
