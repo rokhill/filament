@@ -259,7 +259,7 @@ export default function PortfolioPage() {
               </div>
               <div className="text-right flex-shrink-0">
                 <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(h.valueWei, 2)} LCAI</div>
-                {lcaiUsd > 0 && <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>{usd(h.valueWei)}</div>}
+                <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>spot price{lcaiUsd > 0 ? ` · ${usd(h.valueWei)}` : ""}</div>
                 {h.spentWei > 0n && (() => {
                   const pnl = h.valueWei + h.receivedWei - h.spentWei;
                   const isPos = pnl >= 0n;
