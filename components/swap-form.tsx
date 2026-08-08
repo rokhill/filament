@@ -95,6 +95,13 @@ export default function SwapForm() {
     () => (balance0.data ? Number(balance0.data.formatted) < +amount0 : false),
     [balance0, amount0]
   );
+  const priceImpact = useMemo(() => {
+    if (!pair.data?.price || !amount0 || !amount1 || isNativeWrappedPair) return null;
+    const spotOut = +amount0 * pair.data.price;
+    const actualOut = +amount1;
+    if (spotOut <= 0) return null;
+    return ((spotOut - actualOut) / spotOut) * 100;
+  }, [pair.data, amount0, amount1, isNativeWrappedPair]);
 
   const disableButton = useMemo(
     () => loading || insufficientBalance || (isConnected && !amount0),
@@ -281,6 +288,14 @@ export default function SwapForm() {
           {buttonTitle}
         </Button>
 
+        {priceImpact !== null && priceImpact > 2 && (
+          <div className="flex items-center gap-2 px-1 py-2 rounded-xl text-xs" style={{ background: priceImpact > 10 ? "rgba(248,113,113,0.1)" : "rgba(245,158,11,0.1)", border: `1px solid ${priceImpact > 10 ? "rgba(248,113,113,0.3)" : "rgba(245,158,11,0.3)"}` }}>
+            <span>{priceImpact > 10 ? "🔴" : "⚠️"}</span>
+            <span style={{ color: priceImpact > 10 ? "var(--clr-danger)" : "var(--clr-warning)" }}>
+              Price impact: {priceImpact.toFixed(2)}%{priceImpact > 10 ? " — consider splitting this trade" : ""}
+            </span>
+          </div>
+        )}
         {noPair && (
           <div className="mt-4 p-3 font-medium text-sm leading-[1.71] rounded-lg bg-[var(--clr-gray-100)] dark:bg-[var(--clr-darker-two)] text-[var(--clr-body)]">
             <i className="fa-solid fa-info-circle mr-1.5"></i>
