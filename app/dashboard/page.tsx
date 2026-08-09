@@ -96,10 +96,10 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          <div className="rounded-2xl p-8 mb-6 text-center relative overflow-hidden" style={{ background: "var(--ae-night)", border: "1px solid rgba(255,140,30,0.3)" }}>
-            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 100%, rgba(255,140,30,0.08), transparent 70%)", pointerEvents: "none" }} />
+          <div className="rounded-2xl p-8 mb-6 text-center relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0a0804 0%, #1a1005 50%, #0a0804 100%)", border: "1px solid rgba(255,140,30,0.4)", boxShadow: "0 0 40px rgba(255,140,30,0.08) inset" }}>
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 120%, rgba(255,140,30,0.15), transparent 60%)", pointerEvents: "none" }} />
             <div className="f-eyebrow mb-3">FILAMENT TRADER SCORE</div>
-            <div className="font-bold forge-breathe" style={{ fontSize: "clamp(72px,15vw,120px)", lineHeight: 1, color: "var(--ae-aurum-bright)", fontFamily: "var(--font-display), serif", textShadow: "0 0 60px rgba(255,170,50,0.4)" }}>
+            <div className="forge-title" style={{ fontSize: "clamp(72px,15vw,120px)", lineHeight: 1, fontFamily: "var(--font-display), serif", display: "inline-block" }}>
               {stats.score}
             </div>
             <div className="text-xs mt-2" style={{ color: "var(--ae-nebula)" }}>based on graduations · volume · profit · activity</div>
@@ -114,7 +114,7 @@ export default function Dashboard() {
               { label: "LCAI spent", value: fmt(stats.totalSpent) },
               { label: "LCAI received", value: fmt(stats.totalReceived) },
             ].map(s => (
-              <div key={s.label} className="rounded-2xl p-4" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+              <div key={s.label} className="rounded-2xl p-4" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)", borderLeft: "3px solid var(--ae-aurum-deep)" }}>
                 <div className="text-xl font-bold" style={{ color: "var(--ae-aurum)", fontFamily: "var(--font-display), serif" }}>{s.value}</div>
                 <div className="text-xs mt-1" style={{ color: "var(--ae-nebula)" }}>{s.label}</div>
               </div>
@@ -151,7 +151,7 @@ export default function Dashboard() {
             <div className="text-xs mb-4" style={{ color: "var(--ae-nebula)" }}>ACTIVITY · LAST 90 DAYS</div>
             <div className="flex gap-1 flex-wrap">
               {stats.days.map((d, i) => (
-                <div key={i} title={`${d.count} trades`} style={{ width: 10, height: 10, borderRadius: 2, flexShrink: 0, background: d.count === 0 ? "var(--ae-veil)" : d.count === 1 ? "rgba(255,140,30,0.3)" : d.count <= 3 ? "rgba(255,140,30,0.6)" : "var(--ae-ember)" }} />
+                <div key={i} title={`${d.count} trades`} style={{ width: 12, height: 12, borderRadius: 3, flexShrink: 0, background: d.count === 0 ? "var(--ae-veil)" : d.count === 1 ? "rgba(255,140,30,0.3)" : d.count <= 3 ? "rgba(255,140,30,0.6)" : "var(--ae-ember)" }} />
               ))}
             </div>
             <div className="flex justify-between mt-2 text-[10px]" style={{ color: "var(--ae-nebula)" }}>
