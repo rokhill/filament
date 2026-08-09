@@ -24,6 +24,7 @@ type LPPosition = {
   lpTotal: bigint;
   reserveLCAI: bigint;
   valueWei: bigint;
+  feeEarnings?: string;
 };
 
 const FACTORIES = [
@@ -171,6 +172,15 @@ export default function PortfolioPage() {
         } catch { continue; }
       }
       setLpPositions(lpHeld);
+      // fetch LP fee earnings
+      if (INDEXER && address) {
+        fetch(`${INDEXER}/api/v1/wallet/${address}/lp-earnings`).then(r=>r.json()).then((earnings:any[]) => {
+          setLpPositions(prev => prev.map(lp => {
+            const e = earnings.find((e:any) => e.pair.toLowerCase() === lp.pair.toLowerCase());
+            return e ? { ...lp, feeEarnings: e.fee_earnings_lcai } : lp;
+          }));
+        }).catch(()=>{});
+      }
     } catch { /* noop */ }
     setLoading(false);
   };
@@ -302,6 +312,9 @@ export default function PortfolioPage() {
               <div className="text-right flex-shrink-0">
                 <div className="font-semibold" style={{ color: "var(--clr-heading)" }}>{fmtLcai(lp.valueWei, 2)} LCAI</div>
                 {lcaiUsd > 0 && <div className="text-[10px]" style={{ color: "var(--ae-nebula)" }}>{usd(lp.valueWei)}</div>}
+                {lp.feeEarnings && Number(lp.feeEarnings) > 0 && (
+                  <div className="text-[10px] font-semibold mt-0.5" style={{ color: "var(--clr-success)" }}>+{Number(lp.feeEarnings).toFixed(4)} LCAI fees</div>
+                )}
               </div>
             </Link>
           ))}
