@@ -14,6 +14,7 @@ const NAV = [
   { href: "/", label: "Explore", sub: "Live on-chain data powered by Filament Indexer™" },
   { href: "/markets", label: "Markets", sub: "LCAI market data" },
   { href: "/portfolio", label: "Portfolio", sub: "Your holdings" },
+  { href: "/dashboard", label: "Dashboard", sub: "Your on-chain story" },
   { href: "/guides", label: "Guides", sub: "Learn how it all works" },
 ];
 

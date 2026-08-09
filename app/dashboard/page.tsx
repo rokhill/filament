@@ -1,0 +1,178 @@
+"use client";
+import { useEffect, useState, useMemo } from "react";
+import { useAccount } from "wagmi";
+import Link from "next/link";
+
+const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
+
+type Trade = {
+  coin: string; symbol: string | null; name: string | null;
+  is_buy: number; lcai_amount: string; ts: number; block: number;
+  graduated: number | null; tx: string;
+};
+
+function fmt(n: number, d = 2) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
+  return n.toFixed(d);
+}
+
+export default function Dashboard() {
+  const { address, isConnected } = useAccount();
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!address || !INDEXER) { setLoading(false); return; }
+    fetch(`${INDEXER}/api/v1/wallet/${address}/trades?limit=1000`)
+      .then(r => r.json())
+      .then(data => { setTrades(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [address]);
+
+  const stats = useMemo(() => {
+    if (!trades.length) return null;
+    const buys = trades.filter(t => t.is_buy === 1);
+    const sells = trades.filter(t => t.is_buy === 0);
+    const totalSpent = buys.reduce((a, t) => a + Number(BigInt(t.lcai_amount)) / 1e18, 0);
+    const totalReceived = sells.reduce((a, t) => a + Number(BigInt(t.lcai_amount)) / 1e18, 0);
+    const netPnl = totalReceived - totalSpent;
+    const coinMap: Record<string, { spent: number; received: number; symbol: string | null; graduated: number | null; }> = {};
+    for (const t of trades) {
+      if (!coinMap[t.coin]) coinMap[t.coin] = { spent: 0, received: 0, symbol: t.symbol, graduated: t.graduated };
+      if (t.is_buy) coinMap[t.coin].spent += Number(BigInt(t.lcai_amount)) / 1e18;
+      else coinMap[t.coin].received += Number(BigInt(t.lcai_amount)) / 1e18;
+    }
+    const coins = Object.entries(coinMap);
+    const graduated = coins.filter(([, c]) => c.graduated).length;
+    const gradRate = coins.length > 0 ? (graduated / coins.length) * 100 : 0;
+    const bestTrade = coins.reduce((best, curr) => {
+      const pnl = curr[1].received - curr[1].spent;
+      return pnl > (best[1].received - best[1].spent) ? curr : best;
+    }, coins[0]);
+    const now = Date.now() / 1000;
+    const dayMap: Record<number, number> = {};
+    for (const t of trades) {
+      const day = Math.floor(t.ts / 86400);
+      dayMap[day] = (dayMap[day] || 0) + 1;
+    }
+    const days = Array.from({ length: 90 }, (_, i) => {
+      const day = Math.floor((now - (89 - i) * 86400) / 86400);
+      return { day, count: dayMap[day] || 0 };
+    });
+    const score = Math.min(999, Math.floor(
+      (graduated * 80) + (Math.min(trades.length, 50) * 2) +
+      (netPnl > 0 ? Math.min(netPnl / 10, 200) : 0) + (gradRate * 2)
+    ));
+    return { totalSpent, totalReceived, netPnl, coins: coins.length, graduated, gradRate, bestTrade, days, score, totalTrades: trades.length };
+  }, [trades]);
+
+  if (!isConnected) return (
+    <main className="min-h-[70vh] flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-4xl mb-4">🔗</div>
+        <div className="font-bold text-xl mb-2" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>Connect your wallet</div>
+        <div className="text-sm" style={{ color: "var(--ae-nebula)" }}>Your on-chain story lives here</div>
+      </div>
+    </main>
+  );
+
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-10 min-h-[70vh]">
+      <div className="f-eyebrow mb-2">YOUR STORY · LIGHTCHAIN AI</div>
+      <h1 className="f-display text-4xl sm:text-5xl mb-1" style={{ color: "var(--clr-heading)" }}>Dashboard</h1>
+      <p className="f-meta mb-8" style={{ color: "var(--ae-nebula)" }}>{address?.slice(0,6)}…{address?.slice(-4)}</p>
+
+      {loading ? (
+        <div className="f-card rounded-2xl p-10 text-center">
+          <div className="text-3xl mb-3">⛏️</div>
+          <div className="font-semibold" style={{ color: "var(--ae-aurum)", fontFamily: "var(--font-display), serif" }}>Reading your chain history…</div>
+        </div>
+      ) : !stats ? (
+        <div className="f-card rounded-2xl p-10 text-center">
+          <div className="text-3xl mb-3">🌑</div>
+          <div className="font-semibold mb-2" style={{ color: "var(--clr-heading)" }}>No Forge activity yet</div>
+          <Link href="/forge" className="text-sm" style={{ color: "var(--ae-aurum)" }}>Explore the Forge →</Link>
+        </div>
+      ) : (
+        <>
+          <div className="rounded-2xl p-8 mb-6 text-center relative overflow-hidden" style={{ background: "var(--ae-night)", border: "1px solid rgba(255,140,30,0.3)" }}>
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 100%, rgba(255,140,30,0.08), transparent 70%)", pointerEvents: "none" }} />
+            <div className="f-eyebrow mb-3">FILAMENT TRADER SCORE</div>
+            <div className="font-bold forge-breathe" style={{ fontSize: "clamp(72px,15vw,120px)", lineHeight: 1, color: "var(--ae-aurum-bright)", fontFamily: "var(--font-display), serif", textShadow: "0 0 60px rgba(255,170,50,0.4)" }}>
+              {stats.score}
+            </div>
+            <div className="text-xs mt-2" style={{ color: "var(--ae-nebula)" }}>based on graduations · volume · profit · activity</div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+            {[
+              { label: "Total trades", value: stats.totalTrades.toString() },
+              { label: "Coins traded", value: stats.coins.toString() },
+              { label: "Graduated", value: stats.graduated.toString() },
+              { label: "Grad rate", value: stats.gradRate.toFixed(0) + "%" },
+              { label: "LCAI spent", value: fmt(stats.totalSpent) },
+              { label: "LCAI received", value: fmt(stats.totalReceived) },
+            ].map(s => (
+              <div key={s.label} className="rounded-2xl p-4" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+                <div className="text-xl font-bold" style={{ color: "var(--ae-aurum)", fontFamily: "var(--font-display), serif" }}>{s.value}</div>
+                <div className="text-xs mt-1" style={{ color: "var(--ae-nebula)" }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl p-5 mb-6 flex items-center justify-between" style={{ background: "var(--ae-night)", border: `1px solid ${stats.netPnl >= 0 ? "rgba(74,222,128,0.3)" : "rgba(248,113,113,0.3)"}` }}>
+            <div>
+              <div className="text-xs mb-1" style={{ color: "var(--ae-nebula)" }}>NET PNL · ALL TIME</div>
+              <div className="text-3xl font-bold" style={{ color: stats.netPnl >= 0 ? "var(--clr-success)" : "var(--clr-danger)", fontFamily: "var(--font-display), serif" }}>
+                {stats.netPnl >= 0 ? "+" : ""}{fmt(stats.netPnl)} LCAI
+              </div>
+              <div className="text-xs mt-1" style={{ color: "var(--ae-nebula)" }}>realized only · excludes current holdings</div>
+            </div>
+            <div style={{ fontSize: 48 }}>{stats.netPnl >= 0 ? "🟢" : "🔴"}</div>
+          </div>
+
+          {stats.bestTrade && (
+            <div className="rounded-2xl p-5 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+              <div className="text-xs mb-2" style={{ color: "var(--ae-nebula)" }}>BEST TRADE</div>
+              <div className="flex items-center justify-between">
+                <div className="font-bold text-xl" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
+                  {stats.bestTrade[1].symbol || stats.bestTrade[0].slice(0,8)+"…"}
+                  {stats.bestTrade[1].graduated ? <span className="ml-2 text-xs px-1.5 py-0.5 rounded-full" style={{ background: "rgba(74,222,128,0.12)", color: "var(--clr-success)" }}>GRADUATED</span> : null}
+                </div>
+                <div className="text-xl font-bold" style={{ color: (stats.bestTrade[1].received - stats.bestTrade[1].spent) >= 0 ? "var(--clr-success)" : "var(--clr-danger)" }}>
+                  {(stats.bestTrade[1].received - stats.bestTrade[1].spent) >= 0 ? "+" : ""}{fmt(stats.bestTrade[1].received - stats.bestTrade[1].spent)} LCAI
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="rounded-2xl p-5 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+            <div className="text-xs mb-4" style={{ color: "var(--ae-nebula)" }}>ACTIVITY · LAST 90 DAYS</div>
+            <div className="flex gap-1 flex-wrap">
+              {stats.days.map((d, i) => (
+                <div key={i} title={`${d.count} trades`} style={{ width: 10, height: 10, borderRadius: 2, flexShrink: 0, background: d.count === 0 ? "var(--ae-veil)" : d.count === 1 ? "rgba(255,140,30,0.3)" : d.count <= 3 ? "rgba(255,140,30,0.6)" : "var(--ae-ember)" }} />
+              ))}
+            </div>
+            <div className="flex justify-between mt-2 text-[10px]" style={{ color: "var(--ae-nebula)" }}>
+              <span>90 days ago</span><span>today</span>
+            </div>
+          </div>
+
+          <div className="rounded-2xl overflow-hidden" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+            <div className="px-5 py-4 text-xs" style={{ color: "var(--ae-nebula)", borderBottom: "1px solid var(--clr-border)" }}>RECENT TRADES</div>
+            {trades.slice(0, 10).map((t, i) => (
+              <div key={i} className="flex items-center justify-between px-5 py-3" style={{ borderBottom: i < 9 ? "1px solid var(--clr-border)" : "none" }}>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: t.is_buy ? "rgba(74,222,128,0.12)" : "rgba(248,113,113,0.12)", color: t.is_buy ? "var(--clr-success)" : "var(--clr-danger)" }}>{t.is_buy ? "BUY" : "SELL"}</span>
+                  <span className="text-sm font-semibold" style={{ color: "var(--clr-heading)" }}>{t.symbol || t.coin.slice(0,8)+"…"}</span>
+                </div>
+                <span className="text-sm" style={{ color: "var(--ae-aurum)" }}>{fmt(Number(BigInt(t.lcai_amount)) / 1e18)} LCAI</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </main>
+  );
+}
