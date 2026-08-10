@@ -145,6 +145,7 @@ const useWeb3Functions = () => {
             account: address,
           });
           hash = await walletClient.switchChain({ id: lightchain.id }).catch(() => {}).then(() => walletClient.writeContract({ ...request, chain: lightchain }));
+          await publicClient.waitForTransactionReceipt({ hash });
         }
 
         return hash;
