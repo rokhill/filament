@@ -57,12 +57,20 @@ const useWeb3Functions = () => {
 
     try {
       const amountIn = parseUnits(amount, tokenFrom.decimals);
-      const ownPath  = [tokenFrom.address || weth, tokenTo.address || weth] as [`0x${string}`, `0x${string}`];
+      const ownDirect = [tokenFrom.address || weth, tokenTo.address || weth] as `0x${string}`[];
+      const isTokenToToken = !!(tokenFrom.address && tokenTo.address && tokenFrom.symbol !== chain.nativeCurrency.symbol && tokenTo.symbol !== chain.nativeCurrency.symbol);
       const altWeth  = config.altWETH[chain.id];
       const altPath  = [tokenFrom.address || altWeth, tokenTo.address || altWeth] as [`0x${string}`, `0x${string}`];
 
-      const ownResult = await routerV2Contract.read.getAmountsOut([amountIn, ownPath]).catch(() => [0n, 0n]);
-      const ownOut = (ownResult as bigint[])[ownResult.length - 1] ?? 0n;
+      const ownDirectResult = await routerV2Contract.read.getAmountsOut([amountIn, ownDirect]).catch(() => [0n, 0n]);
+      const ownDirectOut = (ownDirectResult as bigint[])[ownDirectResult.length - 1] ?? 0n;
+      let ownOut = ownDirectOut;
+      if (isTokenToToken && ownDirectOut === 0n) {
+        const hopPath = [tokenFrom.address!, weth, tokenTo.address!] as `0x${string}`[];
+        const hopResult = await routerV2Contract.read.getAmountsOut([amountIn, hopPath]).catch(() => [0n, 0n, 0n]);
+        const hopOut = (hopResult as bigint[])[hopResult.length - 1] ?? 0n;
+        if (hopOut > 0n) ownOut = hopOut;
+      }
       let best = ownOut;
       bestRouterRef.current = "own";
       if (bestPriceRouting) {
@@ -186,7 +194,9 @@ const useWeb3Functions = () => {
           "swapExactTokensForETHSupportingFeeOnTransferTokens",
         ];
       } else {
-        path = [fromAddress, toAddress];
+        const directCheck = await routerV2Contract.read.getAmountsOut([amount, [fromAddress, toAddress] as `0x${string}`[]]).catch(() => [0n, 0n]);
+        const hasDirectPair = ((directCheck as bigint[])[1] ?? 0n) > 0n;
+        path = hasDirectPair ? [fromAddress, toAddress] : [fromAddress, activeWeth, toAddress];
         methods = [
           "swapExactTokensForTokens",
           "swapExactTokensForTokensSupportingFeeOnTransferTokens",
