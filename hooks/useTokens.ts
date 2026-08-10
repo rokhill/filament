@@ -29,7 +29,18 @@ const useTokens = () => {
         ).catch(()=>null)
       : Promise.resolve(null);
     load.then(coins => {
-      if (coins) { coins.forEach(addToken); return; }
+      if (coins) {
+        coins.forEach(addToken);
+        // also load ALL tokens with pairs from indexer (non-Forge tokens)
+        if (INDEXER) {
+          fetch(`${INDEXER}/api/v1/tokens`).then(r=>r.json()).then((rows:any[]) => {
+            rows.filter((r:any) => r.symbol && r.address && !r.is_forge_coin).forEach((r:any) => {
+              addToken({ address: r.address as `0x${string}`, chainId: chain.id, name: r.name || r.symbol, symbol: r.symbol, decimals: r.decimals || 18 });
+            });
+          }).catch(()=>{});
+        }
+        return;
+      }
       fetchCoins().then((coins) => {
         coins.forEach((c) => {
           const img = c.metadata?.image ? (c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/" + c.metadata.image.slice(7) : c.metadata.image) : undefined;
