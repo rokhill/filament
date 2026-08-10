@@ -107,16 +107,17 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
             {[
-              { label: "Total trades", value: stats.totalTrades.toString() },
-              { label: "Coins traded", value: stats.coins.toString() },
-              { label: "Graduated", value: stats.graduated.toString() },
-              { label: "Grad rate", value: stats.gradRate.toFixed(0) + "%" },
-              { label: "LCAI spent", value: fmt(stats.totalSpent) },
-              { label: "LCAI received", value: fmt(stats.totalReceived) },
-            ].map(s => (
+              { label: "Curve trades", sublabel: "buys + sells on the Forge", value: stats.totalTrades.toString() },
+              { label: "Coins touched", sublabel: "unique coins traded", value: stats.coins.toString() },
+              { label: "Backed a grad", sublabel: "coins you bought that graduated", value: stats.graduated.toString() },
+              { label: "Graduation rate", sublabel: "% of your coins that graduated", value: stats.gradRate.toFixed(0) + "%" },
+              { label: "LCAI into curves", sublabel: "total spent buying", value: fmt(stats.totalSpent) },
+              { label: "LCAI from sells", sublabel: "total received selling", value: fmt(stats.totalReceived) },
+            ].map((s: {label:string;sublabel:string;value:string}) => (
               <div key={s.label} className="rounded-2xl p-4" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)", borderLeft: "3px solid var(--ae-aurum-deep)" }}>
                 <div className="text-xl font-bold" style={{ color: "var(--ae-aurum)", fontFamily: "var(--font-display), serif" }}>{s.value}</div>
-                <div className="text-xs mt-1" style={{ color: "var(--ae-nebula)" }}>{s.label}</div>
+                <div className="text-xs mt-0.5 font-semibold" style={{ color: "var(--clr-heading)" }}>{s.label}</div>
+                <div className="text-[10px] mt-0.5" style={{ color: "var(--ae-nebula)" }}>{s.sublabel}</div>
               </div>
             ))}
           </div>
@@ -127,7 +128,7 @@ export default function Dashboard() {
               <div className="text-3xl font-bold" style={{ color: stats.netPnl >= 0 ? "var(--clr-success)" : "var(--clr-danger)", fontFamily: "var(--font-display), serif" }}>
                 {stats.netPnl >= 0 ? "+" : ""}{fmt(stats.netPnl)} LCAI
               </div>
-              <div className="text-xs mt-1" style={{ color: "var(--ae-nebula)" }}>realized only · excludes current holdings</div>
+              <div className="text-xs mt-1" style={{ color: "var(--ae-nebula)" }}>What you received from sells minus what you spent buying — realized only. Coins you still hold are not counted.</div>
             </div>
             <div style={{ fontSize: 48 }}>{stats.netPnl >= 0 ? "🟢" : "🔴"}</div>
           </div>
