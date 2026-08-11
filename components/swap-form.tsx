@@ -97,10 +97,12 @@ export default function SwapForm() {
 
   const noPair = useMemo(() => {
     if (pair.isLoading) return false;
+    // For token-to-token swaps, multi-hop may work even without a direct pair
+    if (!pair.data && amount1 && +amount1 > 0) return false;
     if (!pair.data) return true;
-    if (pair.data.totalSupply === BigInt(0)) return true;
+    if (pair.data.totalSupply === BigInt(0) && (!amount1 || +amount1 === 0)) return true;
     return false;
-  }, [pair]);
+  }, [pair, amount1]);
 
   const insufficientBalance = useMemo(
     () => (balance0.data ? Number(balance0.data.formatted) < +amount0 : false),
