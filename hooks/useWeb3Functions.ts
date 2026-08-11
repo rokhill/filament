@@ -251,11 +251,20 @@ const useWeb3Functions = () => {
       return hash;
     } catch (error: any) {
       console.log("swap", error);
-      toast.error(
-        error?.walk?.().message ||
-          error?.message ||
-          "Signing failed, please try again!"
-      );
+      const msg = error?.walk?.()?.message || error?.shortMessage || error?.message || "";
+      if (msg.includes("INSUFFICIENT_OUTPUT_AMOUNT") || msg.includes("slippage")) {
+        toast.error("Price moved too much — increase slippage in settings and try again.");
+      } else if (msg.includes("EXPIRED") || msg.includes("deadline")) {
+        toast.error("Transaction expired — please try again.");
+      } else if (msg.includes("insufficient") || msg.includes("exceeds balance")) {
+        toast.error("Insufficient balance for this swap.");
+      } else if (msg.includes("user rejected") || msg.includes("User rejected")) {
+        toast.error("Transaction cancelled.");
+      } else if (msg) {
+        toast.error(msg.length > 100 ? "Swap failed — try a smaller amount or increase slippage." : msg);
+      } else {
+        toast.error("Swap failed — try again.");
+      }
     }
   };
 
