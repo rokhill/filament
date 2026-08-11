@@ -84,6 +84,17 @@ export default function SwapForm() {
     [amount0, token0, token1]
   );
 
+  // Auto-refresh quote every 30 seconds to prevent stale prices
+  useEffect(() => {
+    if (!amount0 || !token0 || !token1 || isNaN(+amount0)) return;
+    const interval = setInterval(() => {
+      getAmountFromTo(amount0, token0, token1).then((val) => {
+        if (val) setAmount1(val);
+      });
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [amount0, token0, token1, getAmountFromTo]);
+
   const noPair = useMemo(() => {
     if (pair.isLoading) return false;
     if (!pair.data) return true;
