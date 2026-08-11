@@ -70,7 +70,7 @@ export default function Dashboard() {
       (netPnl > 0 ? Math.min(netPnl / 10, 200) : 0) + (gradRate * 2)
     ));
     return { totalSpent, totalReceived, netPnl, coins: coins.length, graduated, gradRate, bestTrade, days, score, totalTrades: trades.length };
-  }, [trades]);
+  }, [trades, dexSwaps]);
 
   if (!isConnected) return (
     <main className="min-h-[70vh] flex items-center justify-center">
