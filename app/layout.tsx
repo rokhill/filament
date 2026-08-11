@@ -90,7 +90,7 @@ export default async function RootLayout({
         <link rel="apple-touch-startup-image" href="/brand/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" />
         <link rel="apple-touch-startup-image" href="/brand/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" />
       </head>
-      <body className={cn("antialiased", bodyFont.variable, display.variable)} style={{ background: "#050506" }}>
+      <body className={cn("antialiased", bodyFont.variable, display.variable)} style={{ background: "#050506", overflowX: "hidden" }}>
         
         <ThemeProvider
           attribute="class"
@@ -99,7 +99,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <ContextProvider cookies={cookies}>
-            <main className="flex flex-col min-h-dvh">
+            <main className="flex flex-col min-h-dvh" style={{ overflowX: "hidden" }}>
               <Header />
               <div className="flex-1 ae-sky">
                 {children}
