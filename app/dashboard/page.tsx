@@ -110,6 +110,34 @@ export default function Dashboard() {
             <div className="text-xs mt-2" style={{ color: "var(--ae-nebula)" }}>based on graduations · volume · profit · activity</div>
           </div>
 
+          {rank && (
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {[
+                { label: "RANK BY TRADES", value: `#${rank.tradeRank}`, hot: rank.tradeRank <= 3 },
+                { label: "RANK BY VOLUME", value: `#${rank.volRank}`, hot: rank.volRank <= 3 },
+                { label: "BIGGEST BUY", value: `${rank.biggestBuy.toFixed(0)} LCAI`, hot: rank.biggestBuy >= 1000 },
+              ].map(r => (
+                <div key={r.label} className="rounded-2xl p-4 text-center" style={{ background: r.hot ? "rgba(255,140,30,0.1)" : "var(--ae-night)", border: `1px solid ${r.hot ? "rgba(255,140,30,0.4)" : "var(--clr-border)"}` }}>
+                  <div className="text-lg font-bold" style={{ color: r.hot ? "var(--ae-aurum-bright)" : "var(--ae-aurum)", fontFamily: "var(--font-display), serif" }}>{r.value}</div>
+                  <div className="text-[10px] mt-1" style={{ color: "var(--ae-nebula)" }}>{r.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          {stats && (
+            <div className="rounded-2xl p-5 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+              <div className="text-xs mb-4" style={{ color: "var(--ae-nebula)" }}>ACHIEVEMENTS</div>
+              <div className="flex flex-wrap gap-2">
+                {stats.graduated > 0 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(74,222,128,0.12)", color: "var(--clr-success)", border: "1px solid rgba(74,222,128,0.25)" }}>🎓 Backed a Graduation</span>}
+                {stats.totalTrades >= 10 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>⚡ Active Trader</span>}
+                {stats.totalTrades >= 50 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>🔥 Forge Veteran</span>}
+                {rank && rank.tradeRank === 1 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,170,50,0.2)", color: "var(--ae-aurum-bright)", border: "1px solid rgba(255,170,50,0.4)" }}>👑 Most Active Trader</span>}
+                {rank && rank.biggestBuy >= 1000 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>🐋 Whale</span>}
+                {stats.gradRate >= 50 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(74,222,128,0.12)", color: "var(--clr-success)", border: "1px solid rgba(74,222,128,0.25)" }}>💎 Sharp Eye</span>}
+                {stats.coins >= 10 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>🌐 Diversified</span>}
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
             {[
               { label: "Curve trades", sublabel: "buys + sells on the Forge", value: stats.totalTrades.toString() },
