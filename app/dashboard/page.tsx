@@ -125,7 +125,7 @@ export default function Dashboard() {
             </div>
           )}
           {stats && (
-            <div className="rounded-2xl p-5 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+            <div className="rounded-2xl p-5 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)", borderLeft: "3px solid var(--ae-aurum-deep)" }}>
               <div className="text-xs mb-4" style={{ color: "var(--ae-nebula)" }}>ACHIEVEMENTS</div>
               <div className="flex flex-wrap gap-2">
                 {stats.graduated > 0 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(74,222,128,0.12)", color: "var(--clr-success)", border: "1px solid rgba(74,222,128,0.25)" }}>🎓 Backed a Graduation</span>}
@@ -181,7 +181,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className="rounded-2xl p-5 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+          <div className="rounded-2xl p-5 mb-6" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)", borderLeft: "3px solid var(--ae-aurum-deep)" }}>
             <div className="text-xs mb-4" style={{ color: "var(--ae-nebula)" }}>ACTIVITY · LAST 90 DAYS</div>
             <div className="flex gap-1 flex-wrap">
               {stats.days.map((d, i) => (
@@ -193,7 +193,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-2xl overflow-hidden" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ background: "var(--ae-night)", border: "1px solid var(--clr-border)", borderLeft: "3px solid var(--ae-aurum-deep)" }}>
             <div className="px-5 py-4 text-xs" style={{ color: "var(--ae-nebula)", borderBottom: "1px solid var(--clr-border)" }}>RECENT TRADES</div>
             {trades.slice(0, 10).map((t, i) => (
               <div key={i} className="flex items-center justify-between px-5 py-3" style={{ borderBottom: i < 9 ? "1px solid var(--clr-border)" : "none" }}>
