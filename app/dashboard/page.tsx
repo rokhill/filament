@@ -20,6 +20,8 @@ function fmt(n: number, d = 2) {
 export default function Dashboard() {
   const { address, isConnected } = useAccount();
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [dexSwaps, setDexSwaps] = useState<any[]>([]);
+  const [rank, setRank] = useState<{volRank:number;tradeRank:number;biggestBuy:number}|null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,6 +30,8 @@ export default function Dashboard() {
       .then(r => r.json())
       .then(data => { setTrades(data); setLoading(false); })
       .catch(() => setLoading(false));
+    fetch(`${INDEXER}/api/v1/wallet/${address}/rank`).then(r=>r.json()).then(setRank).catch(()=>{});
+    fetch(`${INDEXER}/api/v1/wallet/${address}/swaps?limit=500`).then(r=>r.json()).then(setDexSwaps).catch(()=>{});
   }, [address]);
 
   const stats = useMemo(() => {
@@ -35,7 +39,8 @@ export default function Dashboard() {
     const buys = trades.filter(t => t.is_buy === 1);
     const sells = trades.filter(t => t.is_buy === 0);
     const totalSpent = buys.reduce((a, t) => a + Number(BigInt(t.lcai_amount)) / 1e18, 0);
-    const totalReceived = sells.reduce((a, t) => a + Number(BigInt(t.lcai_amount)) / 1e18, 0);
+    const dexSellsTotal = dexSwaps.filter((s:any) => s.is_buy === 0).reduce((a:number, s:any) => a + Number(BigInt(s.lcai_amount||"0")) / 1e18, 0);
+    const totalReceived = sells.reduce((a, t) => a + Number(BigInt(t.lcai_amount)) / 1e18, 0) + dexSellsTotal;
     const netPnl = totalReceived - totalSpent;
     const coinMap: Record<string, { spent: number; received: number; symbol: string | null; graduated: number | null; }> = {};
     for (const t of trades) {
