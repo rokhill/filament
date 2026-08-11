@@ -194,14 +194,17 @@ export default function Dashboard() {
           </div>
 
           <div className="f-card rounded-2xl overflow-hidden">
-            <div className="px-5 py-4 text-xs" style={{ color: "var(--ae-nebula)", borderBottom: "1px solid var(--clr-border)" }}>RECENT TRADES</div>
-            {trades.slice(0, 10).map((t, i) => (
-              <div key={i} className="flex items-center justify-between px-5 py-3" style={{ borderBottom: i < 9 ? "1px solid var(--clr-border)" : "none" }}>
+            <div className="px-5 py-4 text-xs" style={{ color: "var(--ae-nebula)", borderBottom: "1px solid var(--clr-border)" }}>RECENT ACTIVITY</div>
+            {[...trades.map(t => ({ ...t, source: "Forge", symbol: t.symbol, lcai: Number(BigInt(t.lcai_amount))/1e18, buy: t.is_buy === 1, ts: t.ts })),
+              ...dexSwaps.map((s:any) => ({ source: "DEX", symbol: s.symbol, lcai: Number(BigInt(s.lcai_amount||"0"))/1e18, buy: s.is_buy === 1, ts: s.ts }))
+            ].sort((a,b) => b.ts - a.ts).slice(0, 12).map((t, i, arr) => (
+              <div key={i} className="flex items-center justify-between px-5 py-3" style={{ borderBottom: i < arr.length-1 ? "1px solid var(--clr-border)" : "none" }}>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: t.is_buy ? "rgba(74,222,128,0.12)" : "rgba(248,113,113,0.12)", color: t.is_buy ? "var(--clr-success)" : "var(--clr-danger)" }}>{t.is_buy ? "BUY" : "SELL"}</span>
-                  <span className="text-sm font-semibold" style={{ color: "var(--clr-heading)" }}>{t.symbol || t.coin.slice(0,8)+"…"}</span>
+                  <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: t.buy ? "rgba(74,222,128,0.12)" : "rgba(248,113,113,0.12)", color: t.buy ? "var(--clr-success)" : "var(--clr-danger)" }}>{t.buy ? "BUY" : "SELL"}</span>
+                  <span className="text-sm font-semibold" style={{ color: "var(--clr-heading)" }}>{t.symbol || "?"}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: "var(--ae-haze)", color: "var(--ae-nebula)" }}>{t.source}</span>
                 </div>
-                <span className="text-sm" style={{ color: "var(--ae-aurum)" }}>{fmt(Number(BigInt(t.lcai_amount)) / 1e18)} LCAI</span>
+                <span className="text-sm" style={{ color: "var(--ae-aurum)" }}>{fmt(t.lcai)} LCAI</span>
               </div>
             ))}
           </div>
