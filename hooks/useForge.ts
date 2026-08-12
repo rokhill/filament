@@ -369,7 +369,9 @@ export default function useForge() {
 export function fmtLcai(wei: bigint, digits = 2): string {
   const n = Number(formatEther(wei));
   if (n === 0) return "0";
-  if (n < 0.01) return n.toPrecision(2);
+  const abs = Math.abs(n);
+  if (abs < 0.0001) return "~0";
+  if (abs < 0.01) return n.toFixed(4);
   return n.toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
