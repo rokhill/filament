@@ -275,7 +275,7 @@ export default function Dashboard() {
               <div className="f-card rounded-2xl p-5 mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-xs" style={{ color: "var(--ae-nebula)" }}>ACHIEVEMENTS</div>
-                  <div className="text-xs font-semibold" style={{ color: "var(--ae-aurum)" }}>{earned.length}/{allAchievements.length} unlocked</div>
+                  <div className="text-xs font-semibold" style={{ color: "var(--ae-aurum)" }}>{earned.length} unlocked</div>
                 </div>
                 <div className="flex flex-wrap gap-3 mb-4">
                   {earned.map(a => (
