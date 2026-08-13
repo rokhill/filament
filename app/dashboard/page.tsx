@@ -286,20 +286,7 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
-                {locked.length > 0 && (
-                  <>
-                    <div className="text-xs mb-3" style={{ color: "var(--ae-nebula)" }}>LOCKED — {locked.length} remaining</div>
-                    <div className="flex flex-wrap gap-3">
-                      {locked.map(a => (
-                        <div key={a.id} className="flex flex-col items-center gap-1" style={{ width: 64 }} title={`${a.label}: ${a.desc}`}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={`/badges/${a.id}.png`} alt={a.label} width={48} height={48} style={{ borderRadius: "50%", filter: "grayscale(100%) brightness(0.3)" }} />
-                          <span className="text-[9px] text-center leading-tight" style={{ color: "var(--ae-veil)" }}>{a.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
+
               </div>
             );
           })()}
