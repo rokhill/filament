@@ -124,20 +124,185 @@ export default function Dashboard() {
               ))}
             </div>
           )}
-          {stats && (
-            <div className="f-card rounded-2xl p-5 mb-6">
-              <div className="text-xs mb-4" style={{ color: "var(--ae-nebula)" }}>ACHIEVEMENTS</div>
-              <div className="flex flex-wrap gap-2">
-                {stats.graduated > 0 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(74,222,128,0.12)", color: "var(--clr-success)", border: "1px solid rgba(74,222,128,0.25)" }}>🎓 Backed a Graduation</span>}
-                {stats.totalTrades >= 10 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>⚡ Active Trader</span>}
-                {stats.totalTrades >= 50 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>🔥 Forge Veteran</span>}
-                {rank && rank.tradeRank === 1 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,170,50,0.2)", color: "var(--ae-aurum-bright)", border: "1px solid rgba(255,170,50,0.4)" }}>👑 Most Active Trader</span>}
-                {rank && rank.biggestBuy >= 1000 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>🐋 Whale</span>}
-                {stats.gradRate >= 50 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(74,222,128,0.12)", color: "var(--clr-success)", border: "1px solid rgba(74,222,128,0.25)" }}>💎 Sharp Eye</span>}
-                {stats.coins >= 10 && <span className="text-xs px-3 py-1.5 rounded-full font-semibold" style={{ background: "rgba(255,140,30,0.12)", color: "var(--ae-aurum)", border: "1px solid rgba(255,140,30,0.25)" }}>🌐 Diversified</span>}
+          {stats && (() => {
+            // compute trading streak
+            const tradeDays = new Set(trades.map(t => Math.floor(t.ts / 86400)));
+            const now = Math.floor(Date.now()/1000/86400);
+            let streak = 0;
+            for (let d = now; tradeDays.has(d); d--) streak++;
+
+            // compute biggest single buy
+            const biggestBuy = rank?.biggestBuy || 0;
+
+            // all achievements definition
+            const allAchievements = [
+              // TRADING ACTIVITY
+              { id:"first_spark", label:"First Spark", desc:"Made your first trade", earned: stats.totalTrades >= 1 },
+              { id:"getting_warmed_up", label:"Getting Warmed Up", desc:"5 trades", earned: stats.totalTrades >= 5 },
+              { id:"active_trader", label:"Active Trader", desc:"10 trades", earned: stats.totalTrades >= 10 },
+              { id:"on_a_roll", label:"On A Roll", desc:"25 trades", earned: stats.totalTrades >= 25 },
+              { id:"forge_veteran", label:"Forge Veteran", desc:"50 trades", earned: stats.totalTrades >= 50 },
+              { id:"centurion", label:"Centurion", desc:"100 trades", earned: stats.totalTrades >= 100 },
+              { id:"forge_legend", label:"Forge Legend", desc:"250 trades", earned: stats.totalTrades >= 250 },
+              { id:"forge_god", label:"Forge God", desc:"500 trades", earned: stats.totalTrades >= 500 },
+              { id:"immortal", label:"Immortal", desc:"1,000 trades", earned: stats.totalTrades >= 1000 },
+              { id:"consistent", label:"Consistent", desc:"3-day trading streak", earned: streak >= 3 },
+              { id:"week_warrior", label:"Week Warrior", desc:"7-day trading streak", earned: streak >= 7 },
+              { id:"fortnight", label:"Fortnight", desc:"14-day trading streak", earned: streak >= 14 },
+              { id:"monthly", label:"Monthly", desc:"30-day trading streak", earned: streak >= 30 },
+              { id:"ghost", label:"Ghost", desc:"Came back after 7+ days away", earned: false },
+              { id:"comeback", label:"Comeback", desc:"Came back after 30+ days", earned: false },
+              { id:"resurrection", label:"Resurrection", desc:"Came back after 60+ days", earned: false },
+              { id:"circus", label:"Circus", desc:"5 different coins in one day", earned: false },
+              { id:"coin_flipper", label:"Coin Flipper", desc:"Bought and sold same coin same day", earned: false },
+              { id:"trigger_happy", label:"Trigger Happy", desc:"3 trades in 10 minutes", earned: false },
+              { id:"marathon", label:"Marathon", desc:"Traded every day for a week", earned: streak >= 7 },
+              { id:"speed_trader", label:"Speed Trader", desc:"5 trades in one hour", earned: false },
+              { id:"blitz", label:"Blitz", desc:"10 trades in one hour", earned: false },
+              // GRADUATION
+              { id:"backed_a_grad", label:"Backed a Grad", desc:"Bought a coin that graduated", earned: stats.graduated >= 1 },
+              { id:"double_down", label:"Double Down", desc:"2 graduations backed", earned: stats.graduated >= 2 },
+              { id:"hat_trick", label:"Hat Trick", desc:"3 graduations backed", earned: stats.graduated >= 3 },
+              { id:"grad_hunter", label:"Grad Hunter", desc:"5 graduations backed", earned: stats.graduated >= 5 },
+              { id:"graduation_machine", label:"Graduation Machine", desc:"8 graduations backed", earned: stats.graduated >= 8 },
+              { id:"rocket_fuel", label:"Rocket Fuel", desc:"All current grads backed", earned: stats.graduated >= 8 },
+              { id:"oracle", label:"Oracle", desc:"Bought before 10% curve filled", earned: false },
+              { id:"visionary", label:"Visionary", desc:"Bought before 5% curve filled", earned: false },
+              { id:"prophet", label:"Prophet", desc:"First buyer on a graduated coin", earned: false },
+              { id:"diamond_hands", label:"Diamond Hands", desc:"Held through graduation without selling", earned: false },
+              { id:"patient", label:"Patient", desc:"Bought early and waited for graduation", earned: false },
+              { id:"early_majority", label:"Early Majority", desc:"Bought before 25% curve", earned: false },
+              { id:"late_bloomer", label:"Late Bloomer", desc:"Bought after 75% curve and it graduated", earned: false },
+              // SPENDING
+              { id:"first_lcai", label:"First LCAI", desc:"Spent any amount on the Forge", earned: stats.totalSpent > 0 },
+              { id:"small_fish", label:"Small Fish", desc:"100 LCAI spent", earned: stats.totalSpent >= 100 },
+              { id:"getting_serious", label:"Getting Serious", desc:"500 LCAI spent", earned: stats.totalSpent >= 500 },
+              { id:"dolphin", label:"Dolphin", desc:"1,000 LCAI spent", earned: stats.totalSpent >= 1000 },
+              { id:"big_player", label:"Big Player", desc:"2,500 LCAI spent", earned: stats.totalSpent >= 2500 },
+              { id:"whale", label:"Whale", desc:"5,000 LCAI spent", earned: stats.totalSpent >= 5000 },
+              { id:"shark", label:"Shark", desc:"10,000 LCAI spent", earned: stats.totalSpent >= 10000 },
+              { id:"leviathan", label:"Leviathan", desc:"50,000 LCAI spent", earned: stats.totalSpent >= 50000 },
+              { id:"high_roller", label:"High Roller", desc:"Single buy over 1,000 LCAI", earned: biggestBuy >= 1000 },
+              { id:"all_in", label:"All In", desc:"Single buy over 5,000 LCAI", earned: biggestBuy >= 5000 },
+              { id:"moonshot", label:"Moonshot", desc:"Single buy over 10,000 LCAI", earned: biggestBuy >= 10000 },
+              { id:"satoshi_mode", label:"Satoshi Mode", desc:"Spent exactly 0.001 LCAI", earned: false },
+              // PROFIT & LOSS
+              { id:"first_green", label:"First Green", desc:"First profitable sell", earned: stats.netPnl > 0 },
+              { id:"in_the_green", label:"In The Green", desc:"Positive all-time PnL", earned: stats.netPnl > 0 },
+              { id:"printing", label:"Printing", desc:"100 LCAI profit", earned: stats.netPnl >= 100 },
+              { id:"stacking", label:"Stacking", desc:"500 LCAI profit", earned: stats.netPnl >= 500 },
+              { id:"money_printer", label:"Money Printer", desc:"1,000 LCAI profit", earned: stats.netPnl >= 1000 },
+              { id:"filament_rich", label:"Filament Rich", desc:"5,000 LCAI profit", earned: stats.netPnl >= 5000 },
+              { id:"sharp_eye", label:"Sharp Eye", desc:"50%+ graduation rate", earned: stats.gradRate >= 50 },
+              { id:"sniper", label:"Sniper", desc:"75%+ graduation rate", earned: stats.gradRate >= 75 },
+              { id:"omniscient", label:"Omniscient", desc:"100% graduation rate (min 3)", earned: stats.gradRate >= 100 && stats.coins >= 3 },
+              { id:"tuition_paid", label:"Tuition Paid", desc:"Lost 100 LCAI", earned: stats.netPnl <= -100 },
+              { id:"expensive_lesson", label:"Expensive Lesson", desc:"Lost 500 LCAI", earned: stats.netPnl <= -500 },
+              { id:"rekt", label:"Rekt", desc:"Lost 1,000 LCAI", earned: stats.netPnl <= -1000 },
+              { id:"absolutely_rekt", label:"Absolutely Rekt", desc:"Lost 5,000 LCAI", earned: stats.netPnl <= -5000 },
+              { id:"comeback_kid", label:"Comeback Kid", desc:"Turned negative PnL positive", earned: false },
+              { id:"phoenix", label:"Phoenix", desc:"Recovered from 1,000 LCAI loss", earned: false },
+              { id:"teflon", label:"Teflon", desc:"Never had a losing sell", earned: false },
+              { id:"lucky_streak", label:"Lucky Streak", desc:"5 profitable sells in a row", earned: false },
+              { id:"cold_streak", label:"Cold Streak", desc:"5 losing sells in a row", earned: false },
+              { id:"gambler", label:"Gambler", desc:"10 losing sells in a row", earned: false },
+              // DIVERSITY
+              { id:"curious", label:"Curious", desc:"3 different coins traded", earned: stats.coins >= 3 },
+              { id:"explorer", label:"Explorer", desc:"5 different coins", earned: stats.coins >= 5 },
+              { id:"adventurer", label:"Adventurer", desc:"10 different coins", earned: stats.coins >= 10 },
+              { id:"nomad", label:"Nomad", desc:"20 different coins", earned: stats.coins >= 20 },
+              { id:"collector", label:"Collector", desc:"30 different coins", earned: stats.coins >= 30 },
+              { id:"completionist", label:"Completionist", desc:"Traded every graduated coin", earned: false },
+              { id:"omnivore", label:"Omnivore", desc:"Traded curve and DEX same day", earned: false },
+              { id:"both_sides", label:"Both Sides", desc:"Bought and sold on DEX and Forge same week", earned: false },
+              // TIME BASED
+              { id:"night_owl", label:"Night Owl", desc:"Traded after midnight", earned: trades.some(t => new Date(t.ts*1000).getHours() >= 0 && new Date(t.ts*1000).getHours() < 4) },
+              { id:"vampire", label:"Vampire", desc:"3 trades after midnight", earned: trades.filter(t => new Date(t.ts*1000).getHours() < 4).length >= 3 },
+              { id:"early_bird", label:"Early Bird", desc:"Traded before 6am", earned: trades.some(t => new Date(t.ts*1000).getHours() < 6) },
+              { id:"rooster", label:"Rooster", desc:"3 trades before 6am", earned: trades.filter(t => new Date(t.ts*1000).getHours() < 6).length >= 3 },
+              { id:"weekend_warrior", label:"Weekend Warrior", desc:"Traded Sat and Sun", earned: false },
+              { id:"holiday_trader", label:"Holiday Trader", desc:"Traded 4 weekends in a row", earned: false },
+              { id:"no_days_off", label:"No Days Off", desc:"7-day streak including weekend", earned: streak >= 7 },
+              { id:"lunch_break", label:"Lunch Break", desc:"Traded between 12-1pm", earned: trades.some(t => new Date(t.ts*1000).getHours() === 12) },
+              { id:"after_hours", label:"After Hours", desc:"Traded between 5-7pm", earned: trades.some(t => { const h = new Date(t.ts*1000).getHours(); return h >= 17 && h < 19; }) },
+              // COMMUNITY & SOCIAL
+              { id:"pioneer", label:"Pioneer", desc:"Among first 100 traders on Filament", earned: rank ? rank.tradeRank <= 100 : false },
+              { id:"og", label:"OG", desc:"Among first 50 traders", earned: rank ? rank.tradeRank <= 50 : false },
+              { id:"genesis", label:"Genesis", desc:"Among first 10 traders", earned: rank ? rank.tradeRank <= 10 : false },
+              { id:"most_active", label:"Most Active", desc:"#1 trader by trade count", earned: rank ? rank.tradeRank === 1 : false },
+              { id:"king_of_volume", label:"King of Volume", desc:"#1 by LCAI volume", earned: rank ? rank.volRank === 1 : false },
+              { id:"supporter", label:"Supporter", desc:"Traded 5 coins by others", earned: false },
+              { id:"community_builder", label:"Community Builder", desc:"Traded 10 coins by others", earned: false },
+              { id:"true_believer", label:"True Believer", desc:"Traded 20 coins by others", earned: false },
+              { id:"creators_friend", label:"Creator's Friend", desc:"Bought the creator's own coin", earned: false },
+              { id:"solo_mission", label:"Solo Mission", desc:"Only traded your own coins", earned: false },
+              // COINS & CREATION
+              { id:"creator", label:"Creator", desc:"Launched a coin", earned: false },
+              { id:"serial_creator", label:"Serial Creator", desc:"Launched 3 coins", earned: false },
+              { id:"factory", label:"Factory", desc:"Launched 5 coins", earned: false },
+              { id:"mint_master", label:"Mint Master", desc:"Launched 10 coins", earned: false },
+              { id:"graduation_day", label:"Graduation Day", desc:"Your created coin graduated", earned: false },
+              { id:"double_grad_creator", label:"Double Grad Creator", desc:"2 of your coins graduated", earned: false },
+              { id:"legend_creator", label:"Legend Creator", desc:"5 of your coins graduated", earned: false },
+              // DEX SPECIFIC
+              { id:"dex_trader", label:"DEX Trader", desc:"First DEX swap", earned: dexSwaps.length >= 1 },
+              { id:"dex_veteran", label:"DEX Veteran", desc:"10 DEX swaps", earned: dexSwaps.length >= 10 },
+              { id:"liquidity_provider", label:"Liquidity Provider", desc:"Added liquidity to any pool", earned: false },
+              { id:"pool_owner", label:"Pool Owner", desc:"Added liquidity to 3 pools", earned: false },
+              { id:"lp_farmer", label:"LP Farmer", desc:"Earned LP fees", earned: false },
+              { id:"token_swapper", label:"Token Swapper", desc:"Swapped between two Forge coins", earned: false },
+              { id:"arbitrageur", label:"Arbitrageur", desc:"Swapped same pair both directions same day", earned: false },
+              // SPECIAL & RARE
+              { id:"lucky_number_7", label:"Lucky Number 7", desc:"7th trade was profitable", earned: false },
+              { id:"round_number", label:"Round Number", desc:"Traded exactly 100, 500, or 1000 LCAI", earned: false },
+              { id:"symmetry", label:"Symmetry", desc:"Spent and received equal LCAI", earned: false },
+              { id:"filament_native", label:"Filament Native", desc:"Used every Filament feature", earned: false },
+              { id:"full_stack", label:"Full Stack", desc:"Used Exchange, Forge, Pools, Bridge in one day", earned: false },
+              { id:"bridge_crosser", label:"Bridge Crosser", desc:"Used the bridge", earned: false },
+              { id:"perfectionist", label:"Perfectionist", desc:"0 failed transactions", earned: false },
+              { id:"crash_test", label:"Crash Test", desc:"Had a transaction revert", earned: false },
+              { id:"survivor", label:"Survivor", desc:"Recovered after a failed transaction", earned: false },
+              { id:"whale_watcher", label:"Whale Watcher", desc:"Your buy triggered a whale alert", earned: biggestBuy >= 30000 },
+              { id:"trend_setter", label:"Trend Setter", desc:"Bought before coin hit Forge Pulse top 3", earned: false },
+              { id:"king_of_the_hill", label:"King of the Hill", desc:"Held #1 on Forge Pulse", earned: false },
+              { id:"filament_forever", label:"Filament Forever", desc:"Used Filament 90 consecutive days", earned: streak >= 90 },
+            ];
+
+            const earned = allAchievements.filter(a => a.earned);
+            const locked = allAchievements.filter(a => !a.earned);
+
+            return (
+              <div className="f-card rounded-2xl p-5 mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-xs" style={{ color: "var(--ae-nebula)" }}>ACHIEVEMENTS</div>
+                  <div className="text-xs font-semibold" style={{ color: "var(--ae-aurum)" }}>{earned.length}/{allAchievements.length} unlocked</div>
+                </div>
+                <div className="flex flex-wrap gap-3 mb-4">
+                  {earned.map(a => (
+                    <div key={a.id} className="flex flex-col items-center gap-1" style={{ width: 64 }} title={a.desc}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`/badges/${a.id}.png`} alt={a.label} width={48} height={48} style={{ borderRadius: "50%", filter: "drop-shadow(0 0 6px rgba(255,140,30,0.5))" }} />
+                      <span className="text-[9px] text-center leading-tight" style={{ color: "var(--ae-aurum)" }}>{a.label}</span>
+                    </div>
+                  ))}
+                </div>
+                {locked.length > 0 && (
+                  <>
+                    <div className="text-xs mb-3" style={{ color: "var(--ae-nebula)" }}>LOCKED — {locked.length} remaining</div>
+                    <div className="flex flex-wrap gap-3">
+                      {locked.map(a => (
+                        <div key={a.id} className="flex flex-col items-center gap-1" style={{ width: 64 }} title={`${a.label}: ${a.desc}`}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={`/badges/${a.id}.png`} alt={a.label} width={48} height={48} style={{ borderRadius: "50%", filter: "grayscale(100%) brightness(0.3)" }} />
+                          <span className="text-[9px] text-center leading-tight" style={{ color: "var(--ae-veil)" }}>{a.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
             {[
               { label: "Curve trades", sublabel: "buys + sells on the Forge", value: stats.totalTrades.toString() },
