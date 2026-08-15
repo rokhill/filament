@@ -780,13 +780,13 @@ export default function ForgePage() {
           ✦ My Holdings
         </button>
         {isAdmin && tab("hidden" as Filter, "🚫 Hidden")}
-        <Link
+        <a
           href="/forge/pulse"
           className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all hover:-translate-y-0.5"
           style={{ background: "#0b0b0b", color: "#ffaa32", border: "1px solid rgba(255,140,30,.55)", boxShadow: "0 0 14px -4px rgba(255,140,30,.6)", textShadow: "0 0 8px rgba(255,140,30,.7)" }}
         >
           ⚡ Forge Pulse
-        </Link>
+        </a>
         <input
           className="ml-auto rounded-full px-4 py-1.5 text-xs outline-none w-52 focus:shadow-[var(--shadow-input)]"
           style={{ background: "var(--ae-haze)", border: "1px solid var(--clr-border)", color: "var(--clr-heading)" }}
