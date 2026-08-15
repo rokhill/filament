@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 /* ------------------------------------------------------------------ */
 /*  FORGE PULSE — the data layer of the Forge.                         */
