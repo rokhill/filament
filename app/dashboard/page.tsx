@@ -21,6 +21,7 @@ function fmt(n: number, d = 2) {
 export default function Dashboard() {
   const { address, isConnected } = useAccount();
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [badgeModal, setBadgeModal] = useState<{label:string;desc:string;id:string}|null>(null);
   const [dexSwaps, setDexSwaps] = useState<any[]>([]);
   const [rank, setRank] = useState<{volRank:number;tradeRank:number;biggestBuy:number}|null>(null);
   const [loading, setLoading] = useState(true);
@@ -280,7 +281,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-wrap gap-3 mb-4">
                   {earned.map(a => (
-                    <div key={a.id} className="flex flex-col items-center gap-1" style={{ width: 64 }} title={a.desc}>
+                    <div key={a.id} className="flex flex-col items-center gap-1 cursor-pointer" style={{ width: 64 }} title={a.desc} onClick={() => setBadgeModal(a)}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={`/badges/${a.id}.png`} alt={a.label} width={48} height={48} style={{ borderRadius: "50%", filter: "drop-shadow(0 0 6px rgba(255,140,30,0.5))" }} />
                       <span className="text-[9px] text-center leading-tight" style={{ color: "var(--ae-aurum)" }}>{a.label}</span>
@@ -362,6 +363,16 @@ export default function Dashboard() {
             ))}
           </div>
         </>
+      )}
+      {badgeModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)" }} onClick={() => setBadgeModal(null)}>
+          <div className="f-card rounded-2xl p-6 w-full max-w-sm text-center" style={{ background: "var(--ae-haze)" }} onClick={e => e.stopPropagation()}>
+            <img src={`/badges/${badgeModal.id}.png`} alt={badgeModal.label} width={72} height={72} style={{ borderRadius: "50%", filter: "drop-shadow(0 0 12px rgba(255,140,30,0.6))", margin: "0 auto 12px" }} />
+            <div className="font-bold text-lg mb-2" style={{ color: "var(--ae-aurum)", fontFamily: "var(--font-display), serif" }}>{badgeModal.label}</div>
+            <div className="text-sm mb-4" style={{ color: "var(--ae-nebula)" }}>{badgeModal.desc}</div>
+            <button onClick={() => setBadgeModal(null)} className="rounded-xl px-6 py-2 text-sm font-semibold" style={{ background: "var(--ae-ember)", color: "#140d05" }}>Got it</button>
+          </div>
+        </div>
       )}
     </main>
   );
