@@ -141,6 +141,7 @@ export default function ForgePulse() {
   const [stats, setStats] = useState<CoinStats[]>([]);
   const [grads, setGrads] = useState<ForgeCoin[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -209,8 +210,9 @@ export default function ForgePulse() {
             creatorPct: Number((creatorBals[i] * 10_000n) / SUPPLY) / 100,
           })));
         }
-      } catch {
-        if (alive) setLoading(false);
+      } catch(e) {
+        console.error("ForgePulse fetch error:", e);
+        if (alive) { setLoading(false); setError(true); }
       }
     })();
     return () => { alive = false; };
@@ -274,6 +276,8 @@ export default function ForgePulse() {
 
       {loading ? (
         <div className="f-card py-14 text-center f-meta rounded-2xl">Reading the chain…</div>
+      ) : error ? (
+        <div className="f-card py-14 text-center f-meta rounded-2xl" style={{ color: "var(--clr-danger)" }}>Failed to load — <button onClick={() => { setError(false); setLoading(true); }} style={{ color: "var(--ae-aurum)", textDecoration: "underline" }}>try again</button></div>
       ) : stats.length === 0 ? (
         <div className="f-card py-14 text-center f-meta rounded-2xl">No live coins on the curve yet.</div>
       ) : (
