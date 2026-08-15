@@ -676,9 +676,11 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
                     {holders.map((h, i) => {
                       const bal = Number(BigInt(h.balance)) / 1e18;
                       const pct = (bal / 1e9 * 100).toFixed(1);
+                      const DEAD = "0x000000000000000000000000000000000000dead";
                       const isLp = coin.pair && h.address.toLowerCase() === coin.pair.toLowerCase();
+                      const isBurnedLp = h.address.toLowerCase() === DEAD;
                       const isCreator = h.address.toLowerCase() === coin.creator.toLowerCase();
-                      const label = isLp ? "🔒 LP (Burned)" : isCreator ? "👤 Creator" : `${h.address.slice(0,6)}…${h.address.slice(-4)}`;
+                      const label = isBurnedLp ? "🔒 LP (Burned)" : isLp ? "🏊 LP Pool" : isCreator ? "👤 Creator" : `${h.address.slice(0,6)}…${h.address.slice(-4)}`;
                       return (
                         <div key={i} className="flex items-center justify-between text-xs rounded-lg px-2 py-1.5" style={{ background: "var(--ae-night)" }}>
                           <span className="font-semibold" style={{ color: "var(--ae-aurum)" }}>#{i+1}</span>
