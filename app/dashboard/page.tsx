@@ -50,6 +50,14 @@ export default function Dashboard() {
       if (t.is_buy) coinMap[t.coin].spent += Number(BigInt(t.lcai_amount)) / 1e18;
       else coinMap[t.coin].received += Number(BigInt(t.lcai_amount)) / 1e18;
     }
+    // also count DEX swaps as coins touched
+    for (const s of dexSwaps) {
+      const addr = s.base_token?.toLowerCase();
+      if (!addr) continue;
+      if (!coinMap[addr]) coinMap[addr] = { spent: 0, received: 0, symbol: s.symbol, graduated: 1 };
+      if (s.is_buy === 1) coinMap[addr].spent += Number(BigInt(s.lcai_amount||"0")) / 1e18;
+      else coinMap[addr].received += Number(BigInt(s.lcai_amount||"0")) / 1e18;
+    }
     const coins = Object.entries(coinMap);
     const graduated = coins.filter(([, c]) => c.graduated).length;
     const gradRate = coins.length > 0 ? (graduated / coins.length) * 100 : 0;
