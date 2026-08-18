@@ -395,19 +395,12 @@ function CreateModal({
                   if (file.size > 10 * 1024 * 1024) { toast.error("Image must be under 10 MB"); return; }
                   setUploading(true);
                   try {
-                    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-                    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-                    if (!cloudName || !uploadPreset) throw new Error("Image upload not configured");
                     const fd = new FormData();
                     fd.append("file", file);
-                    fd.append("upload_preset", uploadPreset);
-                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                      method: "POST",
-                      body: fd,
-                    });
+                    const res = await fetch("/api/upload", { method: "POST", body: fd });
                     const json = await res.json();
-                    if (json.secure_url) { setImage(json.secure_url); toast.success("Image uploaded!"); }
-                    else throw new Error(json.error?.message ?? "Upload failed");
+                    if (json.gatewayUrl) { setImage(json.gatewayUrl); toast.success("Image uploaded!"); }
+                    else throw new Error(json.error ?? "Upload failed");
                   } catch (err: any) {
                     toast.error(err.message ?? "Upload failed — paste an image URL instead");
                   } finally {
