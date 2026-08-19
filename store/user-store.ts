@@ -27,7 +27,7 @@ const useUserStore = create<StateType>()(
       txDeadline: 20,
       bestPriceRouting: true as boolean,
     }),
-    { name: "user" }
+    { name: "user", version: 1 }
   )
 );
 
