@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge";
 import useTokenStore from "@/store/token-store";
 import { Token } from "@/types/Token";
 import { erc20Abi, isAddress } from "viem";
@@ -24,6 +25,8 @@ const useTokens = () => {
           rows.map((r:any) => {
             let img: string|undefined;
             try { const m = JSON.parse(r.metadata_uri||"{}"); img = m.image ? (m.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+m.image.slice(7) : m.image) : undefined; } catch {}
+            const overrideImg = FORGE_IMAGE_OVERRIDES[r.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[r.address];
+            if (overrideImg) img = overrideImg;
             return { address: r.address as `0x${string}`, chainId: chain.id, name: r.name, symbol: r.symbol, decimals: 18, ...(img ? { logoURI: img } : {}) };
           })
         ).catch(()=>null)
