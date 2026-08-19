@@ -82,7 +82,7 @@ export const FORGE_IMAGE_OVERRIDES: Record<string, string> = {
   "0x485c421b83d09b8d513e77791573f3f7ace593f6": "https://gateway.pinata.cloud/ipfs/QmbdpGCUjaXtukpn93YvhioU7fvboahhCZfJ4291nwocgn",
   "0x95a6314ba7eadb61943f9f2cb2139a218d53ba1f": "https://gateway.pinata.cloud/ipfs/QmU8sxYiiwgqpJuF8ESGUY4dob7KgAvgrVsbkeGHMp1x3y",
   "0xc98b454a2d13477516f4048094bc06995cf11c85": "https://gateway.pinata.cloud/ipfs/Qma4nJM5CXxUGexANgHNPSMwKBaa1rb1eGdeeuxMo5cvi8",
-  "0x94c6fbeefdbd3c7d1b2e6a7fa164b38de04e9e43": "https://gateway.pinata.cloud/ipfs/Qmdgpvz7YBznDjjCJYXNYx1aTB98iusE86DEQgfd6qqpuc",
+  "0x94c6fbeefdbd3c7d1b2e6a7fa164b38de04e9e43": "https://gateway.pinata.cloud/ipfs/Qmdh4DEnYyXwFdJUwCTtmiX8kQNAsa5SBahmcK5wQxsq4h",
   "0x33e24cd72c7ad6bd78706aec1786972e758f228a": "https://gateway.pinata.cloud/ipfs/QmRxR3y6c4owdNNMpMmBvo6xXFgPFBon9naXSjq9epamhb",
   "0x8895dadca58ce4b2a61019258be9199232296b87": "https://gateway.pinata.cloud/ipfs/QmRP5YxftwK2vxFJNTXWQ6shpqvKgcndkjgeYinFDoCPuR",
   "0xc75dfb5ca983ed33149089922cbed9a8423eecb8": "https://gateway.pinata.cloud/ipfs/QmNM2v6Ziupay9s84xXJCgK6rhsb8oqVc45QDLQxZPjHa4",
