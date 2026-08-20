@@ -70,7 +70,7 @@ export default function CreateCoinPage() {
             ) : image ? (
               <div className="flex flex-col items-center gap-2 py-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={image} alt="preview" className="rounded-xl object-cover" style={{ width: 72, height: 72, background: "var(--ae-veil)" }} onError={() => setImage("")} />
+                <img src={image} alt="preview" className="rounded-xl object-cover" style={{ width: 72, height: 72, background: "var(--ae-veil)" }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }} />
                 <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>Tap to change image</span>
               </div>
             ) : (
