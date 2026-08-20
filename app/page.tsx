@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useIndexerStream } from "@/hooks/useIndexerStream";
 import BootSplash from "@/components/boot-splash";
-import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge";
 import { useAccount } from "wagmi";
 import { createPublicClient, http, erc20Abi, formatEther } from "viem";
 import { lcai } from "@/config/chains";

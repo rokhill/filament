@@ -12,7 +12,7 @@ import useForge, { ForgeCoin, fmtLcai } from "@/hooks/useForge";
 import useWeb3Clients from "@/hooks/useWeb3Clients";
 import { forgeAbi } from "@/contracts/forgeAbi";
 import { FORGE_ADDRESS, ipfsToHttp } from "@/config/forge";
-import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge";
 
 type PulseTrade = {
   token: `0x${string}`;

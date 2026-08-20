@@ -2,7 +2,7 @@
 import { useIndexerStream } from "@/hooks/useIndexerStream";
 import dynamic from "next/dynamic";
 const TradingChart = dynamic(() => import("@/components/TradingChart"), { ssr: false });
-import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";;
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge";
 import GraduationBanner from "@/components/GraduationBanner";
 import SparkButton from "@/components/SparkButton";
 import { useAccount } from "wagmi";

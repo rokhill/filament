@@ -1,6 +1,6 @@
 "use client"
 import { useIndexerStream } from "@/hooks/useIndexerStream";
-import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";;
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge";
 
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";

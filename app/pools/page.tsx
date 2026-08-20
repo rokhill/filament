@@ -1,5 +1,5 @@
 'use client'
-import { FORGE_IMAGE_OVERRIDES } from "@/config/forge-image-overrides";
+import { FORGE_IMAGE_OVERRIDES } from "@/config/forge";
 
 import LoadingBlock from "@/components/loading-block";
 import TokenAvatar from "@/components/token-avatar";
