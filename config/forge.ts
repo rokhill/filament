@@ -100,4 +100,5 @@ export const FORGE_IMAGE_OVERRIDES: Record<string, string> = {
   "0x0700b2c2c3f92c0e5caed27951017c358bef51d9": "https://gateway.pinata.cloud/ipfs/QmYc35EdUukBScD3Wpzb4xgz6xZcutBiw1zVYPPYQqjqrQ",
   "0x4ff915a2984442040f8997fc791907b399499e2d": "https://gateway.pinata.cloud/ipfs/QmcmRi8mockgRLE7Eq9rqgSEnvSZit1yo1cfrXhBRZbGWC",
   "0xcc64663d5e45b0d3dd4442369f7822d6090085b2": "https://gateway.pinata.cloud/ipfs/QmVRrrjA8jT51JgzGh1RwdTt1DSzTv3NvSmnwbJesNDbP5",
+  "0x5bd52ef3e553b28a9da9f9655a1dcc9026a4639f": "https://gateway.pinata.cloud/ipfs/QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH",
 };
