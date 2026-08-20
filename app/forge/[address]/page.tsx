@@ -276,11 +276,11 @@ export default function CoinPage({ params }: { params: Promise<{ address: string
   const addToWallet = async () => {
     if (!walletAddress) return;
     try {
-      const img = coin?.metadata?.image
+      const img = (coin?.address ? (FORGE_IMAGE_OVERRIDES[coin.address.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address]) : undefined) ?? (coin?.metadata?.image
         ? coin.metadata.image.startsWith("ipfs://")
           ? "https://ipfs.io/ipfs/" + coin.metadata.image.slice(7)
           : coin.metadata.image
-        : undefined;
+        : undefined);
       const eth = (window as any).ethereum;
       if (!eth) return;
       await eth.request({
