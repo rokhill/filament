@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     const data = await res.json();
     const ipfsUrl = `ipfs://${data.IpfsHash}`;
-    const gatewayUrl = `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
+    const gatewayUrl = `/api/image?url=${encodeURIComponent(`https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`)}`;
     return NextResponse.json({ ipfsUrl, gatewayUrl, hash: data.IpfsHash });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
