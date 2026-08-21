@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const pinataForm = new FormData();
     pinataForm.append("file", file);
     pinataForm.append("pinataMetadata", JSON.stringify({ name: file.name }));
-    pinataForm.append("pinataOptions", JSON.stringify({ cidVersion: 1 }));
+    pinataForm.append("pinataOptions", JSON.stringify({ cidVersion: 0 }));
 
     const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
       method: "POST",
