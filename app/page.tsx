@@ -67,9 +67,9 @@ export default function Explore(){
       const logoMap:Record<string,string>={};
       Object.assign(logoMap, Object.fromEntries(Object.entries(FORGE_IMAGE_OVERRIDES).map(([k,v])=>[k.toLowerCase(),v])));
       for(const c of coins){
-        if(c.metadata?.image){
-          const img=c.metadata.image.startsWith("ipfs://")?"https://ipfs.io/ipfs/"+c.metadata.image.slice(7):c.metadata.image;
-          logoMap[c.address.toLowerCase()]=img;
+        if(!logoMap[c.address.toLowerCase()] && c.metadata?.image){
+          const rawImg=c.metadata.image.startsWith("ipfs://")?"https://ipfs.io/ipfs/"+c.metadata.image.slice(7):c.metadata.image;
+          logoMap[c.address.toLowerCase()]=`/api/image?url=${encodeURIComponent(rawImg)}`;
         }
       }
 
