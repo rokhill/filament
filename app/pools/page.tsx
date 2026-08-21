@@ -65,8 +65,9 @@ export default function Pools() {
             for (const c of (coinList as any[])) {
                 try {
                     const meta = JSON.parse(c.metadata_uri || "{}");
-                    if (meta.image) {
-                        const img = meta.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+meta.image.slice(7) : meta.image;
+                    if (meta.image && !newLogoMap[c.address?.toLowerCase()]) {
+                        const rawImg = meta.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+meta.image.slice(7) : meta.image;
+                        const img = rawImg.startsWith("/api/image") ? rawImg : `/api/image?url=${encodeURIComponent(rawImg)}`;
                         newLogoMap[c.address.toLowerCase()] = img;
                     }
                 } catch {}
@@ -139,8 +140,8 @@ export default function Pools() {
                     if (override) {
                         m[c.address.toLowerCase()] = override;
                     } else if (c.metadata?.image) {
-                        const img = c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+c.metadata.image.slice(7) : c.metadata.image;
-                        m[c.address.toLowerCase()] = img;
+                        const rawImg = c.metadata.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+c.metadata.image.slice(7) : c.metadata.image;
+                        m[c.address.toLowerCase()] = rawImg.startsWith("/api/image") ? rawImg : `/api/image?url=${encodeURIComponent(rawImg)}`;
                     }
                 });
                 setLogoMap(m);
