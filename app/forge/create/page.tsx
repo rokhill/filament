@@ -70,8 +70,20 @@ export default function CreateCoinPage() {
             ) : image ? (
               <div className="flex flex-col items-center gap-2 py-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={image} alt="preview" className="rounded-xl object-cover" style={{ width: 72, height: 72, background: "var(--ae-veil)" }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }} />
-                <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>Tap to change image</span>
+                <img src={image} alt="preview" className="rounded-xl object-cover" style={{ width: 72, height: 72, background: "var(--ae-veil)" }}
+                  onError={(e) => {
+                    const el = e.target as HTMLImageElement;
+                    el.style.display = "none";
+                    const parent = el.parentElement;
+                    if (parent && !parent.querySelector(".upload-ok")) {
+                      const ok = document.createElement("div");
+                      ok.className = "upload-ok";
+                      ok.style.cssText = "font-size:2rem;text-align:center;";
+                      ok.textContent = "✅";
+                      parent.insertBefore(ok, el);
+                    }
+                  }} />
+                <span className="text-xs" style={{ color: "var(--ae-nebula)" }}>✓ Image uploaded — Tap to change</span>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-1 py-4">
