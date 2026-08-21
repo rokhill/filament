@@ -48,7 +48,8 @@ const FACTORY_ABI = [
 
 function CoinIcon({ coin, size = 44 }: { coin: ForgeCoin; size?: number }) {
   const [err, setErr] = useState(false);
-  const src = FORGE_IMAGE_OVERRIDES[coin.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address] ?? (coin.metadata?.image ? `/api/image?url=${encodeURIComponent(ipfsToHttp(coin.metadata.image) || "")}` : undefined);
+  const rawImg = coin.metadata?.image ? (coin.metadata.image.startsWith("/api/image") ? coin.metadata.image : `/api/image?url=${encodeURIComponent(ipfsToHttp(coin.metadata.image) || "")}`) : undefined;
+  const src = FORGE_IMAGE_OVERRIDES[coin.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address] ?? rawImg;
   if (!src || err) {
     return (
       <div className="flex items-center justify-center rounded-xl font-bold flex-shrink-0"
