@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 import { formatEther } from "viem";
 import useForge, { ForgeCoin, fmtLcai, fmtTokens } from "@/hooks/useForge";
 import useWeb3Clients from "@/hooks/useWeb3Clients";
-import { ipfsToHttp, shortAddr } from "@/config/forge";
+import { FORGE_IMAGE_OVERRIDES, ipfsToHttp, shortAddr } from "@/config/forge";
 
 const WLCAI_ADDRESS = (process.env.NEXT_PUBLIC_WLCAI_ADDRESS ||
   "0xD73cedfc5b894323BdB18A1e31E7BB186fCe5F64") as `0x${string}`;
@@ -48,7 +48,7 @@ const FACTORY_ABI = [
 
 function CoinIcon({ coin, size = 44 }: { coin: ForgeCoin; size?: number }) {
   const [err, setErr] = useState(false);
-  const src = ipfsToHttp(coin.metadata.image);
+  const src = FORGE_IMAGE_OVERRIDES[coin.address?.toLowerCase()] ?? FORGE_IMAGE_OVERRIDES[coin.address] ?? (coin.metadata?.image ? `/api/image?url=${encodeURIComponent(ipfsToHttp(coin.metadata.image) || "")}` : undefined);
   if (!src || err) {
     return (
       <div className="flex items-center justify-center rounded-xl font-bold flex-shrink-0"
