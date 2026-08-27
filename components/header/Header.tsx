@@ -38,7 +38,7 @@ const Header = () => {
           {/* Products */}
           <nav className="fil-nav" aria-label="Primary">
             {NAV.map((n) => {
-              const fullLoad = ["/dashboard", "/portfolio", "/forge/pulse"].includes(n.href);
+              const fullLoad = ["/dashboard", "/portfolio", "/forge/pulse", "/leaderboard"].includes(n.href);
               return fullLoad ? (
                 <a key={n.href} href={n.href} className={`fil-nav-link ${isActive(n.href) ? "is-active" : ""}`}>{n.label}</a>
               ) : (
