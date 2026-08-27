@@ -14,13 +14,14 @@ function fmt(n: number | null | undefined) {
   return v.toFixed(0);
 }
 
-type Tab = "creators" | "traders" | "holders" | "lp";
+type Tab = "creators" | "traders" | "holders" | "lp" | "scores";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "creators", label: "Creators", icon: "🔥" },
   { id: "traders", label: "Traders", icon: "⚡" },
   { id: "holders", label: "Holders", icon: "💎" },
   { id: "lp", label: "Liquidity", icon: "💧" },
+  { id: "scores", label: "Scores", icon: "🎯" },
 ];
 
 const MEDALS = ["🥇", "🥈", "🥉"];
@@ -34,7 +35,8 @@ export default function LeaderboardPage() {
     if (!INDEXER) return;
     setLoading(true);
     setData([]);
-    fetch(`${INDEXER}/api/v1/leaderboard/${tab}?limit=50`)
+    const endpoint = tab === "scores" ? "leaderboard/scores" : `leaderboard/${tab}`;
+    fetch(`${INDEXER}/api/v1/${endpoint}?limit=50`)
       .then(r => r.json())
       .then(d => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
@@ -105,6 +107,15 @@ export default function LeaderboardPage() {
                   <th style={{...th, textAlign:"right"}}>Pools</th>
                   <th style={{...th, textAlign:"right"}}>LP Events</th>
                 </>}
+                {tab === "scores" && <>
+                  <th style={th}>#</th>
+                  <th style={th}>Trader</th>
+                  <th style={{...th, textAlign:"right"}}>Score</th>
+                  <th style={{...th, textAlign:"right"}}>Trades</th>
+                  <th style={{...th, textAlign:"right"}}>Graduated</th>
+                  <th style={{...th, textAlign:"right"}}>Net PnL</th>
+                  <th style={{...th, textAlign:"right"}}>Biggest Trade</th>
+                </>}
               </tr>
             </thead>
             <tbody>
@@ -148,6 +159,19 @@ export default function LeaderboardPage() {
                     {tab === "lp" && <>
                       <td style={{...td, textAlign:"right", color:"var(--ae-aurum)", fontWeight:"600"}}>{row.pools_provided}</td>
                       <td style={{...td, textAlign:"right"}}>{row.lp_events_count}</td>
+                    </>}
+                    {tab === "scores" && <>
+                      <td style={{...td, textAlign:"right"}}>
+                        <span style={{ fontSize:"1.1rem", fontWeight:"bold", color: row.score >= 700 ? "var(--ae-aurum)" : row.score >= 400 ? "var(--clr-heading)" : "var(--ae-nebula)" }}>
+                          {row.score}
+                        </span>
+                      </td>
+                      <td style={{...td, textAlign:"right"}}>{row.total_trades}</td>
+                      <td style={{...td, textAlign:"right", color:"var(--clr-success)"}}>{row.graduated_coins_traded}</td>
+                      <td style={{...td, textAlign:"right", color: row.net_pnl >= 0 ? "var(--clr-success)" : "var(--clr-danger)"}}>
+                        {row.net_pnl >= 0 ? "+" : ""}{fmt(row.net_pnl)} LCAI
+                      </td>
+                      <td style={{...td, textAlign:"right"}}>{fmt(row.biggest_trade)} LCAI</td>
                     </>}
                   </tr>
                 );
