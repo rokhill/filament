@@ -69,7 +69,7 @@ export default function Explore(){
       for(const c of coins){
         if(!logoMap[c.address.toLowerCase()] && c.metadata?.image){
           const rawImg=c.metadata.image.startsWith("ipfs://")?"https://ipfs.io/ipfs/"+c.metadata.image.slice(7):c.metadata.image;
-          logoMap[c.address.toLowerCase()]=`/api/image?url=${encodeURIComponent(rawImg)}`;
+          logoMap[c.address.toLowerCase()]=rawImg.startsWith("/api/image") ? rawImg : `/api/image?url=${encodeURIComponent(rawImg)}`;
         }
       }
 
