@@ -137,6 +137,10 @@ export default function PortfolioPage() {
           }
         } catch { /* skip */ }
       }
+      held.sort((a, b) => {
+        if (a.graduated !== b.graduated) return a.graduated ? -1 : 1;
+        return Number(b.valueWei - a.valueWei);
+      });
       setHoldings(held);
 
       // Scan LP positions across both factories
