@@ -16,6 +16,7 @@ const NAV = [
   { href: "/portfolio", label: "Portfolio", sub: "Your holdings" },
   { href: "/dashboard", label: "Dashboard", sub: "Your on-chain story" },
   { href: "/guides", label: "Guides", sub: "Learn how it all works" },
+  { href: "/leaderboard", label: "Leaderboard", sub: "Top creators, traders & holders" },
 ];
 
 const MobileMenu = () => {

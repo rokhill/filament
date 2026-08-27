@@ -17,6 +17,7 @@ const NAV = [
   { href: "/markets", label: "Markets" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/leaderboard", label: "Leaderboard" },
 ];
 
 const Header = () => {
