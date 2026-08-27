@@ -6,10 +6,12 @@ import Link from "next/link";
 const INDEXER = process.env.NEXT_PUBLIC_INDEXER_URL || "";
 
 function shortAddr(a: string) { return a.slice(0, 6) + "…" + a.slice(-4); }
-function fmt(n: number) {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return n.toFixed(0);
+function fmt(n: number | null | undefined) {
+  if (n == null || isNaN(Number(n))) return "—";
+  const v = Number(n);
+  if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + "M";
+  if (v >= 1_000) return (v / 1_000).toFixed(1) + "K";
+  return v.toFixed(0);
 }
 
 type Tab = "creators" | "traders" | "holders" | "lp";
