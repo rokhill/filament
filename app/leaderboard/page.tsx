@@ -113,7 +113,6 @@ export default function LeaderboardPage() {
                   <th style={{...th, textAlign:"right"}}>Score</th>
                   <th style={{...th, textAlign:"right"}}>Trades</th>
                   <th style={{...th, textAlign:"right"}}>Graduated</th>
-                  <th style={{...th, textAlign:"right"}}>Net PnL</th>
                   <th style={{...th, textAlign:"right"}}>Biggest Trade</th>
                 </>}
               </tr>
@@ -168,9 +167,6 @@ export default function LeaderboardPage() {
                       </td>
                       <td style={{...td, textAlign:"right"}}>{row.total_trades}</td>
                       <td style={{...td, textAlign:"right", color:"var(--clr-success)"}}>{row.graduated_coins_traded}</td>
-                      <td style={{...td, textAlign:"right", color: row.net_pnl >= 0 ? "var(--clr-success)" : "var(--clr-danger)"}}>
-                        {row.net_pnl >= 0 ? "+" : ""}{fmt(row.net_pnl)} LCAI
-                      </td>
                       <td style={{...td, textAlign:"right"}}>{fmt(row.biggest_trade)} LCAI</td>
                     </>}
                   </tr>
