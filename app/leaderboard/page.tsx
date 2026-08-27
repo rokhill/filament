@@ -214,9 +214,9 @@ export default function LeaderboardPage() {
 }
 
 const th: React.CSSProperties = {
-  padding: "0.75rem 1rem", textAlign: "left", fontSize: "0.7rem",
-  fontWeight: 600, color: "var(--ae-nebula)", textTransform: "uppercase", letterSpacing: "0.05em",
+  padding: "0.5rem 0.5rem", textAlign: "left", fontSize: "0.6rem",
+  fontWeight: 600, color: "var(--ae-nebula)", textTransform: "uppercase", letterSpacing: "0.03em",
 };
 const td: React.CSSProperties = {
-  padding: "0.65rem 1rem", fontSize: "0.875rem", color: "var(--clr-heading)",
+  padding: "0.5rem 0.5rem", fontSize: "0.75rem", color: "var(--clr-heading)",
 };
