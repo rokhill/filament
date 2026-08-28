@@ -134,6 +134,10 @@ export default function Explore(){
 
   return(
     <main className="mx-auto max-w-5xl px-4 py-10 min-h-[70vh]">
+      <div className="mb-6 -mx-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/banners/explore.png" alt="Explore" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+      </div>
       <div className="f-eyebrow mb-2">Filament DEX · LightChain AI</div>
       <h1 className="f-display text-4xl sm:text-5xl mb-1">Stay Ahead of the Curve.</h1>
       <p className="f-meta mb-8">Every token with liquidity on LightChain AI — live from on-chain events, powered by Filament Indexer™.</p>
