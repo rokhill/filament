@@ -43,6 +43,10 @@ export default function BridgePage() {
   return (
     <main className="mx-auto max-w-xl px-4 py-12 min-h-[70vh]">
       {/* Hero */}
+      <div className="mb-6 -mx-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/banners/bridge.png" alt="Bridge" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+      </div>
       <div className="f-eyebrow mb-2">LightChain AI · Chain 9200</div>
       <h1 className="f-display text-4xl sm:text-5xl">Bridge</h1>
       <p className="f-body text-sm mt-2 max-w-md">
