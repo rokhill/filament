@@ -48,6 +48,11 @@ export default function LeaderboardPage() {
 
   return (
     <main style={{ maxWidth: 860, margin: "0 auto", padding: "2rem 1rem" }}>
+      {/* Banner */}
+      <div style={{ marginBottom: "1.5rem", marginLeft: "-1rem", marginRight: "-1rem" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/banners/leaderboard.png" alt="Leaderboard" style={{ width: "100%", borderRadius: "0.75rem", objectFit: "cover", maxHeight: 220 }} />
+      </div>
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
         <h1 style={{ fontSize: "2rem", fontWeight: 700, fontFamily: "var(--font-display), serif", color: "var(--clr-heading)", marginBottom: "0.5rem" }}>
