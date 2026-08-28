@@ -53,6 +53,10 @@ export default function Home() {
       <BootSplash />
       <div className="container max-w-lg mx-auto py-12">
         {/* Masthead — same structure as Markets: eyebrow, serif title, rule */}
+        <div className="mb-6 -mx-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/banners/exchange.png" alt="Exchange" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+        </div>
         <div className="f-eyebrow mb-2">Non-custodial AMM · LightChain AI</div>
         <h1 className="f-display text-4xl sm:text-5xl">Exchange</h1>
         <p className="f-body text-sm mt-2 leading-relaxed">
