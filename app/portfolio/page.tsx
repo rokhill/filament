@@ -202,6 +202,10 @@ export default function PortfolioPage() {
   if (!address) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-16 text-center min-h-[70vh]">
+        <div className="mb-6 -mx-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/banners/portfolio.png" alt="Portfolio" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+        </div>
         <div className="f-eyebrow mb-2">Your Holdings · LightChain AI</div>
         <h1 className="f-display text-4xl sm:text-5xl mb-3">Portfolio</h1>
         <p className="text-sm" style={{ color: "var(--ae-nebula)" }}>Connect your wallet to see your holdings.</p>
@@ -211,6 +215,10 @@ export default function PortfolioPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10 min-h-[70vh]">
+      <div className="mb-6 -mx-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/banners/portfolio.png" alt="Portfolio" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+      </div>
       <div className="f-eyebrow mb-2">Your Holdings · LightChain AI</div>
       <h1 className="f-display text-4xl sm:text-5xl">Portfolio</h1>
       <p className="f-mono mt-2 mb-7">{shortAddr(address)}</p>
