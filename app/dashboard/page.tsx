@@ -94,6 +94,10 @@ export default function Dashboard() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 min-h-[70vh]">
+      <div className="mb-6 -mx-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/banners/dashboard.png" alt="Dashboard" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+      </div>
       <div className="f-eyebrow mb-2">YOUR STORY · LIGHTCHAIN AI</div>
       <h1 className="f-display text-4xl sm:text-5xl mb-1" style={{ color: "var(--clr-heading)" }}>Dashboard</h1>
       <p className="f-meta mb-8" style={{ color: "var(--ae-nebula)" }}>{address?.slice(0,6)}…{address?.slice(-4)}</p>
