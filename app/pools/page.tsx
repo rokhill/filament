@@ -162,6 +162,10 @@ export default function Pools() {
 
     return (
         <div className="container py-12">
+            <div className="mb-6 -mx-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/banners/pools.png" alt="Pools" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+            </div>
             <div className="f-eyebrow mb-2">Liquidity · LightChain AI</div>
             <h1 className="f-display text-3xl sm:text-4xl mb-1">Pools</h1>
             <p className="f-body text-sm mb-6" style={{ maxWidth: "540px" }}>
