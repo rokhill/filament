@@ -29,6 +29,10 @@ const GUIDES = [
 export default function GuidesPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-14 min-h-[70vh]">
+      <div className="mb-6 -mx-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/banners/guides.png" alt="Guides" className="w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+      </div>
       <div className="f-eyebrow mb-2">Learn</div>
       <h1 className="f-display text-3xl sm:text-4xl">Guides</h1>
       <p className="f-body text-sm mt-3 mb-10">
