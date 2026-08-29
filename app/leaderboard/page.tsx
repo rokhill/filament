@@ -148,10 +148,9 @@ export default function LeaderboardPage() {
                         {MEDALS[i] ?? i + 1}
                       </td>
                       <td style={td}>
-                        <a href={`https://mainnet.lightscan.app/address/${addr}`} target="_blank" rel="noopener noreferrer"
-                          style={{ color: "var(--clr-heading)", textDecoration: "none", fontFamily: "monospace", fontSize: "0.85rem" }}>
+                        <span style={{ color: "var(--clr-heading)", fontFamily: "monospace", fontSize: "0.85rem" }}>
                           {shortAddr(addr || "")}
-                        </a>
+                        </span>
                       </td>
                       {tab === "overall" && <>
                         <td style={{ ...td, textAlign: "right" }}>
