@@ -148,8 +148,9 @@
   }
 
   body {
-    @apply min-h-dvh bg-background text-foreground;
+    @apply min-h-dvh text-foreground;
     overflow-x: hidden;
+    background-color: #070605;
     background-image: url(/background.jpeg);
     background-size: cover;
     background-position: center;
