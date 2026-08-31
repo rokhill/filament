@@ -165,16 +165,17 @@ export default function PortfolioPage() {
           for (const e of (earnings as any[])) {
             try {
               const pairAddr = e.pair as `0x${string}`;
-              const [lpBal, pairData] = await Promise.all([
+              const [lpBal, pairData, lpTotalRpc] = await Promise.all([
                 publicClient.readContract({ address: pairAddr, abi: PAIR_ABI, functionName: "balanceOf", args: [address] }),
                 fetch(`${INDEXER}/api/v1/pairs/${pairAddr}`).then(r=>r.json()).catch(()=>null),
+                publicClient.readContract({ address: pairAddr, abi: PAIR_ABI, functionName: "totalSupply" }),
               ]);
               if ((lpBal as bigint) === 0n) continue;
               if (!pairData) continue;
               const tokenAddr = (pairData.base_token || "") as `0x${string}`;
               const wlcaiIsT0 = pairData.wlcai_is_t0 === 1;
               const reserveLCAI = BigInt(wlcaiIsT0 ? pairData.reserve1 : pairData.reserve0);
-              const lpTotal = BigInt(pairData.lp_total || "0");
+              const lpTotal = (lpTotalRpc as bigint) || BigInt(pairData.lp_total || "0");
               const sym0 = e.symbol || tokenAddr.slice(0,6);
               const share = lpTotal > 0n ? (lpBal as bigint) * 10n**18n / lpTotal : 0n;
               const valueWei = lpTotal > 0n ? reserveLCAI * 2n * share / 10n**18n : 0n;
