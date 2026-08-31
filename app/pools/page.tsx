@@ -90,8 +90,8 @@ export default function Pools() {
                 const baseInfo = tokenMap[baseAddr] || {symbol: baseAddr?.slice(0,6)||"TOKEN", name: baseAddr||"Token"};
                 const baseLogoURI = logoMap[baseAddr] || "";
                 const isT0Wlcai = t0addr.toLowerCase()===wlcai;
-                const token0 = {address:t0addr,symbol:isT0Wlcai?"LCAI":baseInfo.symbol,name:isT0Wlcai?"LightChainAI":baseInfo.name,decimals:18,chainId:chain.id,logoURI:isT0Wlcai?"":baseLogoURI};
-                const token1 = {address:t1addr,symbol:!isT0Wlcai?"LCAI":baseInfo.symbol,name:!isT0Wlcai?"LightChainAI":baseInfo.name,decimals:18,chainId:chain.id,logoURI:!isT0Wlcai?"":baseLogoURI};
+                const token0 = {address:t0addr,symbol:isT0Wlcai?"LCAI":baseInfo.symbol,name:isT0Wlcai?"LightChainAI":baseInfo.name,decimals:18,chainId:chain.id,logoURI:isT0Wlcai?"/images/brand/lcai.svg":baseLogoURI};
+                const token1 = {address:t1addr,symbol:!isT0Wlcai?"LCAI":baseInfo.symbol,name:!isT0Wlcai?"LightChainAI":baseInfo.name,decimals:18,chainId:chain.id,logoURI:!isT0Wlcai?"/images/brand/lcai.svg":baseLogoURI};
                 allPairs.push({
                     address:pairAddress, token0, token1,
                     liquidity:lpBalance,
