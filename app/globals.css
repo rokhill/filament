@@ -147,14 +147,17 @@
     @apply border-border outline-ring/50;
   }
 
-  body {
-    @apply min-h-dvh text-foreground;
-    overflow-x: hidden;
+  html {
     background-color: #070605;
     background-image: url(/background.jpeg);
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+  }
+  body {
+    @apply min-h-dvh text-foreground;
+    overflow-x: hidden;
+    background: transparent;
   }
 
   button:not(:disabled),
