@@ -74,11 +74,10 @@ export default async function RootLayout({
   const cookies = headersList.get("cookie");
 
   return (
-    <html lang="en" suppressHydrationWarning style={{ background: "#050506" }}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Kill the white PWA launch flash: paint black before any CSS loads */}
         <style dangerouslySetInnerHTML={{ __html: `
-          html, body { background: #050506 !important; }
           html.light, html.light body { background: #f7f5f0 !important; }
         ` }} />
         {/* iOS launch screens — a full-bleed bulb on black */}
@@ -90,7 +89,7 @@ export default async function RootLayout({
         <link rel="apple-touch-startup-image" href="/brand/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" />
         <link rel="apple-touch-startup-image" href="/brand/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" />
       </head>
-      <body className={cn("antialiased", bodyFont.variable, display.variable)} style={{ background: "#050506", overflowX: "hidden" }}>
+      <body className={cn("antialiased", bodyFont.variable, display.variable)} style={{ overflowX: "hidden" }}>
         
         <ThemeProvider
           attribute="class"
