@@ -100,7 +100,7 @@ input[type="number"],
 /* ---------- night sky field ---------- */
 .ae-sky {
   position: relative;
-  background-color: var(--ae-night);
+  background-color: transparent;
   background-image:
     radial-gradient(1200px 500px at 50% 115%, rgba(227, 179, 65, 0.14), transparent 65%),
     radial-gradient(1.2px 1.2px at 12% 22%, rgba(237, 240, 248, 0.55), transparent 100%),
