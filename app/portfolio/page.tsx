@@ -19,6 +19,7 @@ const erc20Abi = [
 type Holding = ForgeCoin & { balance: bigint; valueWei: bigint; spentWei: bigint; receivedWei: bigint; };
 type LPPosition = {
   pair: `0x${string}`;
+  tokenAddr: `0x${string}`;
   token0Symbol: string;
   token1Symbol: string;
   lpBalance: bigint;
@@ -73,6 +74,7 @@ export default function PortfolioPage() {
   const [lcaiUsd, setLcaiUsd] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [lpPositions, setLpPositions] = useState<LPPosition[]>([]);
+  const [logoMap, setLogoMap] = useState<Record<string,string>>({});
 
   const load = async () => {
     if (!address || !publicClient) { setLoading(false); return; }
@@ -96,6 +98,18 @@ export default function PortfolioPage() {
       setNativeLcai(native);
       setWlcai(wlcaiBal as bigint);
       setLcaiUsd(usd);
+      // Build logoMap for LP images
+      const lm: Record<string,string> = {};
+      for (const r of (coinRows as any[] || [])) {
+        try {
+          const meta = JSON.parse(r.metadata_uri || "{}");
+          if (meta.image) {
+            const img = meta.image.startsWith("/api/image") ? meta.image : `/api/image?url=${encodeURIComponent(meta.image.startsWith("ipfs://") ? "https://ipfs.io/ipfs/"+meta.image.slice(7) : meta.image)}`;
+            lm[r.address.toLowerCase()] = img;
+          }
+        } catch {}
+      }
+      setLogoMap(lm);
 
       // Fetch wallet trade history for PnL calculation
       let tradeMap: Record<string, {spent: bigint, received: bigint}> = {};
@@ -172,7 +186,7 @@ export default function PortfolioPage() {
               const lpTotalBig = lpTotal as bigint;
               const share = lpTotalBig > 0n ? (lpBal as bigint) * 10n**18n / lpTotalBig : 0n;
               const valueWei = lpTotalBig > 0n ? reserveLCAI * 2n * share / 10n**18n : 0n;
-              lpHeld.push({ pair, token0Symbol: sym0 as string, token1Symbol: "LCAI", lpBalance: lpBal as bigint, lpTotal: lpTotalBig, reserveLCAI, valueWei });
+              lpHeld.push({ pair, tokenAddr, token0Symbol: sym0 as string, token1Symbol: "LCAI", lpBalance: lpBal as bigint, lpTotal: lpTotalBig, reserveLCAI, valueWei });
             } catch { continue; }
           }
         } catch { continue; }
@@ -311,9 +325,12 @@ export default function PortfolioPage() {
           {lpPositions.map((lp) => (
             <Link key={lp.pair} href="/pools"
               className="pf-card flex items-center gap-4 rounded-2xl p-4">
-              <div className="flex items-center justify-center rounded-xl font-bold flex-shrink-0"
+              <div className="flex items-center justify-center rounded-xl font-bold flex-shrink-0 overflow-hidden"
                 style={{ width: 44, height: 44, background: "var(--ae-veil)", color: "var(--ae-aurum)", fontSize: 13 }}>
-                LP
+                {logoMap[lp.tokenAddr?.toLowerCase()] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={logoMap[lp.tokenAddr.toLowerCase()]} alt={lp.token0Symbol} style={{ width: 44, height: 44, objectFit: "cover", borderRadius: "0.75rem" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                ) : "LP"}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold truncate" style={{ color: "var(--clr-heading)", fontFamily: "var(--font-display), serif" }}>
