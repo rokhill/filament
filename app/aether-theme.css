@@ -112,7 +112,10 @@ input[type="number"],
     radial-gradient(1.2px 1.2px at 91% 30%, rgba(237, 240, 248, 0.45), transparent 100%),
     radial-gradient(1px 1px at 7% 78%, rgba(237, 240, 248, 0.28), transparent 100%),
     radial-gradient(1.3px 1.3px at 52% 82%, rgba(127, 180, 232, 0.4), transparent 100%),
-    url(/background.jpeg) center/cover fixed;
+    url(/background.jpeg);
+  background-size: auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 html.light .ae-sky {
   background-color: #f4f6fc;
