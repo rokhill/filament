@@ -157,39 +157,31 @@ export default function PortfolioPage() {
       });
       setHoldings(held);
 
-      // Scan LP positions across both factories
+      // Fetch LP positions via indexer + RPC balance check
       const lpHeld: LPPosition[] = [];
-      for (const factory of FACTORIES) {
+      if (INDEXER) {
         try {
-          const logs = await publicClient.getLogs({ address: factory as `0x${string}`, fromBlock: 0n, toBlock: "latest" });
-          for (const l of logs) {
-            if (!l.topics[1] || !l.topics[2]) continue;
-            const pair = ("0x" + l.data.slice(26, 66)) as `0x${string}`;
+          const earnings = await fetch(`${INDEXER}/api/v1/wallet/${address}/lp-earnings`).then(r=>r.json()).catch(()=>[]);
+          for (const e of (earnings as any[])) {
             try {
-              const lpBal = await publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "balanceOf", args: [address] });
+              const pairAddr = e.pair as `0x${string}`;
+              const [lpBal, pairData] = await Promise.all([
+                publicClient.readContract({ address: pairAddr, abi: PAIR_ABI, functionName: "balanceOf", args: [address] }),
+                fetch(`${INDEXER}/api/v1/pairs/${pairAddr}`).then(r=>r.json()).catch(()=>null),
+              ]);
               if ((lpBal as bigint) === 0n) continue;
-              const [t0addr, res, lpTotal] = await Promise.all([
-                publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "token0" }),
-                publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "getReserves" }),
-                publicClient.readContract({ address: pair, abi: PAIR_ABI, functionName: "totalSupply" }),
-              ]);
-              const t0 = ("0x" + l.topics[1].slice(26)) as `0x${string}`;
-              const t1 = ("0x" + l.topics[2].slice(26)) as `0x${string}`;
-              const wlcaiIsT0 = (t0addr as string).toLowerCase() === WLCAI_LC;
-              const r = res as [bigint, bigint, number];
-              const reserveLCAI = wlcaiIsT0 ? r[0] : r[1];
-              const tokenAddr = wlcaiIsT0 ? t1 : t0;
-              const [sym0, sym1] = await Promise.all([
-                publicClient.readContract({ address: tokenAddr, abi: ERC20_SYM_ABI, functionName: "symbol" }).catch(() => "???"),
-                Promise.resolve("LCAI"),
-              ]);
-              const lpTotalBig = lpTotal as bigint;
-              const share = lpTotalBig > 0n ? (lpBal as bigint) * 10n**18n / lpTotalBig : 0n;
-              const valueWei = lpTotalBig > 0n ? reserveLCAI * 2n * share / 10n**18n : 0n;
-              lpHeld.push({ pair, tokenAddr, token0Symbol: sym0 as string, token1Symbol: "LCAI", lpBalance: lpBal as bigint, lpTotal: lpTotalBig, reserveLCAI, valueWei });
+              if (!pairData) continue;
+              const tokenAddr = (pairData.base_token || "") as `0x${string}`;
+              const wlcaiIsT0 = pairData.wlcai_is_t0 === 1;
+              const reserveLCAI = BigInt(wlcaiIsT0 ? pairData.reserve1 : pairData.reserve0);
+              const lpTotal = BigInt(pairData.lp_total || "0");
+              const sym0 = e.symbol || tokenAddr.slice(0,6);
+              const share = lpTotal > 0n ? (lpBal as bigint) * 10n**18n / lpTotal : 0n;
+              const valueWei = lpTotal > 0n ? reserveLCAI * 2n * share / 10n**18n : 0n;
+              lpHeld.push({ pair: pairAddr, tokenAddr, token0Symbol: sym0, token1Symbol: "LCAI", lpBalance: lpBal as bigint, lpTotal, reserveLCAI, valueWei });
             } catch { continue; }
           }
-        } catch { continue; }
+        } catch {}
       }
       setLpPositions(lpHeld);
       // fetch LP fee earnings
