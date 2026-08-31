@@ -322,6 +322,9 @@ export default function PortfolioPage() {
                 {logoMap[lp.tokenAddr?.toLowerCase()] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={logoMap[lp.tokenAddr.toLowerCase()]} alt={lp.token0Symbol} style={{ width: 44, height: 44, objectFit: "cover", borderRadius: "0.75rem" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                ) : lp.tokenAddr?.toLowerCase() === "0xd73cedfc5b894323bdb18a1e31e7bb186fce5f64" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="/images/brand/lcai.svg" alt="LCAI" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: "0.75rem" }} />
                 ) : "LP"}
               </div>
               <div className="flex-1 min-w-0">
