@@ -150,6 +150,11 @@
   body {
     @apply min-h-dvh bg-background text-foreground;
     overflow-x: hidden;
+    background-image: url(/background.jpeg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-blend-mode: luminosity;
   }
 
   button:not(:disabled),
