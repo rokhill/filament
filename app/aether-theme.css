@@ -113,7 +113,7 @@ input[type="number"],
     radial-gradient(1px 1px at 7% 78%, rgba(237, 240, 248, 0.28), transparent 100%),
     radial-gradient(1.3px 1.3px at 52% 82%, rgba(127, 180, 232, 0.4), transparent 100%),
     url(/background.webp);
-  background-size: cover;
+  background-size: 100% auto;
   background-position: center;
   background-repeat: no-repeat;
 }
