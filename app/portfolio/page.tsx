@@ -179,8 +179,7 @@ export default function PortfolioPage() {
               const reserveLCAI = wlcaiIsT0 ? r[0] : r[1];
               const lpTotal = (lpTotalRpc as bigint) || BigInt(pairData.lp_total || "0");
               const sym0 = e.symbol || tokenAddr.slice(0,6);
-              const share = lpTotal > 0n ? (lpBal as bigint) * 10n**18n / lpTotal : 0n;
-              const valueWei = lpTotal > 0n ? reserveLCAI * 2n * share / 10n**18n / 10n**18n : 0n;
+              const valueWei = lpTotal > 0n ? reserveLCAI * 2n * (lpBal as bigint) / lpTotal : 0n;
               lpHeld.push({ pair: pairAddr, tokenAddr, token0Symbol: sym0, token1Symbol: "LCAI", lpBalance: lpBal as bigint, lpTotal, reserveLCAI, valueWei });
             } catch { continue; }
           }
