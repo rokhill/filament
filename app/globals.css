@@ -147,18 +147,9 @@
     @apply border-border outline-ring/50;
   }
 
-  html {
-    background-color: #070605;
-    background-image: url(/background.webp);
-    background-size: 100vw 100vh;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-  }
   body {
-    @apply min-h-dvh text-foreground;
+    @apply min-h-dvh bg-background text-foreground;
     overflow-x: hidden;
-    background: transparent;
   }
 
   button:not(:disabled),
