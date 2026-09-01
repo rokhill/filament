@@ -149,10 +149,6 @@
 
   html {
     background-color: #070605;
-    background-image: url(/background.jpeg);
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
   }
   body {
     @apply min-h-dvh text-foreground;
